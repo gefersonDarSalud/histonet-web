@@ -1,6 +1,6 @@
 import type React from "react"
 
-export default (): React.ReactElement => {
+export const Footer = (): React.ReactElement => {
     return (
         <>
             {/* Footer */}

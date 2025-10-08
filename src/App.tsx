@@ -2,19 +2,18 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
-import Header from '@/components/app/header';
-import Footer from '@/components/app/footer';
-import Home from '@/home/pages/main';
+import { Header } from '@/components/app/header';
+import { Footer } from '@/components/app/footer';
+import { Outlet } from 'react-router-dom';
 
-function App() {
-
-  return (
-    <>
-      <Header />
-      <Home />
-      <Footer />
-    </>
-  )
+const App = () => {
+    return (
+        <>
+            <Header />
+            <Outlet />
+            <Footer />
+        </>
+    )
 }
 
-export default App
+export default App;

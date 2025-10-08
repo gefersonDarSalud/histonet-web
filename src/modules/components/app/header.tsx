@@ -1,13 +1,11 @@
 import type React from "react";
 import { Button } from "../ui/button";
-import { Bell} from "lucide-react";
+import { Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
-export default (): React.ReactElement => {
-    const routes
-
+export const Header = (): React.ReactElement => {
     return (
         <>
             <header className="bg-white border-b  border-gray-200 px-4 md:px-6 py-3 flex justify-between items-center">

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function NotFoundPage() {
+export const NotFoundPage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
       <Card className="w-full max-w-sm text-center p-6 shadow-lg rounded-xl transition-all duration-300 transform hover:scale-105">

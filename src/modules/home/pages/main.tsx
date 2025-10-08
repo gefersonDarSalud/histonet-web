@@ -3,7 +3,7 @@
 
 import React from 'react';
 import {
-    Bell,
+    // Bell,
     FileText,
     Plus,
     Eye,
@@ -16,8 +16,8 @@ import {
 import { Button } from '@/components/ui/button';
 import {
     Card,
-    CardHeader,
-    CardContent,
+    // CardHeader,
+    // CardContent,
 } from '@/components/ui/card';
 import {
     Table,
@@ -47,37 +47,37 @@ const appointments = [
     { id: 3, name: 'Maria Rodríguez', time: '11:15 AM', reason: 'Seguimiento de tratamiento', initials: 'MR' },
 ];
 
-export default (): React.ReactElement => {
+export const Home = (): React.ReactElement => {
     return (
         <>
             {/* Main */}
             <main className="container max-w-full mx-auto p-4 md:p-8 min-h-screen bg-gray-50 font-sans text-gray-800">
                 {/* Dashboard Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                            <p className="text-gray-500 mt-1">Bienvenido de nuevo, Dr. Carlos.</p>
-                        </div>
-                        <Button className="mt-4 md:mt-0 shadow-md">
-                            <Plus size={18} className="mr-2" />
-                            Nueva Consulta
-                        </Button>
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                        <p className="text-gray-500 mt-1">Bienvenido de nuevo, Dr. Carlos.</p>
                     </div>
+                    <Button className="mt-4 md:mt-0 shadow-md">
+                        <Plus size={18} className="mr-2" />
+                        Nueva Consulta
+                    </Button>
+                </div>
 
                 {/* Stats */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        {stats.map((stat) => (
-                            <Card key={stat.id} className="p-6 shadow-lg flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-500 text-sm">{stat.title}</p>
-                                    <h2 className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</h2>
-                                </div>
-                                <div className={`p-3 rounded-full ${stat.color}`}>
-                                    <stat.icon size={24} />
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
+                    {stats.map((stat) => (
+                        <Card key={stat.id} className="p-6 shadow-lg flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-500 text-sm">{stat.title}</p>
+                                <h2 className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</h2>
+                            </div>
+                            <div className={`p-3 rounded-full ${stat.color}`}>
+                                <stat.icon size={24} />
+                            </div>
+                        </Card>
+                    ))}
+                </div>
 
                 {/* Appointments */}
                 <Card className="p-6 shadow-lg">
