@@ -1,0 +1,48 @@
+﻿# configuration.yaml
+
+# Secciones de Configuración Genéricas (Simplificación de XML)
+config:
+    # Los detalles de configSections se omiten ya que son específicos de la infraestructura .NET/Visual Basic.
+    # Solo se conserva el nombre de la sección de ajustes de usuario.
+    userSettingsSection: HistoNet.My.MySettings
+
+# Cadenas de Conexión (connectionStrings)
+connectionStrings: [] # Estaba vacío en el XML
+
+# Configuración de Diagnóstico del Sistema (system.diagnostics)
+# Se simplifica a los ajustes de clave, omitiendo la complejidad de listeners y tipos de assembly.
+diagnostics:
+    defaultSwitch: Information
+    logListeners:
+        - name: FileLog
+          type: Microsoft.VisualBasic.Logging.FileLogTraceListener
+          data: FileLogWriter
+        # - name: EventLog (Comentado en el XML original)
+
+# Configuración de Usuario (userSettings)
+# Esta es la sección más importante, mapeada directamente.
+userSettings:
+    HistoNet.My.MySettings:
+        Servidor: 192.168.0.190
+        BaseDeDatos: FLAVICA_A
+        BaseDatosIntegral: Integral..
+        BaseDatosMasterProfit: MasterProfitProA..
+        CantMesesMorbilidad: -12
+        ExportMañongoDirBackup: '\\10.11.201.10\BackupExportCss\'
+        ExportMañongoDirRestaurar: '\\10.11.100.3\BDManongoExportada\'
+        CoColorProductos_Tarjetas: PRE001
+        CargarDetalleDocumentoOrigenCrearNotas: '0'
+        CoColorProductos_Servicios: SERV
+        ServidorSedeCentral: 192.168.0.190
+        BaseDeDatosIPSS: IPSS
+        BaseDeDatosIPSS_File: IPSS_FILES
+        ServidorSMTP: 192.168.0.206
+        UsuarioBD: HistoNetUser
+        NombreIconoAplicacion: HistoNet.lnk
+        RutaVersion: '\\10.11.100.3\ProfitCompartido\Histonet\Aplicacion\HistoNet.exe'
+        UrlApiOrtografia: http://10.11.100.10:1111/gemini/corregirOrtografia
+        RutaReportes: Reportes\
+        BaseDatosDaria: DARIA
+        SegundosCargarDaria: '10'
+        ImpresoraPDF: CutePDF Writer
+        SonidoNotificacionTelemedicina: '\\10.11.101.21\Instaladores\HistoNet\NotificaTelemedicina10Segundos.wav'

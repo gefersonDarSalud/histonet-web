@@ -1,129 +1,146 @@
-// import { Button } from "@/components/ui/button"
-// import type React from "react"
-
-import React from 'react';
-import {
-    // Bell,
-    FileText,
-    Plus,
-    Eye,
-    Edit,
-    Trash2,
-    Users,
-    ArrowRightLeft,
-} from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    // CardHeader,
-    // CardContent,
-} from '@/components/ui/card';
-import {
-    Table,
-    TableHeader,
-    TableBody,
-    TableRow,
-    TableHead,
-    TableCell,
-} from '@/components/ui/table';
-import {
-    Avatar,
-    AvatarImage,
-    AvatarFallback,
-} from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { PlusIcon } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { StatusBadge } from '../components/StatusTabs';
 
-// Datos simulados
-const stats = [
-    { id: 1, title: 'Pacientes Hoy', value: 12, icon: Users, color: 'bg-orange-100 text-orange-600' },
-    { id: 2, title: 'Consultas del Mes', value: 152, icon: FileText, color: 'bg-blue-100 text-blue-600' },
-    { id: 3, title: 'Informes Generados', value: 78, icon: FileText, color: 'bg-green-100 text-green-600' },
-    { id: 4, title: 'Interconsultas', value: 5, icon: ArrowRightLeft, color: 'bg-red-100 text-red-600' },
+// --- Datos de Pacientes (Mock Data) ---
+
+type patien = {
+    id: number;
+    name: string;
+    visit: string;
+    time: string;
+    status: "Ingresado" | "En Espera" | "En Consulta" | "Atendido" | "Pendiente";
+}
+const initialPatients: patien[] = [
+    { id: 1, name: "Sofía Rodríguez", visit: "V-034", time: "09:00 AM", status: "Ingresado" },
+    { id: 2, name: "Carlos Pérez", visit: "-", time: "09:30 AM", status: "Pendiente" },
+    { id: 3, name: "Laura García", visit: "V-035", time: "10:00 AM", status: "En Espera" },
+    { id: 4, name: "Javier López", visit: "V-036", time: "10:30 AM", status: "En Consulta" },
+    { id: 5, name: "Isabel Martínez", visit: "V-037", time: "11:00 AM", status: "Atendido" },
+    { id: 6, name: "Manuel Sánchez", visit: "-", time: "11:30 AM", status: "Pendiente" },
+    { id: 7, name: "Elena Ramos", visit: "V-038", time: "11:45 AM", status: "Ingresado" },
 ];
 
-const appointments = [
-    { id: 1, name: 'Ana Pérez', time: '09:00 AM', reason: 'Control de rutina', initials: 'AP' },
-    { id: 2, name: 'Luis García', time: '10:30 AM', reason: 'Presentación de resultados', initials: 'LG' },
-    { id: 3, name: 'Maria Rodríguez', time: '11:15 AM', reason: 'Seguimiento de tratamiento', initials: 'MR' },
-];
+export const Home = () => {
+    const tabs = ["Todos", "Pendientes", "Registrados"];
+    const [activeTab, setActiveTab] = useState("Todos");
+    const [searchTerm, setSearchTerm] = useState("");
 
-export const Home = (): React.ReactElement => {
+    const filteredPatients = useMemo(() => {
+        let list = initialPatients.filter(patient =>
+            patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            patient.visit.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (activeTab === "Pendientes") {
+            list = list.filter(p => p.status === "Pendiente" || p.status === "En Espera");
+        } else if (activeTab === "Registrados") {
+            list = list.filter(p => ["Ingresado", "En Consulta", "Atendido"].includes(p.status));
+        }
+        return list;
+    }, [activeTab, searchTerm]);
+
+    // --- Renderizado principal ---
     return (
-        <>
-            {/* Main */}
-            <main className="container max-w-full mx-auto p-4 md:p-8 min-h-screen bg-gray-50 font-sans text-gray-800">
-                {/* Dashboard Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                        <p className="text-gray-500 mt-1">Bienvenido de nuevo, Dr. Carlos.</p>
-                    </div>
-                    <Button className="mt-4 md:mt-0 shadow-md">
-                        <Plus size={18} className="mr-2" />
-                        Nueva Consulta
-                    </Button>
-                </div>
+        <div className="min-h-screen bg-gray-50 font-sans">
 
-                {/* Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {stats.map((stat) => (
-                        <Card key={stat.id} className="p-6 shadow-lg flex items-center justify-between">
-                            <div>
-                                <p className="text-gray-500 text-sm">{stat.title}</p>
-                                <h2 className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</h2>
-                            </div>
-                            <div className={`p-3 rounded-full ${stat.color}`}>
-                                <stat.icon size={24} />
-                            </div>
-                        </Card>
-                    ))}
-                </div>
+            <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
-                {/* Appointments */}
-                <Card className="p-6 shadow-lg">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">Próximas Citas</h3>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Paciente</TableHead>
-                                <TableHead>Hora</TableHead>
-                                <TableHead>Motivo</TableHead>
-                                <TableHead className="text-right">Acciones</TableHead>
-                            </TableRow>
+                {/* Panel de Recepción Header */}
+                <section className="mb-8">
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Panel de Recepción</h1>
+                    <p className="mt-1 text-base text-gray-500">
+                        Bienvenido. Gestione la llegada de pacientes y las citas del día.
+                    </p>
+                </section>
+
+                {/* Cola de Pacientes Card (Usando los componentes simulados de shadcn) */}
+                <Card>
+
+                    {/* Card Header (Cola de Pacientes + Botón) */}
+                    <CardHeader className='flex justify-between items-center'>
+                        <CardTitle>Cola de Pacientes</CardTitle>
+                        <Button>
+                            <PlusIcon />
+                            Nuevo Ingreso
+                        </Button>
+                    </CardHeader>
+
+                    {/* Herramientas de Filtro y Búsqueda */}
+                    <CardContent className="bg-gray-50/50 flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
+
+                        {/* Campo de Búsqueda (shadcn Input) */}
+                        <div className="w-full md:max-w-md">
+                            <Input
+                                // icon={SearchIcon}
+                                type="text"
+                                placeholder="Buscar pacientes por nombre o DNI"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Pestañas de Estado (shadcn Tabs) */}
+                        <Tabs defaultValue="Pendientes">
+                            <TabsList className="bg-gray-200 border rounded-md">
+                                {tabs.map(tab => (
+                                    <TabsTrigger
+                                        className="data-[state=active]:text-white data-[state=active]:bg-black"
+                                        key={tab}
+                                        value={tab}
+                                        onClick={() => setActiveTab(tab)}
+                                    >
+                                        {tab}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </Tabs>
+                        {/* <StatusTabs activeTab={activeTab} setActiveTab={setActiveTab} /> */}
+
+                    </CardContent>
+
+                    <Table className="divide-y divide-gray-100">
+                        {/* Encabezado de la Tabla (shadcn Table Header) */}
+                        <TableHeader className="hidden md:grid md:grid-cols-[2fr_1fr_1fr_1.5fr_0.5fr] py-3 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 bg-gray-50 border-b border-gray-200">
+                            <TableHead className="pl-4 font-bold">Nombre del Paciente</TableHead>
+                            <TableHead className='font-bold'>Nº Visita</TableHead>
+                            <TableHead className='font-bold'>Hora de Cita</TableHead>
+                            <TableHead className='font-bold text-center'>Estado</TableHead>
                         </TableHeader>
-                        <TableBody>
-                            {appointments.map((appointment) => (
-                                <TableRow key={appointment.id}>
-                                    <TableCell>
-                                        <div className="flex items-center space-x-3">
-                                            <Avatar>
-                                                <AvatarImage src={`https://placehold.co/40x40/E5E7EB/1F2937?text=${appointment.initials}`} />
-                                                <AvatarFallback>{appointment.initials}</AvatarFallback>
-                                            </Avatar>
-                                            <span className="font-medium text-gray-900">{appointment.name}</span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-gray-600">{appointment.time}</TableCell>
-                                    <TableCell className="text-gray-600">{appointment.reason}</TableCell>
-                                    <TableCell>
-                                        <div className="flex justify-end space-x-2">
-                                            <Button variant="ghost" size="icon">
-                                                <Eye size={18} className="text-gray-600" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon">
-                                                <Edit size={18} className="text-gray-600" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon">
-                                                <Trash2 size={18} className="text-gray-600" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
+
+                        {/* Cuerpo de la Tabla */}
+                        <TableBody> {
+                            filteredPatients.length > 0
+                                ? (
+                                    filteredPatients.map(patient =>
+                                        <TableRow className="grid grid-cols-5 p-4 border-b border-gray-100 transition-colors hover:bg-gray-50 items-center text-sm md:grid-cols-[2fr_1fr_1fr_1.5fr_0.5fr] min-h-[60px]">
+                                            <TableCell className="col-span-2 md:col-span-1 font-medium text-gray-900 pl-4">{patient.name}</TableCell>
+                                            <TableCell className="hidden md:block text-gray-600">{patient.visit}</TableCell>
+                                            <TableCell className="text-gray-600">{patient.time}</TableCell>
+                                            <TableCell className="col-span-2 md:col-span-1 pr-4 md:pr-0 flex justify-center">
+                                                <StatusBadge statusVisit={patient.status} />
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                )
+                                : (
+                                    <TableRow>
+                                        <TableCell className="p-6 text-center text-gray-500" colSpan={3} align='center'>
+                                            No se encontraron pacientes para el filtro actual.
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                        } </TableBody>
                     </Table>
                 </Card>
+
             </main>
-        </>
-    )
-}
+
+        </div>
+    );
+};
