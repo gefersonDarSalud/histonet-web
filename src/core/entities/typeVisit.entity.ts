@@ -1,0 +1,1 @@
+export type TypeVisit = 'asegurado' | 'afiliado' | 'particular'

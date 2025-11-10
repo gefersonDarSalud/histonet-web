@@ -1,12 +1,12 @@
-/**
- * @interface PatientRepository
- * @property {function(id: string): Promise<Patient>} getById
- * @property {function(patient: Patient): Promise<void>} create
- */
+import type { Patient } from "../entities/patient.entity";
 
-import type Patient from "../entities/Patient.entities";
-
-export default interface PatientRepository {
-    getById(id: string): Promise<Patient>;
-    create(patient: Patient): Promise<void>;
+export interface PatientRepository {
+    // El 'search' aquí se mapea a tu método @Get() del backend
+    searchPatients(
+        params: {
+            id?: string;
+            fullname?: string;
+        },
+    ): Promise<Patient[]>;
+    // Podrías añadir getAllPatients, getPatientById, etc.
 }

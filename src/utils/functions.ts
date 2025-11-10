@@ -1,5 +1,10 @@
-import type { fromApiPatient } from "src/data/mappers/patient.mappers";
+import { MAX_ID_LENGTH, MIN_ID_LENGTH } from "./globals";
 
-export function isFromApiPatient(data: any): data is fromApiPatient {
-    return 'user_id' in data && 'full_name' in data && 'email_address' in data;
-}
+export function isValidIdNumber(term: string): boolean {
+    // 1. Debe ser un número (usamos RegExp o Number.isNaN)
+    const isNumeric = /^\d+$/.test(term);
+    if (!isNumeric) return false;
+
+    // 2. Debe cumplir con las restricciones de longitud de ID/Cédula
+    return term.length >= MIN_ID_LENGTH && term.length <= MAX_ID_LENGTH;
+};

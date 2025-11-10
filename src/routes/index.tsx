@@ -5,6 +5,7 @@ import { NotFoundPage } from "@/errors/404";
 import App from "./../App";
 import { Login } from "@/auth/pages/login";
 import { Signup } from "@/auth/pages/signup";
+import { RemoteClinic } from "@/remoteClicnic/pages/main";
 
 
 export const routesConfig = [
@@ -16,6 +17,10 @@ export const routesConfig = [
             {
                 index: true,
                 element: <Home />,
+            },
+            {
+                path: "telemedicina",
+                element: <RemoteClinic />,
             },
         ],
     },

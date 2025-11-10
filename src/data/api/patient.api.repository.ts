@@ -1,21 +1,24 @@
-// src/data/api/UserApiRepository.js
+import { serverUrl } from "#/utils/globals";
+import type { PatientApiDto } from "#/utils/types";
 
-import { isFromApiPatient } from 'src/utils/functions';
-import PatientEntity from '../../core/entities/Patient.entities';
-import { backendUrl } from '../../utils/globals';
-import patientMappers from '../mappers/patient.mappers'; // Mapeador para transformar los datos
+export const PatientApi = {
+    async search(query: { id?: string, fullname?: string }): Promise<PatientApiDto[]> {
 
-export default class PatientApiRepository extends PatientEntity  {
-    async getById(id: string): Promise<PatientEntity> {
-        const response = await fetch(`${backendUrl}${id}`);
-        const patientData = await response.json();
+        const params = new URLSearchParams();
+        if (query.id) params.append('id', query.id);
+        if (query.fullname) params.append('nombre_apellido', query.fullname);
 
-        if (!isFromApiPatient(patientData)) {
-            throw new Error("algo fallo")
+        const urlFull = `${serverUrl}/paciente?${params.toString()}`;
+        console.log(urlFull);
+
+        const response = await fetch(urlFull);
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: Fallo al buscar pacientes`);
         }
-        
-        return patientMappers.fromApi(patientData);
-    }
 
-    // Otros métodos...
-}
+        const data = await response.json();
+
+        return data;
+    }
+};
