@@ -2,10 +2,10 @@ import type React from "react";
 import { Button } from "../ui/button";
 import { Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Link } from "react-router-dom";
 
 
 export const Header = (): React.ReactElement => {
+
     const links: string[] = [
         "Inicio",
         "Gestión de Ingresos",

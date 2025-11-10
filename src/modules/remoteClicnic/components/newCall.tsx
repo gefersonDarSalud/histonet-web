@@ -24,7 +24,7 @@ import { BusinessCombobox } from "./Business.combobox"
 import { PatientType } from "./patientType"
 import { PatientCombobox } from "./Patient.combobox"
 import { useState } from "react"
-import type { PatientState } from "./types/newCall.type"
+import type { PatientState } from "#/utils/types"
 
 
 export const NewCall = () => {
