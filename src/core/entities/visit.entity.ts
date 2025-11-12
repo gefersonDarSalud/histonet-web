@@ -3,8 +3,8 @@ import type { StatusVisit } from "./status.entity";
 import type { TypeVisit } from "./typeVisit.entity";
 
 
-export type Visit = {
-    code: string;
+export interface Visit {
+    code: `${string}-${string}`;
     patient: Patient;
     date: string;
     time: string;

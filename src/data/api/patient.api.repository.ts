@@ -1,15 +1,10 @@
-import { serverUrl } from "#/utils/globals";
-import type { PatientApiDto } from "#/utils/types";
+import { getServerUrl } from "#/utils/functions";
+import type { PatientApiDto, PatientBusinessApiDto } from "#/utils/types";
 
 export const PatientApi = {
     async search(query: { id?: string, fullname?: string }): Promise<PatientApiDto[]> {
 
-        const params = new URLSearchParams();
-        if (query.id) params.append('id', query.id);
-        if (query.fullname) params.append('nombre_apellido', query.fullname);
-
-        const urlFull = `${serverUrl}/paciente?${params.toString()}`;
-        console.log(urlFull);
+        const urlFull = getServerUrl('paciente', query);
 
         const response = await fetch(urlFull);
 
@@ -20,5 +15,16 @@ export const PatientApi = {
         const data = await response.json();
 
         return data;
+    },
+
+    async getInsuranceCompany(patient: string): Promise<PatientBusinessApiDto[]> {
+        const urlFull = getServerUrl('empresa/paciente', patient);
+        const response = await fetch(urlFull)
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: Fallo al buscar las empresas del paciente`);
+        }
+
+        return await response.json() as PatientBusinessApiDto[];
     }
 };

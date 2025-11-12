@@ -26,8 +26,7 @@ type props = {
     listBusiness: business[];
 }
 
-export const BusinessCombobox = (props: props) => {
-    const { listBusiness } = props
+export const BusinessCombobox = ({ listBusiness }: props) => {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
 

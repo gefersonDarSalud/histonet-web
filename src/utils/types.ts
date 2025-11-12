@@ -28,6 +28,17 @@ export type PatientApiDto = {
     id_carnet: string
 }
 
+export type PatientBusinessApiDto = {
+    id: string;
+    nombre: string;
+    rif: string;
+    aseguradora?: {
+        id: string;
+        nombre: string;
+        rif: string;
+    } | null;
+}
+
 export type PatientState = {
     id: string | null; // Cédula o ID
     fullname: string | null; // Nombre completo

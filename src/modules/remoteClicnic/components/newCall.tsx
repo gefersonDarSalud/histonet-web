@@ -25,31 +25,11 @@ import { PatientType } from "./patientType"
 import { PatientCombobox } from "./Patient.combobox"
 import { useState } from "react"
 import type { PatientState } from "#/utils/types"
+import type { TypeVisit } from "#/core/entities/typeVisit.entity"
 
 
 export const NewCall = () => {
-    const patientsTypes = [
-        {
-            name: "Particular",
-            value: "Particular"
-        },
-        {
-            name: "Privado",
-            value: "Privado"
-        },
-        {
-            name: "Asegurado",
-            value: "Asegurado"
-        },
-        {
-            name: "Pam",
-            value: "Pam"
-        },
-        {
-            name: "Otro",
-            value: "Otro"
-        }
-    ]
+    const typeVisit: TypeVisit[] = ["particular", "afiliado", "asegurado"]
 
     const listBusiness = [
         {
@@ -76,11 +56,15 @@ export const NewCall = () => {
         birthdate: null,
     });
 
+    const [visitType, setVisitType] = useState<TypeVisit | null>(null);
+
+    const isBusinessDisabled = visitType === 'asegurado';
+
+    // update one field
     const handlePatientChange = (field: keyof PatientState, value: string | null) => {
-        setPatient(prev => ({
-            ...prev,
-            [field]: value
-        }));
+        setPatient(othersFields => {
+            return { ...othersFields, [field]: value }
+        });
     };
 
     console.log("Estado del Paciente en NewCall:", patient); // Para debug
@@ -98,8 +82,9 @@ export const NewCall = () => {
                                 Busca el Paciente y para registrarlo a la llamada
                             </DialogDescription>
                         </div>
-                        <div className="w-full md:max-w-md">
+                        <div className="flex justify-between">
                             <PatientCombobox patient={patient} setPatient={setPatient} />
+                            <Button variant={"link"} className="flex-1 font-bold cursor-pointer">¿El cliente No esta registrado?</Button>
                         </div>
                     </DialogHeader>
                     <div className="w-full">
@@ -119,6 +104,7 @@ export const NewCall = () => {
                                             required
                                             value={patient.fullname ?? ''}
                                             onChange={(e) => handlePatientChange('fullname', e.target.value)}
+                                            disabled
                                         />
                                     </Field>
                                     <Field>
@@ -131,6 +117,7 @@ export const NewCall = () => {
                                             required
                                             value={patient.id ?? ''}
                                             onChange={(e) => handlePatientChange('id', e.target.value)}
+                                            disabled
                                         />
                                     </Field>
                                     <Field>
@@ -141,8 +128,9 @@ export const NewCall = () => {
                                             id="newCall-birthdate"
                                             type="date"
                                             required
-                                            value={patient.birthdate ?? ''}
+                                            value={patient.birthdate ? patient.birthdate.split('T')[0] : ''}
                                             onChange={(e) => handlePatientChange('birthdate', e.target.value)}
+                                            disabled
                                         />
                                     </Field>
                                 </FieldGroup>
@@ -150,19 +138,22 @@ export const NewCall = () => {
                                 {/* config data */}
                                 <FieldGroup className="grid grid-cols-2 gap-4">
                                     <Field>
-                                        <FieldLabel htmlFor="newCall-business">
-                                            Empresa
-                                        </FieldLabel>
-                                        <div id="newCall-business">
-                                            <BusinessCombobox listBusiness={listBusiness} />
-                                        </div>
-                                    </Field>
-                                    <Field>
                                         <FieldLabel htmlFor="newCall-patientsTypes">
                                             Tipo de Paciente
                                         </FieldLabel>
-                                        <PatientType id={"newCall-patientsTypes"} patientsTypes={patientsTypes} />
+                                        <PatientType typeVisit={typeVisit} value={visitType} onValueChange={setVisitType} />
                                     </Field>
+                                    {isBusinessDisabled ?
+                                        <Field>
+                                            <FieldLabel htmlFor="newCall-business">
+                                                Empresa
+                                            </FieldLabel>
+                                            <div id="newCall-business">
+                                                <BusinessCombobox listBusiness={listBusiness} />
+                                            </div>
+                                        </Field>
+                                        : null
+                                    }
                                 </FieldGroup>
                             </FieldSet>
                             <FieldSeparator />
@@ -171,9 +162,9 @@ export const NewCall = () => {
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                            <Button variant="outline">Cancelar</Button>
                         </DialogClose>
-                        <Button type="submit">Save changes</Button>
+                        <Button type="submit">Ingresar</Button>
                     </DialogFooter>
                 </DialogContent>
             </form>

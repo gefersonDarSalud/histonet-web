@@ -1,12 +1,19 @@
+import type { Business } from "../entities/Business";
 import type { Patient } from "../entities/patient.entity";
 
 export interface PatientRepository {
-    // El 'search' aquí se mapea a tu método @Get() del backend
+
     searchPatients(
         params: {
             id?: string;
             fullname?: string;
+            birthdate?: string;
         },
     ): Promise<Patient[]>;
-    // Podrías añadir getAllPatients, getPatientById, etc.
+
+    getInsuranceCompany(
+        params: {
+            id: string;
+        },
+    ): Promise<Business[]>
 }

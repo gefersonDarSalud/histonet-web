@@ -122,7 +122,6 @@ export const PatientCombobox = ({ patient, setPatient }: PatientComboboxProps) =
                                                 <Check
                                                     className={cn(
                                                         "ml-auto h-4 w-4",
-                                                        // Comparar contra el ID del objeto del estado del padre
                                                         patientMap.value === patient.id ? "opacity-100" : "opacity-0"
                                                     )}
                                                 />

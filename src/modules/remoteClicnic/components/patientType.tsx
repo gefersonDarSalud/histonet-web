@@ -1,3 +1,4 @@
+import type { TypeVisit } from "#/core/entities/typeVisit.entity";
 import {
     Select,
     SelectContent,
@@ -8,27 +9,30 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-type patientType = {
-    name: string
-    value: string
+interface PatientTypeProps {
+    typeVisit: TypeVisit[];
+    value: TypeVisit | null;
+    onValueChange: (value: TypeVisit) => void;
 }
 
-type props = {
-    patientsTypes: patientType[]
-    id: string
-}
 
-export const PatientType = (props: props) => {
-    const { patientsTypes } = props;
+export const PatientType = ({ typeVisit, value, onValueChange }: PatientTypeProps) => {
     return (
-        <Select>
+        <Select
+            value={value ?? ''}
+            onValueChange={onValueChange as (value: string) => void}
+        >
             <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Selecciona un paciente" />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    <SelectLabel>Fruits</SelectLabel>
-                    {patientsTypes.map((type, index) => <SelectItem key={index} value={type.value}>{type.name}</SelectItem>)}
+                    <SelectLabel>tipo</SelectLabel>
+                    {typeVisit.map((type, index) =>
+                        <SelectItem key={index} value={type}>
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </SelectItem>
+                    )}
                 </SelectGroup>
             </SelectContent>
         </Select>
