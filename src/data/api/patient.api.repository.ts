@@ -2,7 +2,7 @@ import { getServerUrl } from "#/utils/functions";
 import type { PatientApiDto, PatientBusinessApiDto } from "#/utils/types";
 
 export const PatientApi = {
-    async search(query: { id?: string, fullname?: string }): Promise<PatientApiDto[]> {
+    async search(query: object): Promise<PatientApiDto[]> {
 
         const urlFull = getServerUrl('paciente', query);
 

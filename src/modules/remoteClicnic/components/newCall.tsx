@@ -23,32 +23,18 @@ import {
 import { BusinessCombobox } from "./Business.combobox"
 import { PatientType } from "./patientType"
 import { PatientCombobox } from "./Patient.combobox"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { PatientState } from "#/utils/types"
 import type { TypeVisit } from "#/core/entities/typeVisit.entity"
+import type { Business } from "#/core/entities/Business"
+import { Loader2 } from "lucide-react"
+import { PatientRepositoryImpl } from "#/infrastructure/PatientRepository.impl"
+
+const patientRepository = new PatientRepositoryImpl();
 
 
 export const NewCall = () => {
     const typeVisit: TypeVisit[] = ["particular", "afiliado", "asegurado"]
-
-    const listBusiness = [
-        {
-            value: "Metro de caracas",
-            label: "Metro de caracas"
-        },
-        {
-            value: "Seguros Altamira",
-            label: "Seguros Altamira"
-        },
-        {
-            value: "Seguros Qualitas",
-            label: "Seguros Qualitas"
-        },
-        {
-            value: "Proseguros",
-            label: "Proseguros"
-        },
-    ]
 
     const [patient, setPatient] = useState<PatientState>({
         id: null,
@@ -57,20 +43,57 @@ export const NewCall = () => {
     });
 
     const [visitType, setVisitType] = useState<TypeVisit | null>(null);
+    const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
+    const [businessList, setBusinessList] = useState<Business[]>([]);
+    const [isBusinessLoading, setIsBusinessLoading] = useState(false);
 
-    const isBusinessDisabled = visitType === 'asegurado';
+    const isInsuredPatient = visitType === 'asegurado';
+    const patientIdExists = !!patient.id;
 
-    // update one field
+    useEffect(() => {
+        if (isInsuredPatient && patientIdExists) {
+
+            const fetchBusinesses = async () => {
+                setIsBusinessLoading(true);
+                setBusinessList([]);
+                setSelectedBusiness(null);
+
+                try {
+                    const patientParam = { id: patient.id! };
+                    setBusinessList(await patientRepository.getInsuranceCompany(patientParam));
+                }
+
+                catch (error) {
+                    console.error("Error al cargar empresas:", error);
+                    setBusinessList([]);
+                }
+
+                finally {
+                    setIsBusinessLoading(false);
+                }
+            };
+
+            fetchBusinesses();
+        } else {
+            setBusinessList([]);
+            setSelectedBusiness(null);
+        }
+    }, [isInsuredPatient, patientIdExists, patient.id]);
+
     const handlePatientChange = (field: keyof PatientState, value: string | null) => {
         setPatient(othersFields => {
             return { ...othersFields, [field]: value }
         });
     };
 
-    console.log("Estado del Paciente en NewCall:", patient); // Para debug
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log("Datos de la llamada a enviar:", { patient, visitType, selectedBusiness });
+    };
+
     return (
         <Dialog>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <DialogTrigger asChild>
                     <Button variant="default">Nuevo Ingreso</Button>
                 </DialogTrigger>
@@ -104,7 +127,7 @@ export const NewCall = () => {
                                             required
                                             value={patient.fullname ?? ''}
                                             onChange={(e) => handlePatientChange('fullname', e.target.value)}
-                                            disabled
+                                            disabled={patientIdExists}
                                         />
                                     </Field>
                                     <Field>
@@ -117,7 +140,7 @@ export const NewCall = () => {
                                             required
                                             value={patient.id ?? ''}
                                             onChange={(e) => handlePatientChange('id', e.target.value)}
-                                            disabled
+                                            disabled={patientIdExists}
                                         />
                                     </Field>
                                     <Field>
@@ -130,26 +153,37 @@ export const NewCall = () => {
                                             required
                                             value={patient.birthdate ? patient.birthdate.split('T')[0] : ''}
                                             onChange={(e) => handlePatientChange('birthdate', e.target.value)}
-                                            disabled
+                                            disabled={patientIdExists}
                                         />
                                     </Field>
                                 </FieldGroup>
 
                                 {/* config data */}
+                                <FieldSeparator />
+                                <FieldLegend>Configuración</FieldLegend>
                                 <FieldGroup className="grid grid-cols-2 gap-4">
                                     <Field>
                                         <FieldLabel htmlFor="newCall-patientsTypes">
                                             Tipo de Paciente
                                         </FieldLabel>
-                                        <PatientType typeVisit={typeVisit} value={visitType} onValueChange={setVisitType} />
+                                        <PatientType
+                                            typeVisit={typeVisit}
+                                            value={visitType}
+                                            onValueChange={setVisitType}
+                                        />
                                     </Field>
-                                    {isBusinessDisabled ?
+                                    {isInsuredPatient ?
                                         <Field>
                                             <FieldLabel htmlFor="newCall-business">
-                                                Empresa
+                                                Empresa {isBusinessLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin inline" />}
                                             </FieldLabel>
                                             <div id="newCall-business">
-                                                <BusinessCombobox listBusiness={listBusiness} />
+                                                <BusinessCombobox
+                                                    listBusiness={businessList}
+                                                    selectedBusinessId={selectedBusiness}
+                                                    onValueChange={setSelectedBusiness}
+                                                    disabled={isBusinessLoading || businessList.length === 0}
+                                                />
                                             </div>
                                         </Field>
                                         : null

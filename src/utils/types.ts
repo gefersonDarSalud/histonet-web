@@ -1,4 +1,4 @@
-import type { Visit } from "#/core/entities/Visit.entity";
+import type { Visit } from "#/core/entities/visit.entity";
 
 export type PatientApiDto = {
     ci: string;
