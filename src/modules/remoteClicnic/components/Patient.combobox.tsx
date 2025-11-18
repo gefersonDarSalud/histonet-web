@@ -18,7 +18,7 @@ import { useCallback, useEffect, useState } from "react"
 import { PatientRepositoryImpl } from "../../../infrastructure/PatientRepository.impl"
 import { SearchPatientsService } from "../../../core/services/GetAllPatientservice"
 import type { PatientComboboxProps, PatientState, SelectOption } from "#/utils/types"
-import type { Patient } from "#/core/entities/patient.entity"
+import type { Patient } from "#/core/entities"
 
 const patientRepository = new PatientRepositoryImpl();
 const searchPatientsService = new SearchPatientsService(patientRepository);

@@ -1,5 +1,4 @@
-import type { Business } from "../entities/Business";
-import type { Patient } from "../entities/patient.entity";
+import type { Business, Patient } from "../entities";
 
 export interface PatientRepository {
 

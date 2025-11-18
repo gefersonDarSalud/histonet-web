@@ -1,4 +1,4 @@
-import type { TypeVisit } from "#/core/entities/typeVisit.entity";
+import type { TypeVisit } from "#/core/entities";
 import {
     Select,
     SelectContent,

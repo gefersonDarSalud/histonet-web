@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NewCall } from '../components/newCall';
 import { PatientVisitTable } from '../components/PatientVisitTable';
-import type { Visit } from '#/core/entities/visit.entity';
+import type { Visit } from '#/core/entities';
 
 const initialVisit: Visit[] = [
     {

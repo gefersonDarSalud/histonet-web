@@ -23,12 +23,12 @@ import {
 import { BusinessCombobox } from "./Business.combobox"
 import { PatientType } from "./patientType"
 import { PatientCombobox } from "./Patient.combobox"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type { PatientState } from "#/utils/types"
-import type { TypeVisit } from "#/core/entities/typeVisit.entity"
-import type { Business } from "#/core/entities/Business"
 import { Loader2 } from "lucide-react"
 import { PatientRepositoryImpl } from "#/infrastructure/PatientRepository.impl"
+import { FeeScheduleType } from "./feeScheduleType"
+import type { Business, TypeVisit } from "#/core/entities"
 
 const patientRepository = new PatientRepositoryImpl();
 
@@ -44,11 +44,29 @@ export const NewCall = () => {
 
     const [visitType, setVisitType] = useState<TypeVisit | null>(null);
     const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
+    const [selectedIsurance, setSelectedIsurance] = useState<string | null>(null);
     const [businessList, setBusinessList] = useState<Business[]>([]);
     const [isBusinessLoading, setIsBusinessLoading] = useState(false);
 
     const isInsuredPatient = visitType === 'asegurado';
     const patientIdExists = !!patient.id;
+    const getSelectedBusiness = businessList.find(b => b.id === selectedBusiness);
+    const { getFeeSchedules } = useMemo(() => {
+        const insurance = getSelectedBusiness?.insurances?.find(i => i.id === selectedIsurance);
+        const feeSchedules = insurance?.feeSchedules;
+        return { getFeeSchedules: feeSchedules };
+    }, [getSelectedBusiness, selectedIsurance]); // Dependencias
+
+    const selectedBusinessState = {
+        value: selectedBusiness,
+        set: setSelectedBusiness
+    }
+
+    const selectedIsuranceState = {
+        value: selectedIsurance,
+        set: setSelectedIsurance
+    }
+
 
     useEffect(() => {
         if (isInsuredPatient && patientIdExists) {
@@ -88,7 +106,6 @@ export const NewCall = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Datos de la llamada a enviar:", { patient, visitType, selectedBusiness });
     };
 
     return (
@@ -180,9 +197,9 @@ export const NewCall = () => {
                                             <div id="newCall-business">
                                                 <BusinessCombobox
                                                     listBusiness={businessList}
-                                                    selectedBusinessId={selectedBusiness}
-                                                    onValueChange={setSelectedBusiness}
+                                                    businessState={selectedBusinessState}
                                                     disabled={isBusinessLoading || businessList.length === 0}
+                                                    insuranceState={selectedIsuranceState}
                                                 />
                                             </div>
                                         </Field>
@@ -195,6 +212,12 @@ export const NewCall = () => {
                         </FieldGroup>
                     </div>
                     <DialogFooter>
+                        <Field orientation={'horizontal'}>
+                            <FieldLabel htmlFor="newCall-patientsTypes">
+                                Tipo de Paciente
+                            </FieldLabel>
+                            <FeeScheduleType feeSchedules={getFeeSchedules ?? []} />
+                        </Field>
                         <DialogClose asChild>
                             <Button variant="outline">Cancelar</Button>
                         </DialogClose>

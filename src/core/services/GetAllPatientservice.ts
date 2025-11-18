@@ -1,5 +1,5 @@
 import { isValidIdNumber } from "#/utils/functions";
-import type { Patient } from "../entities/patient.entity";
+import type { Patient } from "../entities";
 import type { PatientRepository } from "../repositories/patient.repository";
 
 // Asumiremos que es un service para "buscar pacientes"

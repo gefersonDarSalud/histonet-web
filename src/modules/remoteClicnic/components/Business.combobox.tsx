@@ -16,23 +16,25 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import type { Business } from "#/core/entities/Business"
+import type { Business } from "#/core/entities"
+import { InsuranceType } from "./InsuranceType"
+import type { state } from "#/utils/types"
 
 interface BusinessComboboxProps {
     listBusiness: Business[];
-    selectedBusinessId: string | null;
-    onValueChange: (value: string) => void;
+    businessState: state<string | null>;
+    insuranceState: state<string | null>;
     disabled?: boolean;
 }
 
-export const BusinessCombobox = ({ listBusiness, selectedBusinessId, onValueChange, disabled = false }: BusinessComboboxProps) => {
-    const selectedBusiness = listBusiness.find((business) => business.id === selectedBusinessId)
+export const BusinessCombobox = ({ listBusiness, businessState, insuranceState, disabled = false }: BusinessComboboxProps) => {
+    const selectedBusiness = listBusiness.find((business) => business.id === businessState.value)
     const [open, setOpen] = React.useState(false)
 
     const commandItemHandler = (currentBusiness: string) => {
         const selected = listBusiness.find(b => b.name.toLowerCase() === currentBusiness.toLowerCase());
-        if (selected) onValueChange(selected.id === selectedBusinessId ? "" : selected.id);
-        else onValueChange("");
+        if (selected) businessState.set(selected.id === businessState.value ? "" : selected.id);
+        else businessState.set("");
         setOpen(false)
     }
 
@@ -58,7 +60,7 @@ export const BusinessCombobox = ({ listBusiness, selectedBusinessId, onValueChan
                     <CommandList>
                         <CommandEmpty>No framework found.</CommandEmpty>
                         <CommandGroup>
-                            {listBusiness.map((business) => (
+                            {listBusiness.map((business) =>
                                 <CommandItem
                                     key={business.id}
                                     value={business.id}
@@ -68,20 +70,20 @@ export const BusinessCombobox = ({ listBusiness, selectedBusinessId, onValueChan
                                     <Check
                                         className={cn(
                                             "ml-auto",
-                                            selectedBusinessId === business.id ? "opacity-100" : "opacity-0"
+                                            businessState.value === business.id ? "opacity-100" : "opacity-0"
                                         )}
                                     />
                                 </CommandItem>
-                            ))}
+                            )}
                         </CommandGroup>
                     </CommandList>
                 </Command>
             </PopoverContent>
-            {selectedBusiness && selectedBusiness.insurance &&
-                <>
-                    <div className="text-muted-foreground text-sm space-y-1 px-3 mt-1">
-                        {selectedBusiness.insurance?.name}
-                    </div>
+            {selectedBusiness && selectedBusiness.insurances &&
+                <>{selectedBusiness.insurances.length > 1 ?
+                    <InsuranceType list={selectedBusiness.insurances} state={insuranceState} />
+                    : <div className="text-muted-foreground text-sm space-y-1 px-3 mt-1"> {selectedBusiness.insurances[0].name} </div>
+                }
                 </>
             }
         </Popover>

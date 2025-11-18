@@ -1,5 +1,4 @@
-import type { Business } from "#/core/entities/Business";
-import type { Patient } from "#/core/entities/patient.entity";
+import type { Business, Patient } from "#/core/entities";
 import type { PatientRepository } from "#/core/repositories/patient.repository";
 import { PatientApi } from "#/data/api/patient.api.repository";
 import { PatientBusinessMapper, PatientMapper } from "#/data/mappers/patient.mappers";

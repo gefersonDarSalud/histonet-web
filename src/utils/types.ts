@@ -1,4 +1,4 @@
-import type { Visit } from "#/core/entities/visit.entity";
+import type { Visit } from "#/core/entities";
 
 export type PatientApiDto = {
     ci: string;
@@ -32,11 +32,15 @@ export type PatientBusinessApiDto = {
     id: string;
     nombre: string;
     rif: string;
-    aseguradora?: {
+    aseguradoras?: {
         id: string;
         nombre: string;
         rif: string;
-    } | null;
+        baremos?: {
+            id: string;
+            nombre: string;
+        }[];
+    }[] | null;
 }
 
 export type PatientState = {
@@ -60,3 +64,8 @@ export type SelectOption = {
 export type VisitTableProps = {
     visits: Visit[];
 }; // El array de pacientes filtrados
+
+export type state<type> = {
+    value: type,
+    set: React.Dispatch<React.SetStateAction<type>>
+}
