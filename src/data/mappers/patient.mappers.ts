@@ -44,7 +44,6 @@ export const PatientBusinessMapper: Mapper<PatientBusinessApiDto, Business> = {
                 id: Number(baremo.id),
                 name: baremo.nombre,
             })) ?? [];
-
             return {
                 id: aseguradora.id,
                 name: aseguradora.nombre,
@@ -59,6 +58,9 @@ export const PatientBusinessMapper: Mapper<PatientBusinessApiDto, Business> = {
             code: dto.rif,
             insurances,
         } as Business
+
+
+
 
         return result;
     },

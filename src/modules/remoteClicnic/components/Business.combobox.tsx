@@ -17,18 +17,16 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import type { Business } from "#/core/entities"
-import { InsuranceType } from "./InsuranceType"
 import type { state } from "#/utils/types"
 
 interface BusinessComboboxProps {
     listBusiness: Business[];
     businessState: state<string | null>;
-    insuranceState: state<string | null>;
+    selectedBusiness?: Business | undefined;
     disabled?: boolean;
 }
 
-export const BusinessCombobox = ({ listBusiness, businessState, insuranceState, disabled = false }: BusinessComboboxProps) => {
-    const selectedBusiness = listBusiness.find((business) => business.id === businessState.value)
+export const BusinessCombobox = ({ listBusiness, businessState, disabled = false, selectedBusiness }: BusinessComboboxProps) => {
     const [open, setOpen] = React.useState(false)
 
     const commandItemHandler = (currentBusiness: string) => {
@@ -79,13 +77,6 @@ export const BusinessCombobox = ({ listBusiness, businessState, insuranceState, 
                     </CommandList>
                 </Command>
             </PopoverContent>
-            {selectedBusiness && selectedBusiness.insurances &&
-                <>{selectedBusiness.insurances.length > 1 ?
-                    <InsuranceType list={selectedBusiness.insurances} state={insuranceState} />
-                    : <div className="text-muted-foreground text-sm space-y-1 px-3 mt-1"> {selectedBusiness.insurances[0].name} </div>
-                }
-                </>
-            }
         </Popover>
     )
 }

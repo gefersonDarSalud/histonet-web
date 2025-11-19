@@ -29,6 +29,7 @@ import { Loader2 } from "lucide-react"
 import { PatientRepositoryImpl } from "#/infrastructure/PatientRepository.impl"
 import { FeeScheduleType } from "./feeScheduleType"
 import type { Business, TypeVisit } from "#/core/entities"
+import { InsuranceType } from "./InsuranceType"
 
 const patientRepository = new PatientRepositoryImpl();
 
@@ -50,12 +51,21 @@ export const NewCall = () => {
 
     const isInsuredPatient = visitType === 'asegurado';
     const patientIdExists = !!patient.id;
-    const getSelectedBusiness = businessList.find(b => b.id === selectedBusiness);
-    const { getFeeSchedules } = useMemo(() => {
-        const insurance = getSelectedBusiness?.insurances?.find(i => i.id === selectedIsurance);
+
+    const { insuranceName, getFeeSchedules, businessObject } = useMemo(() => {
+        const business = businessList.find(b => b.id === selectedBusiness);
+        const insurance = business?.insurances?.find(i => String(i.id) === String(selectedIsurance));
         const feeSchedules = insurance?.feeSchedules;
-        return { getFeeSchedules: feeSchedules };
-    }, [getSelectedBusiness, selectedIsurance]); // Dependencias
+        console.log("usememo");
+
+        console.log(insurance);
+
+        return {
+            insuranceName: insurance?.name ?? null,
+            getFeeSchedules: feeSchedules,
+            businessObject: business
+        };
+    }, [selectedIsurance, selectedBusiness, businessList]);
 
     const selectedBusinessState = {
         value: selectedBusiness,
@@ -78,6 +88,8 @@ export const NewCall = () => {
 
                 try {
                     const patientParam = { id: patient.id! };
+                    console.log("useEffect");
+                    console.log(await patientRepository.getInsuranceCompany(patientParam));
                     setBusinessList(await patientRepository.getInsuranceCompany(patientParam));
                 }
 
@@ -177,9 +189,9 @@ export const NewCall = () => {
 
                                 {/* config data */}
                                 <FieldSeparator />
-                                <FieldLegend>Configuración</FieldLegend>
-                                <FieldGroup className="grid grid-cols-2 gap-4">
-                                    <Field>
+                                <div className="flex justify-between items-center">
+                                    <FieldLegend className="m-0">Configuracion</FieldLegend>
+                                    <Field orientation="horizontal" className="w-1/2">
                                         <FieldLabel htmlFor="newCall-patientsTypes">
                                             Tipo de Paciente
                                         </FieldLabel>
@@ -189,21 +201,34 @@ export const NewCall = () => {
                                             onValueChange={setVisitType}
                                         />
                                     </Field>
-                                    {isInsuredPatient ?
-                                        <Field>
-                                            <FieldLabel htmlFor="newCall-business">
-                                                Empresa {isBusinessLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin inline" />}
-                                            </FieldLabel>
-                                            <div id="newCall-business">
+                                </div>
+                                <FieldGroup className="grid grid-cols-2 gap-4">
+                                    {isInsuredPatient &&
+                                        <>
+                                            <Field>
+                                                <FieldLabel htmlFor="newCall-business">
+                                                    Empresa {isBusinessLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin inline" />}
+                                                </FieldLabel>
                                                 <BusinessCombobox
                                                     listBusiness={businessList}
                                                     businessState={selectedBusinessState}
                                                     disabled={isBusinessLoading || businessList.length === 0}
-                                                    insuranceState={selectedIsuranceState}
+                                                    selectedBusiness={businessObject}
                                                 />
-                                            </div>
-                                        </Field>
-                                        : null
+                                            </Field>
+                                            {businessObject && businessObject.insurances &&
+                                                <Field>
+                                                    <FieldLabel htmlFor="newCall-insurances">
+                                                        Seguro:
+                                                    </FieldLabel>
+                                                    <InsuranceType
+                                                        list={businessObject.insurances}
+                                                        state={selectedIsuranceState}
+                                                        selectedInsurance={insuranceName ?? ''}
+                                                    />
+                                                </Field>
+                                            }
+                                        </>
                                     }
                                 </FieldGroup>
                             </FieldSet>
@@ -214,7 +239,7 @@ export const NewCall = () => {
                     <DialogFooter>
                         <Field orientation={'horizontal'}>
                             <FieldLabel htmlFor="newCall-patientsTypes">
-                                Tipo de Paciente
+                                Baremo
                             </FieldLabel>
                             <FeeScheduleType feeSchedules={getFeeSchedules ?? []} />
                         </Field>

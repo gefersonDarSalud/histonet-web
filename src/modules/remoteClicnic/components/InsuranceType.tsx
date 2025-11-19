@@ -9,28 +9,19 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useMemo } from "react";
 
 interface InsuranceTypeProps {
     list: Business[];
     className?: string;
     state: state<string | null>
+    selectedInsurance: string;
 }
 
 
-export const InsuranceType = ({ list, state, className }: InsuranceTypeProps) => {
+export const InsuranceType = ({ list, state, selectedInsurance, className }: InsuranceTypeProps) => {
     const handleValueChange = (newValue: string) => {
         state.set(newValue === "" ? null : newValue);
     };
-
-    const selectedInsurance = useMemo(() => {
-        if (!state.value) return null; // Retorna null si no hay ID seleccionado
-
-        // Busca el objeto completo Business usando el ID
-        const selected = list.find(i => String(i.id) === String(state.value));
-        return selected?.name || null;
-
-    }, [list, state.value]);
 
     return (
         <Select
