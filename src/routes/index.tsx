@@ -8,7 +8,7 @@ import { RemoteClinic } from "@/remoteClicnic/pages/main";
 import { Patient } from "@/patient/pages/main";
 import { PatientProfile } from "@/patient/pages/profile";
 import { ProtectedRoute } from "@/auth/components/protectedRoute";
-import App from "#/App";
+import App from "#/app";
 
 export const routeLabel: Record<string, string> = {
     home: "/",

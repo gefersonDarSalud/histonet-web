@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
-    CardHeader,
+    // CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,23 +12,41 @@ import { GoogleIcon } from '../components/googleIcon';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useServices } from '#/hooks/useServices';
+import { routeLabel } from '#/routes';
 
 export const Login = (): Component => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { authService } = useServices();
     const { login, setMessage } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "/";
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (email === 'admin@test.com' && password === 'password') {
+        if (isLoading) return;
+        setIsLoading(true);
+        setMessage(null);
+
+        try {
+            const authData = await authService.execute({ email: email, password: password });
+            console.log("Login exitoso. Datos recibidos:", authData);
             login();
+            setMessage('¡Inicio de sesión exitoso! Redirigiendo...');
             navigate(from, { replace: true });
-        } else {
-            setMessage('Credenciales incorrectas. Usa admin@darsalud.com / password');
-            setTimeout(() => setMessage(null), 4000);
+        }
+
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido al iniciar sesión.';
+            setMessage(errorMessage);
+            setTimeout(() => setMessage(null), 5000);
+        }
+
+        finally {
+            setIsLoading(false);
         }
     };
 
@@ -36,7 +54,7 @@ export const Login = (): Component => {
         setMessage('Simulando inicio de sesión con Google...');
         setTimeout(() => {
             login();
-            navigate('/dashboard');
+            navigate(routeLabel.home, { replace: true });
         }, 1500);
     }
 
@@ -55,9 +73,9 @@ export const Login = (): Component => {
                             Inicia sesión para gestionar tus citas.
                         </p>
                     </div>
-                    <CardHeader>
-                        {/* Opcional: Podrías poner un título aquí si lo necesitaras */}
-                    </CardHeader>
+                    {/* <CardHeader>
+                         Opcional: Podrías poner un título aquí si lo necesitaras 
+                    </CardHeader> */}
                     <CardContent className='flex-1  max-w-1/2 px-0'>
                         <form onSubmit={handleLogin}>
 
@@ -67,9 +85,9 @@ export const Login = (): Component => {
                                 <Label htmlFor="email">Correo electrónico</Label>
                                 <Input
                                     id="email"
-                                    type="email"
                                     placeholder="nombre@ejemplo.com"
                                     onChange={(e) => setEmail(e.target.value)}
+                                    disabled={isLoading}
                                     required
                                 />
                             </div>
@@ -81,7 +99,9 @@ export const Login = (): Component => {
                                 <Input
                                     id="password"
                                     type="password"
+                                    placeholder="••••••••"
                                     onChange={(e) => setPassword(e.target.value)}
+                                    disabled={isLoading}
                                     required
                                 />
                             </div>
@@ -95,7 +115,19 @@ export const Login = (): Component => {
 
                             {/* Botón de Iniciar Sesión */}
                             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                                <LogIn className="w-4 h-4 mr-2" /> Iniciar Sesión
+                                {isLoading ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Validando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <LogIn className="w-4 h-4 mr-2" /> Iniciar Sesión
+                                    </>
+                                )}
                             </Button>
 
                         </form>
@@ -121,7 +153,7 @@ export const Login = (): Component => {
                         </Button>
 
                         <p className='mt-6 text-center text-sm text-gray-500'>
-                            ¿No tienes cuenta? <Link to="/signup" className='text-blue-600 hover:underline font-medium'>Regístrate</Link>
+                            ¿No tienes cuenta? <Link to={routeLabel.register} className='text-blue-600 hover:underline font-medium'>Regístrate</Link>
                         </p>
 
                     </CardContent>

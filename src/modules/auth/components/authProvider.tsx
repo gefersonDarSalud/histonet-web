@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useMemo, useState } from "react";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -29,8 +29,10 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         setTimeout(() => setMessage(null), 3000);
     }, []);
 
+    const contextValue = useMemo(() => ({ isLoggedIn, login, logout, message, setMessage }), [isLoggedIn, login, logout, message, setMessage]);
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout, message, setMessage }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

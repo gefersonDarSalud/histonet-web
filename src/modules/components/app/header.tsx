@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/hooks/useAuth";
+import { routeLabel } from "#/routes";
 
 interface HeaderProps {
     activePath: string;
@@ -22,10 +23,10 @@ export const Header = ({ activePath }: HeaderProps): React.ReactElement => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const links: NavLink[] = [
-        { name: "Inicio", path: "/" },
-        { name: "Gestión de Ingresos", path: "/ingresos" },
-        { name: "Pacientes", path: "/pacientes" },
-        { name: "Configuración", path: "/configuracion" }
+        { name: "Inicio", path: routeLabel.home },
+        { name: "Telemedicina", path: routeLabel.remoteClinic },
+        { name: "Pacientes", path: routeLabel.patient },
+        // { name: "Configuración", path: "/configuracion" }
     ];
 
     const onNavigate = (path: string) => {
@@ -35,7 +36,7 @@ export const Header = ({ activePath }: HeaderProps): React.ReactElement => {
 
     const onLogout = () => {
         logout();
-        navigate('/login');
+        navigate(routeLabel.login);
     }
     return (
 
@@ -57,6 +58,7 @@ export const Header = ({ activePath }: HeaderProps): React.ReactElement => {
                                 key={item.name}
                                 href={item.path}
                                 onClick={(e) => {
+                                    console.log(item);
                                     e.preventDefault();
                                     onNavigate(item.path);
                                 }}

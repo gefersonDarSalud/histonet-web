@@ -1,6 +1,6 @@
 
 export default class BaseService {
-    exectute() {
+    execute() {
         throw new Error('se necesita implentar el metodo execute');
     }
 }

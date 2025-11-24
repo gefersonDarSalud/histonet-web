@@ -1,4 +1,4 @@
-import type { Patient, PatientFull } from "../entities";
+import type { PatientFull } from "../entities";
 import type { PatientRepository } from "../repositories/patient.repository";
 
 export class GetPatientDataService {

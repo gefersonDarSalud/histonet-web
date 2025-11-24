@@ -9,7 +9,7 @@ export function isValidIdNumber(term: string): boolean {
     return term.length >= MIN_ID_LENGTH && term.length <= MAX_ID_LENGTH;
 };
 
-export function getServerUrl(route: string, params: string | object, url?: string): string {
+export function getServerUrl(route: string, params?: string | object, url?: string): string {
     if (typeof url === 'undefined') url = serverUrl;
     const queryParams = new URLSearchParams();
     let urlFull = '';
@@ -25,6 +25,9 @@ export function getServerUrl(route: string, params: string | object, url?: strin
                 queryParams.append(key, String(value));
             }
             urlFull = `${url}/${route}?${queryParams.toString()}`;
+            break;
+        default:
+            urlFull = `${url}/${route}`;
             break;
     }
     return urlFull;

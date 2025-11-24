@@ -5,7 +5,7 @@ import router from './routes/index.tsx';
 import { useAuth } from '@/auth/hooks/useAuth.ts';
 import { cn } from '@/lib/utils.ts';
 import { AuthProvider } from '@/auth/components/authProvider.tsx';
-
+import { ServiceProvider } from './serviceProvider.tsx';
 
 const RootApp = () => {
     const { message, isLoggedIn } = useAuth();
@@ -27,9 +27,11 @@ const RootApp = () => {
 
 // 2. Componente principal que envuelve toda la aplicación en el proveedor de contexto.
 const AppWrapper = () => (
-    <AuthProvider>
-        <RootApp />
-    </AuthProvider>
+    <ServiceProvider>
+        <AuthProvider>
+            <RootApp />
+        </AuthProvider>
+    </ServiceProvider>
 );
 
 

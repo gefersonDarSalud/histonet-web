@@ -1,5 +1,35 @@
 // 💎 Definición de Dominio. Define la forma pura de los datos que usa la aplicación, independientemente de la fuente.
 
+import type { ServiceContainer } from "./services/serviceContainer";
+
+export type Services = ServiceContainer;
+
+export interface IService<T, R> {
+    execute(props: T): Promise<R>;
+}
+
+export type BasicResponse = {
+    message: string;
+    status: 'failed' | 'success';
+}
+
+export interface Mapper<Param, Return> {
+    /**
+     * Convierte un único Data Transfer Object (DTO) de la API 
+     * a un único Objeto de Dominio.
+     * @param dto El objeto DTO recibido de la API.
+     * @returns El objeto de Dominio (limpio).
+     */
+    fromApiToDomain(dto: Param): Return;
+
+    /**
+     * Convierte un arreglo de Data Transfer Objects (DTOs) de la API 
+     * a un arreglo de Objetos de Dominio.
+     * @param dtos El arreglo de DTOs recibido de la API.
+     * @returns El arreglo de Objetos de Dominio.
+     */
+    fromApiArrayToDomainArray(dtos: Param[]): Return[];
+}
 
 export interface Business {
     id: string;

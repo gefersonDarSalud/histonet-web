@@ -1,0 +1,43 @@
+src/
+    - assets/
+        -- backgrounds-app/
+        darsalud-logo/
+        etc/
+        general-icons/
+        histonet-logo/
+    core/
+        repositories/
+        services/
+    mappers/
+    infrastructure/
+    modules/
+        admission/
+            components/
+            hooks/
+            pages/
+        auth/
+            components/
+            hooks/
+            pages/
+        components/
+            app/
+            ui/
+        errors /
+            components/
+            hooks/
+            pages/
+        home/
+            components/
+            hooks/
+            pages/
+        hooks/
+        lib/
+        patient/
+            components/
+            hooks/
+            pages/
+        remoteClicnic/
+            components/
+            hooks/
+            pages/
+    utils/
