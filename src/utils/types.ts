@@ -1,17 +1,17 @@
-import type { Visit } from "#/core/entities";
+import type { Patient, Visit } from "#/core/entities";
 
 export type PatientApiDto = {
     ci: string;
     nombre_apellido: string;
     fecha_nacimiento: string;
     sexo: string;
-    id: string,
+    id: number,
     nombre: string,
-    id_profesion: string,
-    id_pais: string,
-    id_ciudad: string,
-    id_nivel_educativo: string,
-    id_zona: string,
+    id_profesion: number,
+    id_pais: number,
+    id_ciudad: number,
+    id_nivel_educativo: number,
+    id_zona: number,
     apellido: string,
     dir: string,
     correo: string,
@@ -22,10 +22,21 @@ export type PatientApiDto = {
     grupo_sanguineo: string,
     status: string,
     lateralidad: string,
-    id_foto: string,
-    id_ci: string,
-    id_cliente: string,
-    id_carnet: string
+    id_foto: number,
+    id_ci: number,
+    id_cliente: number,
+    id_carnet: number
+}
+
+export type PatientFullApiDto = {
+    ci: string,
+    nombre: string,
+    apellido: string,
+    fecha_nacimiento: string | null,
+    sexo: string | null,
+    correo: string | null,
+    tlfn: string | null,
+    dir: string | null,
 }
 
 export type PatientBusinessApiDto = {
@@ -45,6 +56,7 @@ export type PatientBusinessApiDto = {
 
 export type PatientState = {
     id: string | null; // Cédula o ID
+    code: string | null; // Cédula o ID
     fullname: string | null; // Nombre completo
     birthdate: string | null;
 }
@@ -64,6 +76,13 @@ export type SelectOption = {
 export type VisitTableProps = {
     visits: Visit[];
 }; // El array de pacientes filtrados
+
+export type PatientTableProps = {
+    patients: Patient[];
+    isLoading: boolean;
+}; // El array de pacientes filtrados
+
+
 
 export type state<type> = {
     value: type,

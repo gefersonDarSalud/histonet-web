@@ -39,6 +39,7 @@ export const NewCall = () => {
 
     const [patient, setPatient] = useState<PatientState>({
         id: null,
+        code: null,
         fullname: null,
         birthdate: null,
     });
@@ -52,17 +53,18 @@ export const NewCall = () => {
     const isInsuredPatient = visitType === 'asegurado';
     const patientIdExists = !!patient.id;
 
-    const { insuranceName, getFeeSchedules, businessObject } = useMemo(() => {
+    const { insuranceName, getFeeSchedulesInsurance, getFeeSchedulesBusiness, businessObject } = useMemo(() => {
         const business = businessList.find(b => b.id === selectedBusiness);
         const insurance = business?.insurances?.find(i => String(i.id) === String(selectedIsurance));
-        const feeSchedules = insurance?.feeSchedules;
-        console.log("usememo");
-
-        console.log(insurance);
+        const feeSchedulesInsurance = insurance?.feeSchedules;
+        const feeSchedulesBusiness = business?.insurances?.find(i => typeof i.id === 'undefined')?.feeSchedules;
+        console.log("business: ", business)
+        console.log("feeSchedulesBusiness: ", feeSchedulesBusiness)
 
         return {
             insuranceName: insurance?.name ?? null,
-            getFeeSchedules: feeSchedules,
+            getFeeSchedulesInsurance: feeSchedulesInsurance,
+            getFeeSchedulesBusiness: feeSchedulesBusiness,
             businessObject: business
         };
     }, [selectedIsurance, selectedBusiness, businessList]);
@@ -88,8 +90,7 @@ export const NewCall = () => {
 
                 try {
                     const patientParam = { id: patient.id! };
-                    console.log("useEffect");
-                    console.log(await patientRepository.getInsuranceCompany(patientParam));
+
                     setBusinessList(await patientRepository.getInsuranceCompany(patientParam));
                 }
 
@@ -216,7 +217,7 @@ export const NewCall = () => {
                                                     selectedBusiness={businessObject}
                                                 />
                                             </Field>
-                                            {businessObject && businessObject.insurances &&
+                                            {businessObject && businessObject.insurances?.some(insurance => typeof insurance.id !== 'undefined') && businessObject &&
                                                 <Field>
                                                     <FieldLabel htmlFor="newCall-insurances">
                                                         Seguro:
@@ -225,6 +226,7 @@ export const NewCall = () => {
                                                         list={businessObject.insurances}
                                                         state={selectedIsuranceState}
                                                         selectedInsurance={insuranceName ?? ''}
+                                                        selfBusiness={{ name: businessObject.name, id: businessObject.id }}
                                                     />
                                                 </Field>
                                             }
@@ -241,7 +243,7 @@ export const NewCall = () => {
                             <FieldLabel htmlFor="newCall-patientsTypes">
                                 Baremo
                             </FieldLabel>
-                            <FeeScheduleType feeSchedules={getFeeSchedules ?? []} />
+                            <FeeScheduleType feeSchedules={getFeeSchedulesInsurance ?? getFeeSchedulesBusiness ?? []} />
                         </Field>
                         <DialogClose asChild>
                             <Button variant="outline">Cancelar</Button>

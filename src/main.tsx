@@ -1,10 +1,36 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
-import Router from './routes/index.tsx';
+import router from './routes/index.tsx';
+import { useAuth } from '@/auth/hooks/useAuth.ts';
+import { cn } from '@/lib/utils.ts';
+import { AuthProvider } from '@/auth/components/authProvider.tsx';
 
-createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        <RouterProvider router={Router} />
-    </StrictMode>
+
+const RootApp = () => {
+    const { message, isLoggedIn } = useAuth();
+
+    return (
+        <StrictMode>
+            <RouterProvider router={router} />
+            {message && (
+                <div className={cn(
+                    "fixed bottom-4 right-4 p-4 rounded-xl shadow-2xl text-white transition-opacity duration-300 z-50",
+                    isLoggedIn ? "bg-green-600" : "bg-red-600"
+                )}>
+                    {message}
+                </div>
+            )}
+        </StrictMode>
+    );
+};
+
+// 2. Componente principal que envuelve toda la aplicación en el proveedor de contexto.
+const AppWrapper = () => (
+    <AuthProvider>
+        <RootApp />
+    </AuthProvider>
 );
+
+
+createRoot(document.getElementById('root')!).render(<AppWrapper />);

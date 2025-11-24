@@ -2,16 +2,31 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Home } from "@/home/pages/main";
 import { NotFoundPage } from "@/errors/404";
-import App from "./../App";
 import { Login } from "@/auth/pages/login";
 import { Signup } from "@/auth/pages/signup";
 import { RemoteClinic } from "@/remoteClicnic/pages/main";
+import { Patient } from "@/patient/pages/main";
+import { PatientProfile } from "@/patient/pages/profile";
+import { ProtectedRoute } from "@/auth/components/protectedRoute";
+import App from "#/App";
 
+export const routeLabel: Record<string, string> = {
+    home: "/",
+    remoteClinic: "/telemedicina",
+    patient: "/paciente",
+    patientProfile: "/paciente/:patientId",
+    login: "/iniciar-sesion",
+    signup: "/registro",
+}
 
 export const routesConfig = [
     {
         path: "/",
-        element: <App />,
+        element:
+            <ProtectedRoute>
+                <App />
+            </ProtectedRoute>
+        ,
         NotFoundPage: <NotFoundPage />,
         children: [
             {
@@ -19,21 +34,35 @@ export const routesConfig = [
                 element: <Home />,
             },
             {
-                path: "telemedicina",
+                path: routeLabel.remoteClinic,
                 element: <RemoteClinic />,
+            },
+            {
+                path: routeLabel.patient,
+                element: <Patient />,
+            },
+            {
+                path: routeLabel.patientProfile,
+                element: <PatientProfile />,
             },
         ],
     },
     {
-        path: "/login",
-        element: <Login />,
+        path: routeLabel.login,
+        element: <Login />
+        ,
         NotFoundPage: <NotFoundPage />,
     },
     {
-        path: "/registro",
+        path: routeLabel.signup,
         element: <Signup />,
         NotFoundPage: <NotFoundPage />,
     },
+
+    {
+        path: "*",
+        element: <NotFoundPage />,
+    }
 
 ];
 

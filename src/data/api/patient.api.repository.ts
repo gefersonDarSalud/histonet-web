@@ -26,5 +26,5 @@ export const PatientApi = {
         }
 
         return await response.json() as PatientBusinessApiDto[];
-    }
+    },
 };

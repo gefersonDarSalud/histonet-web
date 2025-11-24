@@ -14,12 +14,29 @@ export interface Business {
 }
 
 export interface Patient {
-    id: string,
-    fullname: string,
-    birthdate?: string,
-    type?: string
-    gender?: string,
-    business?: string,
+    id: string, //  ID
+    code?: string, // Cédula
+    fullname?: string | null, // Nombre completo
+    firstName?: string | null, // Nombre
+    lastName?: string | null, // Nombre
+    birthdate?: string | null, // Fecha de nacimiento
+    type?: string // 
+    gender?: string | null, // genero
+    business?: string, // ?????
+    phone?: string | null,
+    address?: string | null,
+    email?: string | null,
+}
+
+export interface PatientFull {
+    code: string, // Cédula
+    firstName: string | null, // Nombre
+    lastName: string | null, // Nombre
+    birthdate: string | null, // Fecha de nacimiento
+    gender: string | null, // genero
+    phone: string | null,
+    address: string | null,
+    email: string | null,
 }
 
 export interface FeeSchedule {

@@ -1,4 +1,4 @@
-import type { Business } from "#/core/entities";
+import type { FeeSchedule } from "#/core/entities";
 import type { state } from "#/utils/types";
 import {
     Select,
@@ -11,36 +11,47 @@ import {
 } from "@/components/ui/select"
 
 interface InsuranceTypeProps {
-    list: Business[];
+    list: {
+        id?: string;
+        name?: string;
+        code?: string;
+        feeSchedules?: FeeSchedule[];
+    }[];
     className?: string;
     state: state<string | null>
     selectedInsurance: string;
+    selfBusiness: {
+        id: string;
+        name: string;
+    }
 }
 
 
-export const InsuranceType = ({ list, state, selectedInsurance, className }: InsuranceTypeProps) => {
+export const InsuranceType = ({ list, state, selectedInsurance, className, selfBusiness }: InsuranceTypeProps) => {
     const handleValueChange = (newValue: string) => {
         state.set(newValue === "" ? null : newValue);
     };
 
     return (
         <Select
-            value={selectedInsurance ?? ''}
+            value={selectedInsurance}
             onValueChange={handleValueChange}
         >
             <SelectTrigger className={`${className} w-[180px]`}>
-                <SelectValue placeholder="Selecciona una aseguradora">
+                <SelectValue placeholder="No ha seleccionado una aseguradora">
                     {selectedInsurance}
                 </SelectValue>
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    <SelectLabel>Baremo</SelectLabel>
-                    {list.map(insurance =>
-                        <SelectItem key={insurance.id} value={String(insurance.id)}>
-                            {insurance.name ? insurance.name.charAt(0).toUpperCase() + insurance.name.slice(1) : ''}
-                        </SelectItem>
-                    )}
+                    <SelectLabel>Aseguradora</SelectLabel>
+                    {list.map((insurance, index) => {
+                        console.log(insurance);
+
+                        return (<SelectItem key={index} value={String(insurance.id) ? String(insurance.id) : ''}>
+                            {insurance.name ? insurance.name.charAt(0).toUpperCase() + insurance.name.slice(1) : selfBusiness.name}
+                        </SelectItem>)
+                    })}
                 </SelectGroup>
             </SelectContent>
         </Select>

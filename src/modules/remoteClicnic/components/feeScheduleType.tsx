@@ -16,7 +16,6 @@ interface FeeScheduleTypeProps {
 
 
 export const FeeScheduleType = ({ feeSchedules, className }: FeeScheduleTypeProps) => {
-    console.log(feeSchedules)
     return (
         <Select>
             <SelectTrigger className={`${className} w-[180px]`}>
