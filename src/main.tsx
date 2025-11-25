@@ -1,25 +1,23 @@
-import { StrictMode } from 'react';
+import { StrictMode, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import router from './routes/index.tsx';
 import { useAuth } from '@/auth/hooks/useAuth.ts';
-import { cn } from '@/lib/utils.ts';
 import { AuthProvider } from '@/auth/components/authProvider.tsx';
 import { ServiceProvider } from './serviceProvider.tsx';
+import { AppAlert } from '@/components/app/appAlert.tsx';
 
 const RootApp = () => {
-    const { message, isLoggedIn } = useAuth();
-
+    const { message, setMessage } = useAuth();
+    const handleCloseAlert = useCallback(() => setMessage(null), [setMessage]);
     return (
         <StrictMode>
             <RouterProvider router={router} />
             {message && (
-                <div className={cn(
-                    "fixed bottom-4 right-4 p-4 rounded-xl shadow-2xl text-white transition-opacity duration-300 z-50",
-                    isLoggedIn ? "bg-green-600" : "bg-red-600"
-                )}>
-                    {message}
-                </div>
+                <AppAlert
+                    message={message}
+                    onClose={handleCloseAlert}
+                />
             )}
         </StrictMode>
     );

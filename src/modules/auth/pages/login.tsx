@@ -8,7 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from '../components/logo';
-import { GoogleIcon } from '../components/googleIcon';
+// import { GoogleIcon } from '../components/googleIcon';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -32,9 +32,9 @@ export const Login = (): Component => {
         setMessage(null);
 
         try {
-            const authData = await authService.execute({ email: email, password: password });
-            console.log("Login exitoso. Datos recibidos:", authData);
-            login();
+            const result = await authService.execute({ email: email, password: password });
+            console.log("Login exitoso. Datos recibidos:", result);
+            login(result.auth);
             setMessage('¡Inicio de sesión exitoso! Redirigiendo...');
             navigate(from, { replace: true });
         }
@@ -50,13 +50,13 @@ export const Login = (): Component => {
         }
     };
 
-    const handleGoogleLogin = () => {
-        setMessage('Simulando inicio de sesión con Google...');
-        setTimeout(() => {
-            login();
-            navigate(routeLabel.home, { replace: true });
-        }, 1500);
-    }
+    // const handleGoogleLogin = () => {
+    //     setMessage('Simulando inicio de sesión con Google...');
+    //     setTimeout(() => {
+    //         login();
+    //         navigate(routeLabel.home, { replace: true });
+    //     }, 1500);
+    // }
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 font-sans">
@@ -93,7 +93,7 @@ export const Login = (): Component => {
                             </div>
 
                             {/* Campo de Contraseña */}
-                            <div className="grid w-full items-center gap-5">
+                            <div className="grid w-full items-center gap-5 mt-4">
 
                                 <Label htmlFor="password">Contraseña</Label>
                                 <Input
@@ -107,7 +107,7 @@ export const Login = (): Component => {
                             </div>
 
                             {/* Enlace de Olvidaste tu contraseña */}
-                            <div className="text-sm text-right">
+                            <div className="text-sm text-right my-4">
                                 <Link to="/forgot-password" className="font-medium text-blue-600 hover:underline">
                                     ¿Olvidaste tu contraseña?
                                 </Link>
@@ -131,7 +131,7 @@ export const Login = (): Component => {
                             </Button>
 
                         </form>
-                        <div className="relative my-6">
+                        {/* <div className="relative my-6">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-200"></div>
                             </div>
@@ -140,9 +140,9 @@ export const Login = (): Component => {
                                     O continuar con
                                 </span>
                             </div>
-                        </div>
+                        </div> */}
                         {/* BOTÓN DE GOOGLE */}
-                        <Button
+                        {/* <Button
                             className="w-full flex items-center justify-center space-x-3 border-gray-300 hover:bg-gray-50"
                             type="button"
                             variant="outline"
@@ -150,7 +150,7 @@ export const Login = (): Component => {
                         >
                             <GoogleIcon />
                             <span>Google</span>
-                        </Button>
+                        </Button> */}
 
                         <p className='mt-6 text-center text-sm text-gray-500'>
                             ¿No tienes cuenta? <Link to={routeLabel.register} className='text-blue-600 hover:underline font-medium'>Regístrate</Link>

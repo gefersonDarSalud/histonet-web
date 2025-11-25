@@ -32,3 +32,7 @@ export function getServerUrl(route: string, params?: string | object, url?: stri
     }
     return urlFull;
 }
+
+export function cn(...classes: string[]): string {
+    return classes.filter(Boolean).join(' ')
+};

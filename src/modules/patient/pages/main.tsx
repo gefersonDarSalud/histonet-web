@@ -3,18 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { PatientTable } from '../components/patientTable';
-import { SearchPatientsService } from '#/core/services/GetAllPatientservice';
-import { PatientRepositoryImpl } from '#/infrastructure/PatientRepository.impl';
 import type { Patient as PatientEntity } from '#/core/entities';
-
-const patientRepositoryImpl = new PatientRepositoryImpl();
-const searchPatientsService = new SearchPatientsService(patientRepositoryImpl);
+import { useServices } from '#/hooks/useServices';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { routeLabel } from '#/routes';
 
 export const Patient = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [listPatients, setListPatients] = useState<PatientEntity[]>([]);
+    const { searchPatientsService } = useServices();
 
+    const navigate = useNavigate();
 
     const fetchData = useCallback(async (text: string) => {
         setIsLoading(true);
@@ -29,7 +30,7 @@ export const Patient = () => {
         finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [searchPatientsService]);
 
 
     useEffect(() => {
@@ -43,13 +44,23 @@ export const Patient = () => {
     }, [searchTerm, fetchData]);
 
     const filteredPatients = useMemo(() => {
-        const list = listPatients.filter(patient =>
-            patient.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            patient.code?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const list = listPatients.filter(patient => {
+            let fullName: boolean = false;
+            if (patient.fullname) fullName = patient.fullname.toLowerCase().includes(searchTerm.toLowerCase());
+
+            return fullName || patient.code?.toLowerCase().includes(searchTerm.toLowerCase());
+        });
 
         return list;
     }, [listPatients, searchTerm]);
+
+    const handleCreateNewPatient = () => {
+        // Obtenemos la ruta base y reemplazamos ':patientId' con 'new'
+        const newPatientPath = routeLabel.patientProfile.replace(":patientId", "new");
+        navigate(newPatientPath);
+    };
+
+
 
     // --- Renderizado principal ---
     return (
@@ -70,6 +81,9 @@ export const Patient = () => {
                     {/* Card Header (Cola de Pacientes + Botón) */}
                     <CardHeader className='flex justify-between items-center'>
                         <CardTitle>Buscar Pacientes</CardTitle>
+                        <Button onClick={handleCreateNewPatient}>
+                            Crear Nuevo Paciente
+                        </Button>
                     </CardHeader>
 
                     {/* Herramientas de Filtro y Búsqueda */}

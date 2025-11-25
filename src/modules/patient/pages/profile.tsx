@@ -6,17 +6,14 @@ import {
 } from "@/components/ui/tabs"
 
 import { useParams } from 'react-router-dom';
-import { BasicData } from '../components/basicData';
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Patient, PatientFull } from "#/core/entities";
-import { GetPatientDataService } from "#/core/services/getPatientData.service";
-import { PatientRepositoryImpl } from "#/infrastructure/PatientRepository.impl";
+import type { PatientFull } from "#/core/entities";
 import type { state } from "#/utils/types";
-
-const patientRepository = new PatientRepositoryImpl();
-const getPatientDataService = new GetPatientDataService(patientRepository)
+import { useServices } from "#/hooks/useServices";
+import { PatientProfileForm } from "../components/patientProfileForm";
 
 export const PatientProfile = () => {
+    const { getPatientDataService } = useServices();
     const patientDefault: PatientFull = useMemo(() => ({
         code: '',
         firstName: null,
@@ -34,10 +31,12 @@ export const PatientProfile = () => {
 
     const patientState: state<PatientFull> = { value: patient, set: setPatient };
 
-    const fetchData = useCallback(async (patientId: string) => {
+    const fetchData = useCallback(async (id: string) => {
         setIsLoading(true);
         try {
-            setPatient(await getPatientDataService.execute(patientId));
+            if (id && id !== 'new') {
+                setPatient(await getPatientDataService.execute(id));
+            }
         }
 
         catch (error) {
@@ -54,44 +53,42 @@ export const PatientProfile = () => {
         if (patientId) {
             fetchData(patientId);
         }
-    }, [patientId, fetchData]);
+    }, [patientId, fetchData, patientDefault]);
+
+    const title = patientId === 'new' ? 'Crear Nuevo Paciente' : 'Perfil de Paciente';
+    const subtitle = patientId === 'new' ? 'Ingrese la información del nuevo paciente.' : 'Vea y edite la información del paciente.';
+
+    const isNewPatient = useMemo(() => patientId === 'new', [patientId]);
+
+    const activeTabClasses = "data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:dark:bg-gray-100 data-[state=active]:dark:text-gray-900";
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 font-display">
-            {/* 3. Header de la Aplicación (Simulado) */}
-            <header className="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-800 px-4 sm:px-10 py-4 bg-white dark:bg-gray-950 shadow-sm">
-                <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">MediConnect</h2>
-                {/* Asumiendo que el nav y el avatar están en el layout superior */}
-            </header>
-
-            {/* 4. Contenedor Principal y Título */}
-            <main className="flex-1 px-4 sm:px-6 lg:px-20 py-8">
-                <div className="max-w-4xl mx-auto">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Perfil de Paciente</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">Vea y edite la información del paciente.</p>
-                    </div>
-
-                    <Tabs defaultValue="account">
-                        <TabsList>
-                            <TabsTrigger className="" value="basicData">Datos Basicos</TabsTrigger>
-                            <TabsTrigger value="business">Aseguradora</TabsTrigger>
-                            <TabsTrigger value="relationship">Beneficiarios</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="basicData">
-                            {isLoading && <p>Cargando...</p>}
-                            <BasicData patientState={patientState} />
-                        </TabsContent>
-                        <TabsContent value="business">
-                            <p>business</p>
-                        </TabsContent>
-                        <TabsContent value="relationship">
-                            <p>relationship</p>
-                        </TabsContent>
-                    </Tabs>
+        <main className="flex-1 px-4 sm:px-6 lg:px-20 py-8">
+            <div className="max-w-4xl mx-auto">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>
                 </div>
-            </main>
-        </div>
+
+                <Tabs defaultValue="PatientProfileForm">
+                    <TabsList>
+                        <TabsTrigger className={activeTabClasses} value="PatientProfileForm">Datos Basicos</TabsTrigger>
+                        <TabsTrigger className={activeTabClasses} value="business">Aseguradora</TabsTrigger>
+                        <TabsTrigger className={activeTabClasses} value="relationship">Beneficiarios</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="PatientProfileForm">
+                        {isLoading && <p>Cargando...</p>}
+                        <PatientProfileForm patientState={patientState} isNewPatient={isNewPatient} />
+                    </TabsContent>
+                    <TabsContent value="business">
+                        <p>business</p>
+                    </TabsContent>
+                    <TabsContent value="relationship">
+                        <p>relationship</p>
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </main>
     );
 };
 

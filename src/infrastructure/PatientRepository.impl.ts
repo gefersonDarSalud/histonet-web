@@ -29,14 +29,11 @@ export class PatientRepositoryImpl implements PatientRepository {
     async getPatientData(patient: { id: string; }): Promise<PatientFull> {
         const urlFull = getServerUrl('paciente', patient.id);
         const response = await fetch(urlFull)
-
         if (!response.ok) {
             throw new Error(`Error ${response.status}: Fallo al buscar el paciente`);
         }
-
-        const dtos = await response.json() as PatientFullApiDto[];
-
-        return PatientFullMapper.fromApiToDomain(dtos[0]);
+        const dtos = await response.json() as PatientFullApiDto;
+        const patientMapped = PatientFullMapper.fromApiToDomain(dtos);
+        return patientMapped
     }
-
 }

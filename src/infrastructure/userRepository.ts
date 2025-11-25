@@ -1,10 +1,10 @@
-import type { BasicResponse } from "#/core/entities";
+import type { AuthServiceResponse } from "#/core/services/authService";
 import { UserLoginMapper } from "#/data/mappers/userMapper";
 import { getServerUrl } from "#/utils/functions";
 
 
 export class UserRepository {
-    async login(credentials: { email: string; password: string; }): Promise<BasicResponse> {
+    async login(credentials: { email: string; password: string; }): Promise<AuthServiceResponse> {
         const urlFull = getServerUrl('usuario/iniciar-sesion');
         console.log(`[UserRepository] Llamando a la API: ${urlFull}`);
 
@@ -27,7 +27,13 @@ export class UserRepository {
             }
             const data = await response.json();
 
-            return UserLoginMapper.fromApiToDomain(data);;
+            return {
+                data: UserLoginMapper.fromApiToDomain(data),
+                auth: {
+                    accessToken: "mock-jwt-" + Math.random().toString(36).substring(7),
+                    refreshToken: "mock-refresh-" + Math.random().toString(36).substring(7),
+                },
+            };
         }
 
         catch (error) {

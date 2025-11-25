@@ -1,6 +1,16 @@
 import type { UserRepository } from "#/infrastructure/userRepository";
 import type { BasicResponse, IService } from "../entities";
 
+export type AuthResult = {
+    accessToken: string;
+    refreshToken: string;
+};
+
+export type AuthServiceResponse = {
+    data: BasicResponse;
+    auth: AuthResult;
+};
+
 type AuthServiceProps = {
     email: string;
     password: string;
@@ -10,7 +20,7 @@ type AuthServiceDependencies = {
     userRepository: UserRepository;
 };
 
-export class AuthService implements IService<AuthServiceProps, BasicResponse> {
+export class AuthService implements IService<AuthServiceProps, AuthServiceResponse> {
     private userRepository: UserRepository;
 
     constructor({ userRepository }: AuthServiceDependencies) {
@@ -18,15 +28,14 @@ export class AuthService implements IService<AuthServiceProps, BasicResponse> {
         console.log("AuthService inicializado.");
     }
 
-    async execute({ email, password }: AuthServiceProps): Promise<BasicResponse> {
+    async execute({ email, password }: AuthServiceProps): Promise<AuthServiceResponse> {
         if (!email || !password) throw new Error("El email y la contraseña son obligatorios.");
 
         try {
-            const authData = await this.userRepository.login({ email, password });
-            console.log("authData: ", authData);
+            const result = await this.userRepository.login({ email, password });
 
-            if (authData.status !== 'success') throw new Error(authData.message);
-            return authData;
+            if (result.data.status !== 'success') throw new Error(result.data.message);
+            return result;
         }
 
         catch (error) {
