@@ -82,7 +82,7 @@ export type PatientTableProps = {
     isLoading: boolean;
 }; // El array de pacientes filtrados
 
-
+export type objectList<T> = { [key: string]: T }
 
 export type state<type> = {
     value: type,

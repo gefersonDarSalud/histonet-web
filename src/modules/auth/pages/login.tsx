@@ -14,6 +14,22 @@ import { LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useServices } from '#/hooks/useServices';
 import { routeLabel } from '#/routes';
+import type { objectList } from '#/utils/types';
+import type { Message } from '@/components/app/appAlert';
+
+const messages: objectList<Message> = {
+    'sessionSuccess': {
+        title: 'Inicio de Sesión Exitoso',
+        variant: 'default',
+        description: 'has iniciado sesión exitosamente.'
+    },
+    'sessionError': {
+        title: 'Error',
+        variant: 'destructive',
+        description: 'No se pudo iniciar sesión.'
+    },
+}
+
 
 export const Login = (): Component => {
     const [email, setEmail] = useState('');
@@ -35,13 +51,13 @@ export const Login = (): Component => {
             const result = await authService.execute({ email: email, password: password });
             console.log("Login exitoso. Datos recibidos:", result);
             login(result.auth);
-            setMessage('¡Inicio de sesión exitoso! Redirigiendo...');
+            setMessage(messages.sessionSuccess);
             navigate(from, { replace: true });
         }
 
         catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido al iniciar sesión.';
-            setMessage(errorMessage);
+            console.log(error);
+            setMessage(messages.sessionError);
             setTimeout(() => setMessage(null), 5000);
         }
 
