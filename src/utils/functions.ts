@@ -16,6 +16,10 @@ export function getServerUrl(route: string, params?: string | object, url?: stri
 
     switch (typeof params) {
         case 'string':
+            if (route.includes('//')) {
+                urlFull = `${url}/${route.replace('//', `/${params}/`)}`
+                break;
+            }
             urlFull = `${url}/${route}/${params}`;
             break;
 

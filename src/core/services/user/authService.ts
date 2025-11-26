@@ -1,15 +1,6 @@
+import type { IService } from "#/core/entities";
+import type { AuthServiceResponse } from "#/core/repositories/userRepository";
 import type { UserRepository } from "#/infrastructure/userRepository";
-import type { BasicResponse, IService } from "../entities";
-
-export type AuthResult = {
-    accessToken: string;
-    refreshToken: string;
-};
-
-export type AuthServiceResponse = {
-    data: BasicResponse;
-    auth: AuthResult;
-};
 
 type AuthServiceProps = {
     email: string;
@@ -33,7 +24,6 @@ export class AuthService implements IService<AuthServiceProps, AuthServiceRespon
 
         try {
             const result = await this.userRepository.login({ email, password });
-
             if (result.data.status !== 'success') throw new Error(result.data.message);
             return result;
         }

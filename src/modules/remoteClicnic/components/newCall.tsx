@@ -26,15 +26,15 @@ import { PatientCombobox } from "./Patient.combobox"
 import { useEffect, useMemo, useState } from "react"
 import type { PatientState } from "#/utils/types"
 import { Loader2 } from "lucide-react"
-import { PatientRepositoryImpl } from "#/infrastructure/PatientRepository.impl"
 import { FeeScheduleType } from "./feeScheduleType"
 import type { Business, TypeVisit } from "#/core/entities"
 import { InsuranceType } from "./InsuranceType"
-
-const patientRepository = new PatientRepositoryImpl();
+import { useServices } from "#/hooks/useServices"
 
 
 export const NewCall = () => {
+    const { getPatientVisitContracts } = useServices();
+
     const typeVisit: TypeVisit[] = ["particular", "afiliado", "asegurado"]
 
     const [patient, setPatient] = useState<PatientState>({
@@ -90,8 +90,7 @@ export const NewCall = () => {
 
                 try {
                     const patientParam = { id: patient.id! };
-
-                    setBusinessList(await patientRepository.getInsuranceCompany(patientParam));
+                    setBusinessList(await getPatientVisitContracts.execute(patientParam));
                 }
 
                 catch (error) {

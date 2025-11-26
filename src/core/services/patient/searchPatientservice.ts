@@ -1,6 +1,6 @@
 import { isValidIdNumber } from "#/utils/functions";
-import type { Patient } from "../entities";
-import type { PatientRepository } from "../repositories/patient.repository";
+import type { Patient } from "../../entities";
+import type { PatientRepository } from "../../repositories/patientRepository";
 
 // Asumiremos que es un service para "buscar pacientes"
 export class SearchPatientsService {
@@ -28,7 +28,7 @@ export class SearchPatientsService {
             }
         });
 
-        const patients: Patient[] = await this.repository.searchPatients({ id, fullname });
+        const patients: Patient[] = await this.repository.search({ id, fullname });
 
         return patients;
     }

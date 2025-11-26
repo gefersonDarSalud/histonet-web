@@ -70,6 +70,19 @@ export interface Visit {
     type: TypeVisit;
 }
 
+export type IdName = {
+    id: number;
+    name: string;
+}
+
+export interface PatientContracts {
+    row: number
+    business: IdName,
+    insurance: IdName,
+    departament: IdName,
+    feeSchedule: IdName,
+}
+
 export type StatusVisit = "Ingresado" | "En Espera" | "En Consulta" | "Atendido" | "Pendiente";
 
 export type TypeVisit = 'asegurado' | 'afiliado' | 'particular'

@@ -1,4 +1,4 @@
-import type { AuthResult } from "#/core/services/authService";
+import type { AuthResult } from "#/core/repositories/userRepository";
 import type { objectList } from "#/utils/types";
 import type { Message } from "@/components/app/appAlert";
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";

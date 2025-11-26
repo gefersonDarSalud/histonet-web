@@ -1,9 +1,11 @@
-import type { AuthServiceResponse } from "#/core/services/authService";
+
 import { UserLoginMapper } from "#/data/mappers/userMapper";
 import { getServerUrl } from "#/utils/functions";
+import type { AuthServiceResponse, UserRepository as UserRepositoryCore } from "#/core/repositories/userRepository";
 
 
-export class UserRepository {
+
+export class UserRepository implements UserRepositoryCore {
     async login(credentials: { email: string; password: string; }): Promise<AuthServiceResponse> {
         const urlFull = getServerUrl('usuario/iniciar-sesion');
         console.log(`[UserRepository] Llamando a la API: ${urlFull}`);

@@ -11,6 +11,7 @@ import type { PatientFull } from "#/core/entities";
 import type { state } from "#/utils/types";
 import { useServices } from "#/hooks/useServices";
 import { PatientProfileForm } from "../components/patientProfileForm";
+import { Business } from "../components/business";
 
 export const PatientProfile = () => {
     const { getPatientDataService } = useServices();
@@ -77,11 +78,10 @@ export const PatientProfile = () => {
                         <TabsTrigger className={activeTabClasses} value="relationship">Beneficiarios</TabsTrigger>
                     </TabsList>
                     <TabsContent value="PatientProfileForm">
-                        {isLoading && <p>Cargando...</p>}
-                        <PatientProfileForm patientState={patientState} isNewPatient={isNewPatient} />
+                        <PatientProfileForm patientState={patientState} isNewPatient={isNewPatient} isLoading={isLoading} />
                     </TabsContent>
                     <TabsContent value="business">
-                        <p>business</p>
+                        <Business patient={patientId ?? ''} />
                     </TabsContent>
                     <TabsContent value="relationship">
                         <p>relationship</p>

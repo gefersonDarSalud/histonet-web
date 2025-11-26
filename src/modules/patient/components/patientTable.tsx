@@ -1,4 +1,5 @@
 import type { PatientTableProps } from "#/utils/types";
+import { Loading } from "@/components/app/loading";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useNavigate } from "react-router-dom";
 
@@ -24,7 +25,7 @@ export const PatientTable = ({ patients, isLoading }: PatientTableProps) => {
                 isLoading ?
                     <TableRow>
                         <TableCell className="p-6 text-center text-gray-500" colSpan={3} align='center'>
-                            No se encontraron pacientes para el filtro actual.
+                            <Loading />
                         </TableCell>
                     </TableRow>
                     : !hasPatients ?

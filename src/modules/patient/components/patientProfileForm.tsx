@@ -17,13 +17,15 @@ import { mapPatientToFormValues } from "../hooks/mappedForm";
 import { ConfirmationModal } from "@/components/app/confirmationModal";
 import { cn } from "@/lib/utils";
 import { CalendarComponent } from "./calendar";
-// import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Loading } from "@/components/app/loading";
+import { Card } from "@/components/ui/card";
 
 export type PatientProfileFormValues = z.infer<typeof patientProfileSchema>;
 
 export interface PatientProfileFormProps {
     patientState: state<PatientFull>;
     isNewPatient: boolean;
+    isLoading: boolean;
 }
 
 const patientProfileSchema = z.object({
@@ -47,18 +49,17 @@ const emptyDefaults: Partial<PatientProfileFormValues> = {
     code: "",
     email: "",
     phone: "",
-    birthdate: undefined, // undefined for optional date
-    gender: undefined, // undefined for optional enum
+    birthdate: undefined,
+    gender: undefined,
 };
 
 const genders = ["Masculino", "Femenino", "Otro"];
 
-export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfileFormProps) => {
-    // State for custom status messages (replaces native alerts)
+export const PatientProfileForm = ({ patientState, isNewPatient, isLoading }: PatientProfileFormProps) => {
+
     const { toast, message } = useToast();
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
-    // Determine initial values based on props
     const initialValues = useMemo(() => {
         if (isNewPatient) {
             return emptyDefaults;
@@ -72,7 +73,6 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
         mode: "onBlur",
     });
 
-    // Reset form when initialValues change (e.g., switching between new/loaded patient)
     useEffect(() => {
         form.reset(mapPatientToFormValues(initialValues));
     }, [initialValues, form]);
@@ -84,7 +84,6 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
             description: `Paciente ${isNewPatient ? 'creado' : 'actualizado'} con éxito.`,
             variant: "success"
         });
-        // Simulate API call delay
         return new Promise(resolve => setTimeout(resolve, 1000));
     };
 
@@ -100,24 +99,20 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
             description: "El paciente ha sido eliminado.",
             variant: "destructive"
         });
-        // Here would go the actual deletion logic and navigation
     };
 
-    // Fallback for avatar display
-    // const initials = (form.watch("firstName")?.[0] || '') + (form.watch("lastName")?.[0] || '');
-
-
-    // Use a status flag for better button text
     const isSaving = form.formState.isSubmitting;
 
-    // Simulate loading state from external data
-    if (!patientState.value.code) {
-        return <div className="p-8 text-center text-gray-500 dark:text-gray-400">Cargando datos del paciente...</div>;
+    if (isLoading) {
+        return (
+            <Card className="min-h-96 flex justify-center items-center">
+                <Loading />
+            </Card>
+        );
     }
 
     return (
         <>
-            {/* Confirmation Modal (replaces window.confirm) */}
             <ConfirmationModal
                 isOpen={isConfirmModalOpen}
                 onConfirm={confirmDeletion}
@@ -126,7 +121,6 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
                 message="¿Está seguro que desea eliminar este paciente? Esta acción no se puede deshacer y eliminará permanentemente todos sus registros."
             />
 
-            {/* Status Message / Toast */}
             {message && (
                 <div className={cn("fixed bottom-4 right-4 p-4 rounded-lg shadow-xl flex items-center z-50 transition-transform duration-300",
                     message.variant === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
@@ -136,9 +130,9 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
                 </div>
             )}
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 max-w-4xl mx-auto my-8">
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="p-6 sm:p-8">
+            <Card>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="">
+                    <div className="px-6 sm:px-8">
                         <div className="flex flex-col md:flex-row gap-8">
 
                             {/* Columna Izquierda: Información Personal */}
@@ -251,33 +245,33 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
 
                                     {/* País (Uncommented in schema) */}
                                     {/* <Controller
-                                        name="country"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field>
-                                                <FieldLabel>País</FieldLabel>
-                                                <FieldContent>
-                                                    <Input placeholder="Ej. España" {...field} />
-                                                </FieldContent>
-                                                {fieldState.error && (<FieldError errors={[fieldState.error]} />)}
-                                            </Field>
-                                        )}
-                                    /> */}
+                                                name="country"
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field>
+                                                        <FieldLabel>País</FieldLabel>
+                                                        <FieldContent>
+                                                            <Input placeholder="Ej. España" {...field} />
+                                                        </FieldContent>
+                                                        {fieldState.error && (<FieldError errors={[fieldState.error]} />)}
+                                                    </Field>
+                                                )}
+                                            /> */}
 
                                     {/* Ciudad (Uncommented in schema) */}
                                     {/* <Controller
-                                        name="city"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field>
-                                                <FieldLabel>Ciudad</FieldLabel>
-                                                <FieldContent>
-                                                    <Input placeholder="Ej. Madrid" {...field} />
-                                                </FieldContent>
-                                                {fieldState.error && (<FieldError errors={[fieldState.error]} />)}
-                                            </Field>
-                                        )}
-                                    /> */}
+                                                name="city"
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field>
+                                                        <FieldLabel>Ciudad</FieldLabel>
+                                                        <FieldContent>
+                                                            <Input placeholder="Ej. Madrid" {...field} />
+                                                        </FieldContent>
+                                                        {fieldState.error && (<FieldError errors={[fieldState.error]} />)}
+                                                    </Field>
+                                                )}
+                                            /> */}
 
                                     {/* Fecha de Nacimiento (Usando Popover y shadcn Calendar) */}
                                     <Controller
@@ -343,14 +337,14 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
                                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b pb-2">Foto</h2>
                                 <div className="flex flex-col items-center">
                                     {/* <Avatar className="w-40 h-40 border-4 border-gray-100 dark:border-gray-700 shadow-md mb-4">
-                                        <AvatarImage
-                                            src={form.watch("profilePictureUrl") || undefined}
-                                            alt="Foto del Paciente"
-                                        />
-                                        <AvatarFallback className="text-3xl font-semibold bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                                            {initials || 'JP'}
-                                        </AvatarFallback>
-                                    </Avatar> */}
+                                                <AvatarImage
+                                                    src={form.watch("profilePictureUrl") || undefined}
+                                                    alt="Foto del Paciente"
+                                                />
+                                                <AvatarFallback className="text-3xl font-semibold bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                                                    {initials || 'JP'}
+                                                </AvatarFallback>
+                                            </Avatar> */}
 
                                     {/* Botón de Subir Foto (simulado) */}
                                     <Button
@@ -399,69 +393,7 @@ export const PatientProfileForm = ({ patientState, isNewPatient }: PatientProfil
                         </div>
                     </div>
                 </form>
-            </div>
+            </Card>
         </>
     );
 };
-
-
-// ===============================================
-// APP WRAPPER FOR DEMO
-// ===============================================
-
-// const App = () => {
-
-//     const [mode, setMode] = useState<'view' | 'new'>('view');
-
-//     const patientStateView: state<PatientFull> = {
-//         value: loadedPatient,
-//         isLoading: false,
-//         error: null,
-//     };
-
-//     const patientStateNew: state<PatientFull> = {
-//         value: null,
-//         isLoading: false,
-//         error: null,
-//     };
-
-//     // Select the correct state based on the mode
-//     const isNewPatient = mode === 'new';
-//     const currentPatientState = isNewPatient ? patientStateNew : patientStateView;
-
-//     return (
-//         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-8">
-//             <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white text-center">
-//                 Registro de Pacientes (Demo)
-//             </h1>
-
-//             <div className="flex justify-center gap-4 mb-8">
-//                 <Button
-//                     onClick={() => setMode('view')}
-//                     variant={!isNewPatient ? 'default' : 'outline'}
-//                     className={cn('sm:w-auto', !isNewPatient && 'bg-blue-600 hover:bg-blue-700')}
-//                 >
-//                     Modo Edición (Existente)
-//                 </Button>
-//                 <Button
-//                     onClick={() => setMode('new')}
-//                     variant={isNewPatient ? 'default' : 'outline'}
-//                     className={cn('sm:w-auto', isNewPatient && 'bg-blue-600 hover:bg-blue-700')}
-//                 >
-//                     Modo Creación (Nuevo)
-//                 </Button>
-//             </div>
-
-//             <PatientProfileForm
-//                 patientState={currentPatientState}
-//                 isNewPatient={isNewPatient}
-//             />
-
-//             <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-//                 ** Nota: Este formulario utiliza mocks simplificados de componentes y no realiza llamadas a la API. Revisa la consola al guardar. **
-//             </p>
-//         </div>
-//     );
-// };
-
-// export default App;

@@ -15,15 +15,12 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { useCallback, useEffect, useState } from "react"
-import { PatientRepositoryImpl } from "../../../infrastructure/PatientRepository.impl"
-import { SearchPatientsService } from "../../../core/services/GetAllPatientservice"
 import type { PatientComboboxProps, PatientState, SelectOption } from "#/utils/types"
 import type { Patient } from "#/core/entities"
-
-const patientRepository = new PatientRepositoryImpl();
-const searchPatientsService = new SearchPatientsService(patientRepository);
+import { useServices } from "#/hooks/useServices"
 
 export const PatientCombobox = ({ patient, setPatient }: PatientComboboxProps) => {
+    const { searchPatientsService } = useServices();
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [listPatients, setListPatients] = useState<SelectOption[]>([]);

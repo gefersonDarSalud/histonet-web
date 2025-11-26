@@ -1,8 +1,8 @@
-import type { Business, Patient, PatientFull } from "../entities";
+import type { Business, Patient, PatientContracts, PatientFull } from "../entities";
 
 export interface PatientRepository {
 
-    searchPatients(
+    search(
         params: {
             id?: string;
             fullname?: string;
@@ -10,11 +10,13 @@ export interface PatientRepository {
         },
     ): Promise<Patient[]>;
 
-    getInsuranceCompany(
+    getVisitContracts(
         params: {
             id: string;
         },
     ): Promise<Business[]>
 
-    getPatientData(patient: { id: string; }): Promise<PatientFull>;
+    getData(patient: { id: string; }): Promise<PatientFull>;
+
+    getContracts(patient: { id: string; }): Promise<PatientContracts[]>;
 }

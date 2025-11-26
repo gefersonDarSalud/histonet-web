@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/hooks/useAuth";
 import { routeLabel } from "#/routes";
+import { Brandmark } from "./brandmark";
 
 interface HeaderProps {
     activePath: string;
@@ -40,20 +41,22 @@ export const Header = ({ activePath }: HeaderProps): React.ReactElement => {
     }
     return (
 
-        <header className="sticky top-0 z-10 border-b bg-white/95 backdrop-blur-sm">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center">
-                    <span className="text-xl font-bold text-gray-900">DarSalud</span>
+        <header className="sticky top-0 z-10 border-b backdrop-blur-sm bg-darsalud-primary text-white">
+            <div className="mr-auto flex h-16 max-w-7xl items-center justify-between pr-4 sm:pr-6 lg:pr-8">
+                <div className="flex items-center bg-white px-20" style={{
+                    clipPath: "polygon(0 0, 100% 0, 80% 100%, 0% 100%)",
+                }}>
+                    <Brandmark className="h-16 w-auto self-center" />
                 </div>
 
                 {/* Navegación Principal (Desktop) */}
                 <nav className="hidden md:flex space-x-8 text-sm font-medium flex-1 self-center justify-center">
                     {links.map(item => {
-                        const isActive = item.path === activePath;
+                        const isActive = activePath.startsWith(item.path);
                         return (
                             <a className={`transition-colors py-1 border-b-2 ${isActive
-                                ? "text-blue-600 border-blue-600 font-semibold"
-                                : "text-gray-600 border-transparent hover:text-blue-500 hover:border-blue-300"
+                                ? "text-darsalud-secondary-500 border-darsalud-secondary-500 font-semibold"
+                                : "text-white border-transparent hover:text-darsalud-secondary-300 hover:border-darsalud-secondary-300"
                                 }`}
                                 key={item.name}
                                 href={item.path}

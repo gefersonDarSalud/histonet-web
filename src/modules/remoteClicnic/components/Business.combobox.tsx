@@ -38,7 +38,7 @@ export const BusinessCombobox = ({ listBusiness, businessState, disabled = false
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+            <PopoverTrigger asChild >
                 <Button
                     variant="outline"
                     role="combobox"
@@ -52,11 +52,11 @@ export const BusinessCombobox = ({ listBusiness, businessState, disabled = false
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent >
                 <Command>
                     <CommandInput placeholder="Busca la empresa..." className="h-9" />
                     <CommandList>
-                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandEmpty>No se encontraron empresas</CommandEmpty>
                         <CommandGroup>
                             {listBusiness.map((business) =>
                                 <CommandItem

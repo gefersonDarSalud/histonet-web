@@ -39,6 +39,18 @@ export type PatientFullApiDto = {
     dir: string | null,
 }
 
+export type PatientContractsApiDto = {
+    id: number
+    id_empresa: number,
+    empresa: string,
+    id_dependencia: number,
+    dependecia: string,
+    id_aseguradora: number,
+    aseguradora: string,
+    id_baremo: number,
+    baremo: string,
+}
+
 export type PatientBusinessApiDto = {
     id: string;
     nombre: string;
