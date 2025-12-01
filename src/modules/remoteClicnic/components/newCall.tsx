@@ -211,9 +211,9 @@ export const NewCall = () => {
                                                 </FieldLabel>
                                                 <BusinessCombobox
                                                     listBusiness={businessList}
-                                                    businessState={selectedBusinessState}
+                                                    businessId={selectedBusinessState}
                                                     disabled={isBusinessLoading || businessList.length === 0}
-                                                    selectedBusiness={businessObject}
+                                                    businessObject={businessObject}
                                                 />
                                             </Field>
                                             {businessObject && businessObject.insurances?.some(insurance => typeof insurance.id !== 'undefined') && businessObject &&

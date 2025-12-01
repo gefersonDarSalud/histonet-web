@@ -7,8 +7,6 @@ export type UserLoginApi = {
 
 export const UserLoginMapper: Mapper<UserLoginApi, BasicResponse> = {
     fromApiToDomain(dto: UserLoginApi): BasicResponse {
-        console.log("dto", dto);
-        console.log("Number(dto.status) === 1", Number(dto.STATUS) === 1);
 
         return {
             status: Number(dto.STATUS) === 1 ? 'success' : 'failed',

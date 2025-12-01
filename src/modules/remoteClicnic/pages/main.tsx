@@ -1,78 +1,98 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useState, useMemo } from 'react';
+import {
+    useState,
+    //useMemo,
+    useCallback,
+    useEffect
+} from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NewCall } from '../components/newCall';
 import { PatientVisitTable } from '../components/PatientVisitTable';
-import type { Visit } from '#/core/entities';
-
-const initialVisit: Visit[] = [
-    {
-        patient: { "id": "V28563229", "fullname": "Sofía Rodríguez" },
-        code: "01-034",
-        time: "09:00 AM",
-        date: "10/11/2025",
-        status: "Ingresado",
-        type: "asegurado"
-    },
-    {
-        patient: { "id": "V15546456", "fullname": "Carlos Pérez" },
-        code: "-",
-        time: "09:30 AM",
-        date: "10/11/2025",
-        status: "Pendiente",
-        type: "particular"
-    },
-    {
-        patient: { "id": "V10687542", "fullname": "Laura García" },
-        code: "01-035",
-        time: "10:00 AM",
-        date: "10/11/2025",
-        status: "En Espera",
-        type: "afiliado"
-    },
-    {
-        patient: { "id": "V23894562", "fullname": "Javier López" },
-        code: "01-036",
-        time: "10:30 AM",
-        date: "10/11/2025",
-        status: "En Consulta",
-        type: "particular"
-    },
-    {
-        patient: { "id": "V31846451", "fullname": "Manuel Sánchez" },
-        code: "01-037",
-        time: "11:30 AM",
-        date: "11/11/2025",
-        status: "Atendido",
-        type: "asegurado"
-    }
-]
+import type { SearchResponse } from '#/data/mappers/visitMappers';
+import { useServices } from '#/hooks/useServices';
+import type { VisitRepositorySearchParams } from '#/core/repositories/visitRepository';
+import { formatDate } from '#/utils/functions';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const RemoteClinic = () => {
+    const { searchVisit } = useServices();
+    const [visitList, setVisitList] = useState<SearchResponse[]>([]);
+    const [isLoadingVisitList, setIsLoadingVisitList] = useState<boolean>(false);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const handlerCurrentPage = (number: number) => {
+        return () => setCurrentPage(prev => {
+            if (prev == 1 && number <= 0) return prev;
+            return prev + number;
+        })
+    }
+
     const tabs = ["Todos", "Pendientes", "Registrados"];
     const [activeTab, setActiveTab] = useState("Todos");
-    const [searchTerm, setSearchTerm] = useState("");
+    const [textSearch, setTextSearch] = useState("");
 
-    const filteredPatients = useMemo(() => {
-        let list = initialVisit.filter(visit =>
-            visit.patient.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            visit.code.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+    const fechDataVistList = useCallback(async (text: string) => {
+        setIsLoadingVisitList(true)
+        try {
+            const currentDate = formatDate(new Date());
+            const params: VisitRepositorySearchParams = {
+                inicio: '1/1/2025',
+                fin: currentDate,
+                texto: text,
+                compania: (1).toString(),
+                sucursal: (2).toString(),
+                cantidad: (10).toString(),
+                pagina: (currentPage).toString(),
+            }
+            const result = await searchVisit.execute(params)
 
-        switch (activeTab) {
-            case "Pendientes":
-                list = list.filter(p => p.status === "Pendiente" || p.status === "En Espera");
-                break;
-            case "Registrados":
-                list = list.filter(p => ["Ingresado", "En Consulta", "Atendido"].includes(p.status));
-                break;
+            setVisitList(result);
         }
 
-        return list;
-    }, [activeTab, searchTerm]);
+        catch (e) {
+            console.error(e);
+            setIsLoadingVisitList(false);
+        }
 
-    // --- Renderizado principal ---
+        finally {
+            setIsLoadingVisitList(false);
+        }
+    }, [searchVisit, currentPage]);
+
+    // const filteredVisitList = useMemo(() => {
+    //     let list = visitList.filter(visit =>
+    //         visit.patient.toLowerCase().includes(textSearch.toLowerCase())
+    //         || visit.business.toLowerCase().includes(textSearch.toLowerCase())
+    //         || visit.information.toLowerCase().includes(textSearch.toLowerCase())
+    //         || visit.password.toLowerCase().includes(textSearch.toLowerCase())
+    //         || visit.topic.toLowerCase().includes(textSearch.toLowerCase())
+    //         || visit.observation.toLowerCase().includes(textSearch.toLowerCase())
+    //         || visit.insurance.toLowerCase().includes(textSearch.toLowerCase())
+    //         || visit.patient_ci.toLowerCase().includes(textSearch.toLowerCase())
+    //     );
+
+    //     switch (activeTab) {
+    //         case "Pendientes":
+    //             list = list.filter(p => p.status === "Pendiente" || p.status === "En Espera");
+    //             break;
+    //         case "Registrados":
+    //             list = list.filter(p => ["Ingresado", "En Consulta", "Atendido"].includes(p.status));
+    //             break;
+    //     }
+
+    //     return list;
+    // }, [visitList, activeTab, textSearch]);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            fechDataVistList(textSearch);
+        }, 500);
+        return () => clearTimeout(timeoutId);
+    }, [fechDataVistList, textSearch]);
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -103,8 +123,8 @@ export const RemoteClinic = () => {
                                 // icon={SearchIcon}
                                 type="text"
                                 placeholder="Buscar pacientes por nombre o DNI"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                value={textSearch}
+                                onChange={(e) => setTextSearch(e.target.value)}
                             />
                         </div>
 
@@ -126,7 +146,21 @@ export const RemoteClinic = () => {
 
                     </CardContent>
 
-                    <PatientVisitTable visits={filteredPatients} />
+                    <PatientVisitTable visits={visitList} isLoading={isLoadingVisitList} />
+
+                    <CardFooter className='flex justify-between'>
+                        <span className='bold'>{`Pagina: ${currentPage}`}</span>
+                        <ButtonGroup className=''>
+                            <Button variant='outline' onClick={handlerCurrentPage(-1)}>
+                                <ChevronLeft /> Anterior
+                            </Button>
+                            <Button variant='outline' onClick={handlerCurrentPage(1)}>
+                                Siguiente <ChevronRight />
+                            </Button>
+                        </ButtonGroup>
+
+                    </CardFooter>
+
                 </Card>
 
             </main>

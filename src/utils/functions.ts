@@ -40,3 +40,10 @@ export function getServerUrl(route: string, params?: string | object, url?: stri
 export function cn(...classes: string[]): string {
     return classes.filter(Boolean).join(' ')
 };
+
+export function formatDate(date: Date) {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}/${year}`;
+}

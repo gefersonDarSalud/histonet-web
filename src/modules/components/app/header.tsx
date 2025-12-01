@@ -24,7 +24,7 @@ export const Header = ({ activePath }: HeaderProps): React.ReactElement => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const links: NavLink[] = [
-        { name: "Inicio", path: routeLabel.home },
+        //{ name: "Inicio", path: routeLabel.home },
         { name: "Telemedicina", path: routeLabel.remoteClinic },
         { name: "Pacientes", path: routeLabel.patient },
         // { name: "Configuración", path: "/configuracion" }

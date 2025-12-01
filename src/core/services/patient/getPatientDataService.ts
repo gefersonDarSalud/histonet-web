@@ -1,5 +1,5 @@
-import type { PatientFull } from "../entities";
-import type { PatientRepository } from "../repositories/patient.repository";
+import type { PatientFull } from "#/core/entities";
+import type { PatientRepository } from "#/core/repositories/patientRepository";
 
 export class GetPatientDataService {
     private repository: PatientRepository;
@@ -7,6 +7,6 @@ export class GetPatientDataService {
         this.repository = repository;
     }
     async execute(patient: string): Promise<PatientFull> {
-        return await this.repository.getPatientData({ id: patient });;
+        return await this.repository.getData({ id: patient });;
     }
 }

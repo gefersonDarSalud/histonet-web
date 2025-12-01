@@ -11,7 +11,7 @@ import { ProtectedRoute } from "@/auth/components/protectedRoute";
 import App from "#/app";
 
 export const routeLabel: Record<string, string> = {
-    home: "/inicio",
+    // home: "/inicio",
     remoteClinic: "/telemedicina",
     patient: "/paciente",
     patientProfile: "/paciente/:patientId",

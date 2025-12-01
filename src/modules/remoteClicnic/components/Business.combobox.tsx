@@ -21,18 +21,20 @@ import type { state } from "#/utils/types"
 
 interface BusinessComboboxProps {
     listBusiness: Business[];
-    businessState: state<string | null>;
-    selectedBusiness?: Business | undefined;
+    businessId: state<string | null>;
+    businessObject?: Business | undefined;
     disabled?: boolean;
+    text?: state<string>;
+    isLoading?: boolean;
 }
 
-export const BusinessCombobox = ({ listBusiness, businessState, disabled = false, selectedBusiness }: BusinessComboboxProps) => {
+export const BusinessCombobox = ({ listBusiness, businessId, disabled = false, businessObject, text }: BusinessComboboxProps) => {
     const [open, setOpen] = React.useState(false)
 
     const commandItemHandler = (currentBusiness: string) => {
-        const selected = listBusiness.find(b => b.name.toLowerCase() === currentBusiness.toLowerCase());
-        if (selected) businessState.set(selected.id === businessState.value ? "" : selected.id);
-        else businessState.set("");
+        const selected = listBusiness.find(b => b.id.toLowerCase() === currentBusiness.toLowerCase());
+        if (selected) businessId.set(selected.id === businessId.value ? "" : selected.id);
+        else businessId.set("");
         setOpen(false)
     }
 
@@ -46,33 +48,34 @@ export const BusinessCombobox = ({ listBusiness, businessState, disabled = false
                     className="w-[200px] justify-between"
                     disabled={disabled}
                 >
-                    {selectedBusiness
-                        ? selectedBusiness.name
+                    {businessObject
+                        ? businessObject.name
                         : "Selecciona la empresa..."}
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent >
                 <Command>
-                    <CommandInput placeholder="Busca la empresa..." className="h-9" />
+                    {typeof text !== 'undefined'
+                        ?
+                        <input placeholder="Busca la empresa..." className="h-9" onChange={(e) => text.set(e.target.value)} />
+                        :
+                        <CommandInput placeholder="Busca la empresa..." className="h-9" />
+                    }
                     <CommandList>
                         <CommandEmpty>No se encontraron empresas</CommandEmpty>
                         <CommandGroup>
                             {listBusiness.map((business) =>
                                 <CommandItem
-                                    key={business.id}
+                                    key={`${business.id}`}
                                     value={business.id}
                                     onSelect={commandItemHandler}
                                 >
                                     {business.name}
-                                    <Check
-                                        className={cn(
-                                            "ml-auto",
-                                            businessState.value === business.id ? "opacity-100" : "opacity-0"
-                                        )}
-                                    />
+                                    <Check className={cn("ml-auto", businessId.value === business.id ? "opacity-100" : "opacity-0")} />
                                 </CommandItem>
-                            )}
+                            )
+                            }
                         </CommandGroup>
                     </CommandList>
                 </Command>

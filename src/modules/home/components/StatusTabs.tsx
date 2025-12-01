@@ -1,5 +1,5 @@
 type props = {
-    statusVisit: "Ingresado" | "En Espera" | "En Consulta" | "Atendido" | "Pendiente",
+    statusVisit: string,
     className?: string
 };
 

@@ -1,4 +1,5 @@
 import type { IdName } from "#/core/entities"
+import type { state } from "#/utils/types"
 import {
     Select,
     SelectContent,
@@ -9,16 +10,12 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-const listDepartaments: IdName[] = [
-    { id: 1, name: "cobranza" },
-    { id: 2, name: "sistemas" },
-    { id: 3, name: "recursos humanos" },
-    { id: 4, name: "pago a proveedores" },
-    { id: 5, name: "contabilidad" },
-    { id: 6, name: "operaciones" },
-]
+type props = {
+    departaments: IdName[];
+    selected: state<string | null>;
+}
 
-export const DepartamentsSelect = () => {
+export const DepartamentsSelect = (param: props) => {
     return (
         <Select>
             <SelectTrigger className="w-[180px]">
@@ -27,7 +24,7 @@ export const DepartamentsSelect = () => {
             <SelectContent>
                 <SelectGroup>
                     <SelectLabel>Departamentos</SelectLabel>
-                    {listDepartaments.map(departament =>
+                    {param.departaments.map(departament =>
                         <SelectItem value={departament.id.toString()}>{departament.name}</SelectItem>
                     )}
                 </SelectGroup>
