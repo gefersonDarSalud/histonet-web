@@ -21,6 +21,7 @@ import { GetPatientDataService } from "./patient/getPatientDataService";
 import { GetPatientContracts } from "./patient/getPatientContractsService";
 import { SearchVisitService } from "./visit/searchVisitService";
 import { GetPatientRelationshipService } from "./patient/getPatientRelationshipService";
+import { SetPatientData } from "./patient/setPatientDataService";
 
 type Repositories = {
     user: UserRepositoryCore;
@@ -48,6 +49,7 @@ export class ServiceContainer {
     public readonly getPatientContracts: GetPatientContracts;
     public readonly getPatientVisitContracts: GetPatientVisitContracts;
     public readonly getPatientRelationship: GetPatientRelationshipService;
+    public readonly setPatientData: SetPatientData;
 
 
 
@@ -59,15 +61,14 @@ export class ServiceContainer {
             visit: new VisitRepository(),
         }
 
+
         // user
         this.authService = new AuthService({ userRepository: this.repository.user });
 
         // visit
         this.searchVisit = new SearchVisitService(this.repository.visit);
 
-        // business 
-        console.log("service container");
-
+        // business
         this.searchBusinessService = new SearchBusinessService(this.repository.business)
         this.getBusinessDataListService = new GetBusinessDataListService(this.repository.business)
 
@@ -77,5 +78,6 @@ export class ServiceContainer {
         this.getPatientContracts = new GetPatientContracts(this.repository.patient);
         this.getPatientVisitContracts = new GetPatientVisitContracts(this.repository.patient);
         this.getPatientRelationship = new GetPatientRelationshipService(this.repository.patient);
+        this.setPatientData = new SetPatientData(this.repository.patient);
     }
 }

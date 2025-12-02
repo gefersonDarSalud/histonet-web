@@ -8,7 +8,6 @@ import type { AuthServiceResponse, UserRepository as UserRepositoryCore } from "
 export class UserRepository implements UserRepositoryCore {
     async login(credentials: { email: string; password: string; }): Promise<AuthServiceResponse> {
         const urlFull = getServerUrl('usuario/iniciar-sesion');
-        console.log(`[UserRepository] Llamando a la API: ${urlFull}`);
 
         try {
             const response = await fetch(urlFull, {

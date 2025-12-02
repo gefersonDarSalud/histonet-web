@@ -92,6 +92,20 @@ export interface PatientRelationship {
     relationship: string;
 }
 
+export interface NewPatient {
+    ci: string,
+    id_paciente: string,
+    nombre: string,
+    apellido: string,
+    fecha_nacimiento: string | null,
+    sexo: string | null,
+    tlfn: string | null,
+    email: string | null,
+    direccion: string | null,
+    co_us: string | null,
+}
+
+
 
 
 export type StatusVisit = "Ingresado" | "En Espera" | "En Consulta" | "Atendido" | "Pendiente";

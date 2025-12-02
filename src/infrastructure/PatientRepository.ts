@@ -1,4 +1,4 @@
-import type { Business, Patient, PatientContracts, PatientFull, PatientRelationship } from "#/core/entities";
+import type { Business, NewPatient, Patient, PatientContracts, PatientFull, PatientRelationship } from "#/core/entities";
 import type { PatientRepository as PatientRepositoryCore } from "#/core/repositories/patientRepository";
 import { PatientBusinessMapper, PatientContractsMapper, PatientFullMapper, PatientMapper, PatientRelationsMapper } from "#/data/mappers/patient.mappers";
 import { getServerUrl } from "#/utils/functions";
@@ -61,4 +61,29 @@ export class PatientRepository implements PatientRepositoryCore {
         return PatientRelationsMapper.fromApiArrayToDomainArray(dtos);
     }
 
+    async setData(newPatient: NewPatient): Promise<[]> {
+        const urlFull = getServerUrl('paciente');
+
+        try {
+            const response = await fetch(urlFull, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newPatient),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: 'Error de red o API desconocido.' }));
+                throw new Error(errorData.message || `Fallo en el login. Estado: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        }
+
+        catch (error) {
+            console.error('[UserRepository] Error en el intento de login:', error);
+            throw error;
+        }
+    }
 }
