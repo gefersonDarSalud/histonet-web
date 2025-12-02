@@ -1,16 +1,18 @@
 
-import { useState, useCallback, type DependencyList } from 'react';
+import { useState, useCallback, type DependencyList, type Dispatch, type SetStateAction } from 'react';
 
 /**
  * 📝 Interfaz Genérica para el Estado de la Operación Asíncrona
  * @template T - La estructura de datos esperada.
  * @template E - El tipo de error esperado.
  */
-interface AsyncState<T, E = Error> {
+export interface useFetchState<T, E = Error> {
     data: T | null;
     loading: boolean;
     error: E | null;
 }
+
+export type UseFetchSetState<T, E = Error> = Dispatch<SetStateAction<useFetchState<T, E>>>;
 
 /**
  * 💡 Hook Personalizado Avanzado para gestionar el estado de un servicio asíncrono.
@@ -28,9 +30,7 @@ export function useFetch<T, A extends any[] = [], E = Error>(
     deps: DependencyList,
     initialLoading: boolean = false
 ) {
-    console.log("useFetch");
-
-    const [state, setState] = useState<AsyncState<T, E>>({
+    const [state, setState] = useState<useFetchState<T, E>>({
         data: null,
         loading: initialLoading,
         error: null,
@@ -80,5 +80,5 @@ export function useFetch<T, A extends any[] = [], E = Error>(
     );
 
     // Exponer el estado y la función de ejecución memoizada
-    return { ...state, execute };
+    return { ...state, execute, set: setState as Dispatch<SetStateAction<useFetchState<T, E>>> };
 }

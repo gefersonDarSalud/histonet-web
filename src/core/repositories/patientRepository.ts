@@ -1,4 +1,4 @@
-import type { Business, Patient, PatientContracts, PatientFull } from "../entities";
+import type { Business, Patient, PatientContracts, PatientFull, PatientRelationship } from "../entities";
 
 export interface PatientRepository {
 
@@ -19,4 +19,6 @@ export interface PatientRepository {
     getData(patient: { id: string; }): Promise<PatientFull>;
 
     getContracts(patient: { id: string; }): Promise<PatientContracts[]>;
+
+    getRelationship(patient: string, list: 'BENEFICIARIO' | 'TITULAR'): Promise<PatientRelationship[]>
 }

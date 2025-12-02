@@ -1,8 +1,8 @@
-import type { Business, Patient, PatientContracts, PatientFull } from "#/core/entities";
+import type { Business, Patient, PatientContracts, PatientFull, PatientRelationship } from "#/core/entities";
 import type { PatientRepository as PatientRepositoryCore } from "#/core/repositories/patientRepository";
-import { PatientBusinessMapper, PatientContractsMapper, PatientFullMapper, PatientMapper } from "#/data/mappers/patient.mappers";
+import { PatientBusinessMapper, PatientContractsMapper, PatientFullMapper, PatientMapper, PatientRelationsMapper } from "#/data/mappers/patient.mappers";
 import { getServerUrl } from "#/utils/functions";
-import type { PatientContractsApiDto, PatientFullApiDto } from "#/utils/types";
+import type { PatientContractsApiDto, PatientFullApiDto, PatientRelationshipApiDto } from "#/utils/types";
 
 export class PatientRepository implements PatientRepositoryCore {
     async search(params: { id?: string, fullname?: string }): Promise<Patient[]> {
@@ -48,4 +48,18 @@ export class PatientRepository implements PatientRepositoryCore {
         const dtos = await response.json() as PatientContractsApiDto[];
         return PatientContractsMapper.fromApiArrayToDomainArray(dtos);
     }
+
+    async getRelationship(patient: string, list: "BENEFICIARIO" | "TITULAR"): Promise<PatientRelationship[]> {
+        const urlFull = getServerUrl(`paciente/${patient}/relacion`, { lista: list });
+        // paciente/859/relacion?lista=TITULAR
+        const response = await fetch(urlFull)
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: Fallo al buscar las relaciones del paciente`);
+        }
+        const dtos = await response.json() as PatientRelationshipApiDto[];
+        console.log("dtos", dtos);
+
+        return PatientRelationsMapper.fromApiArrayToDomainArray(dtos);
+    }
+
 }

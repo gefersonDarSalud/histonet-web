@@ -12,6 +12,7 @@ import type { state } from "#/utils/types";
 import { useServices } from "#/hooks/useServices";
 import { PatientProfileForm } from "../components/patientProfileForm";
 import { Business } from "../components/business";
+import { RelationshipForm } from "../components/relationshipForm";
 
 export const PatientProfile = () => {
     const { getPatientDataService } = useServices();
@@ -48,7 +49,7 @@ export const PatientProfile = () => {
         finally {
             setIsLoading(false);
         }
-    }, [patientDefault])
+    }, [patientDefault, getPatientDataService])
 
     useEffect(() => {
         if (patientId) {
@@ -84,7 +85,7 @@ export const PatientProfile = () => {
                         <Business patient={patientId ?? ''} />
                     </TabsContent>
                     <TabsContent value="relationship">
-                        <p>relationship</p>
+                        <RelationshipForm id_patient={patientId} />
                     </TabsContent>
                 </Tabs>
             </div>

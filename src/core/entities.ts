@@ -83,6 +83,15 @@ export interface PatientContracts {
     feeSchedule: IdName,
 }
 
+export interface PatientRelationship {
+    id_patient: string;
+    fullname: string;
+    id_relationship: string;
+    relationship: string;
+}
+
+
+
 export type StatusVisit = "Ingresado" | "En Espera" | "En Consulta" | "Atendido" | "Pendiente";
 
 export type TypeVisit = 'asegurado' | 'afiliado' | 'particular'

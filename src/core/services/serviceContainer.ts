@@ -20,6 +20,7 @@ import { SearchPatientsService } from "./patient/searchPatientservice";
 import { GetPatientDataService } from "./patient/getPatientDataService";
 import { GetPatientContracts } from "./patient/getPatientContractsService";
 import { SearchVisitService } from "./visit/searchVisitService";
+import { GetPatientRelationshipService } from "./patient/getPatientRelationshipService";
 
 type Repositories = {
     user: UserRepositoryCore;
@@ -46,6 +47,7 @@ export class ServiceContainer {
     public readonly getPatientDataService: GetPatientDataService;
     public readonly getPatientContracts: GetPatientContracts;
     public readonly getPatientVisitContracts: GetPatientVisitContracts;
+    public readonly getPatientRelationship: GetPatientRelationshipService;
 
 
 
@@ -74,5 +76,6 @@ export class ServiceContainer {
         this.getPatientDataService = new GetPatientDataService(this.repository.patient);
         this.getPatientContracts = new GetPatientContracts(this.repository.patient);
         this.getPatientVisitContracts = new GetPatientVisitContracts(this.repository.patient);
+        this.getPatientRelationship = new GetPatientRelationshipService(this.repository.patient);
     }
 }
