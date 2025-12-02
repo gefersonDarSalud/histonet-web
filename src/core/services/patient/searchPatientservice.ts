@@ -10,7 +10,7 @@ export class SearchPatientsService {
         this.repository = repository;
     }
 
-    async execute(TextSearched: string): Promise<Patient[]> {
+    execute = async (TextSearched: string): Promise<Patient[]> => {
         const fullNameTerms: string[] = [];
         let id = '';
         let fullname = '';

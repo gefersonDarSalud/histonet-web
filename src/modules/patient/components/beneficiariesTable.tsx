@@ -65,7 +65,7 @@ export const BeneficiariesTable = ({ beneficiaries, isLoading }: props) => {
                             <TableRow className="grid grid-cols-5 border-b border-gray-100 transition-colors items-center text-sm md:grid-cols-[0.5fr_2fr_1fr_0.5Fr] min-h-[60px] px-5"
                                 key={index}
                             >
-                                <TableCell className="hidden md:block text-gray-600">{beneficiaries.id_patient}</TableCell>
+                                <TableCell className="hidden md:block text-gray-600">{beneficiaries.patient_code}</TableCell>
                                 <TableCell className="text-center font-medium text-gray-900 ">{beneficiaries.fullname}</TableCell>
                                 <TableCell className="font-medium text-gray-900">{beneficiaries.relationship}</TableCell>
                                 <TableCell className="font-medium text-gray-900">

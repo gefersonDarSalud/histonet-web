@@ -68,7 +68,7 @@ export const OwnersTable = ({ owners, isLoading }: props) => {
                                     <TableRow className="grid grid-cols-5 p-4 border-b border-gray-100 transition-colors items-center text-sm md:grid-cols-[0.5fr_2fr_1fr_0.5Fr] min-h-[60px]"
                                         key={index}
                                     >
-                                        <TableCell className="hidden md:block text-gray-600">{owners.id_patient}</TableCell>
+                                        <TableCell className="hidden md:block text-gray-600">{owners.patient_code}</TableCell>
                                         <TableCell className="md:col-span-1 font-medium text-gray-900 pl-4 text-center">{owners.fullname}</TableCell>
                                         <TableCell className="md:col-span-1 font-medium text-gray-900 pl-4">{owners.relationship}</TableCell>
                                         <TableCell className="font-medium text-gray-900">

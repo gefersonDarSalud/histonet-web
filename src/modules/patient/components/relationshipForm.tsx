@@ -1,6 +1,6 @@
 import {
     Card,
-    // CardAction,
+    CardAction,
     CardContent,
     CardDescription,
     CardFooter,
@@ -14,6 +14,7 @@ import { useFetch } from "#/hooks/useFetch"
 import { useServices } from "#/hooks/useServices"
 import type { PatientRelationship } from "#/core/entities"
 import { useEffect } from "react"
+import { AddRelationshipModal } from "./AddRelationshipModal"
 
 export type beneficiariesType = { patient: string; list: 'BENEFICIARIO'; }
 export type ownersType = { patient: string; list: 'TITULAR'; }
@@ -45,6 +46,37 @@ export const RelationshipForm = ({ id_patient }: props) => {
         PatientRelationship[], ownersType[]
     >(getPatientRelationship.execute, []);
 
+    // const handleAddRelationship = (
+    //     patient: { patient_code: string, id_patient: string, fullname: string },
+    //     relationshipName: string,
+    //     type: 'TITULAR' | 'BENEFICIARIO'
+    // ) => {
+    //     // Crear el nuevo objeto PatientRelationship
+    //     const newRelationship: PatientRelationship = {
+    //         patient_code: patient.patient_code,
+    //         id_patient: patient.id_patient,
+    //         fullname: patient.fullname,
+    //         id_client: id_patient || "temp-client-id", // Usar el id_patient del paciente actual
+    //         id_relationship: relationshipName.toLowerCase(), // Usar el nombre de parentesco como ID temporal
+    //         relationship: relationshipName,
+    //     };
+
+    //     if (type === 'BENEFICIARIO') {
+    //         setGroupBeneficiaries((prev) => ({
+    //             ...prev,
+    //             data: prev.data ? [...prev.data, newRelationship] : [newRelationship],
+    //         }));
+    //     } else {
+    //         setGroupOwners((prev) => ({
+    //             ...prev,
+    //             data: prev.data ? [...prev.data, newRelationship] : [newRelationship],
+    //         }));
+    //     }
+
+    //     // NOTA: En un caso real, aquí deberías llamar a un servicio de guardado (API)
+    //     // y luego actualizar el estado si la llamada es exitosa.
+    // };
+
     useEffect(
         () => { if (id_patient) beneficiariesFetch({ patient: id_patient, list: 'BENEFICIARIO' }) },
         [id_patient, beneficiariesFetch]
@@ -55,14 +87,16 @@ export const RelationshipForm = ({ id_patient }: props) => {
         [id_patient, ownerFetch]
     );
 
-    console.log("owners:", owners);
-
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Beneficiarios y Titulares</CardTitle>
                 <CardDescription>Lista de los beneficiarios y titulares del paciente actual</CardDescription>
-                {/* <CardAction>Card Action</CardAction> */}
+                <CardAction>
+                    <AddRelationshipModal
+                        triggerText="Agregar Paciente"
+                    />
+                </CardAction>
             </CardHeader>
             <CardContent>
                 <div className="flex justify-between flex-col gap-3">

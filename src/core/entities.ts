@@ -84,7 +84,9 @@ export interface PatientContracts {
 }
 
 export interface PatientRelationship {
+    patient_code: string;
     id_patient: string;
+    id_client: string,
     fullname: string;
     id_relationship: string;
     relationship: string;

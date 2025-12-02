@@ -57,7 +57,6 @@ export class PatientRepository implements PatientRepositoryCore {
             throw new Error(`Error ${response.status}: Fallo al buscar las relaciones del paciente`);
         }
         const dtos = await response.json() as PatientRelationshipApiDto[];
-        console.log("dtos", dtos);
 
         return PatientRelationsMapper.fromApiArrayToDomainArray(dtos);
     }

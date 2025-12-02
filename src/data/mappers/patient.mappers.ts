@@ -71,7 +71,6 @@ export const PatientFullMapper: Mapper<PatientFullApiDto, PatientFull> = {
 
 export const PatientContractsMapper: Mapper<PatientContractsApiDto, PatientContracts> = {
     fromApiToDomain(dto: PatientContractsApiDto): PatientContracts {
-        console.log("dto:", dto);
 
         return {
             row: dto.id,
@@ -100,8 +99,11 @@ export const PatientContractsMapper: Mapper<PatientContractsApiDto, PatientContr
 
 export const PatientRelationsMapper: Mapper<PatientRelationshipApiDto, PatientRelationship> = {
     fromApiToDomain(dto: PatientRelationshipApiDto): PatientRelationship {
+
         return {
-            id_patient: dto.ID,
+            id_patient: dto.id_paciente,
+            id_client: dto.id_cliente,
+            patient_code: dto.cedula,
             fullname: dto.nombre,
             id_relationship: dto.id_parentesco,
             relationship: dto.parentesco,
