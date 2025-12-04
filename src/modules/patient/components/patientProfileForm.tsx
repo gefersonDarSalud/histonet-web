@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { CalendarComponent } from "./calendar";
 import { Loading } from "@/components/app/loading";
 import { Card } from "@/components/ui/card";
+import { useServices } from "#/hooks/useServices";
 
 export type PatientProfileFormValues = z.infer<typeof patientProfileSchema>;
 
@@ -26,6 +27,7 @@ export interface PatientProfileFormProps {
     patientState: state<PatientFull>;
     isNewPatient: boolean;
     isLoading: boolean;
+    patientId: string | null;
 }
 
 const patientProfileSchema = z.object({
@@ -53,9 +55,10 @@ const emptyDefaults: Partial<PatientProfileFormValues> = {
     gender: undefined,
 };
 
-const genders = ["Masculino", "Femenino", "Otro"];
+const genders = ["Masculino", "Femenino"];
 
-export const PatientProfileForm = ({ patientState, isNewPatient, isLoading }: PatientProfileFormProps) => {
+export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, patientId }: PatientProfileFormProps) => {
+    const { setPatientData } = useServices();
 
     const { toast, message } = useToast();
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -77,14 +80,24 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading }: Pa
         form.reset(mapPatientToFormValues(initialValues));
     }, [initialValues, form]);
 
-    const onSubmit = (data: PatientProfileFormValues) => {
-        console.log("Datos del Formulario Validados:", data);
-        toast({
-            title: "Éxito",
-            description: `Paciente ${isNewPatient ? 'creado' : 'actualizado'} con éxito.`,
-            variant: "success"
-        });
-        return new Promise(resolve => setTimeout(resolve, 1000));
+    const onSubmit = async (data: PatientProfileFormValues) => {
+        try {
+            const result = await setPatientData.execute(patientId, data)
+            if (result.status !== 1) throw new Error("Algo salio mal");
+            toast({
+                title: "Éxito",
+                description: `${result.resultado}`,
+                variant: "success"
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                toast({
+                    title: "Error",
+                    description: `${e.message}`,
+                    variant: "destructive"
+                });
+            }
+        }
     };
 
     const handleDelete = () => {
@@ -180,7 +193,7 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading }: Pa
                                             <Field className="">
                                                 <FieldLabel>Cédula</FieldLabel>
                                                 <FieldContent>
-                                                    <Input placeholder="Ej. 12345678" {...field} />
+                                                    <Input placeholder="Ej. V12345678" {...field} />
                                                 </FieldContent>
                                                 {fieldState.error && (<FieldError errors={[fieldState.error]} />)}
                                             </Field>

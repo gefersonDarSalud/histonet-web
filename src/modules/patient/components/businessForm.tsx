@@ -18,11 +18,15 @@ type BusinessFormProps = {
     patient: string,
 }
 
-export const Business = ({ patient }: BusinessFormProps) => {
+export const BusinessForm = ({ patient }: BusinessFormProps) => {
     const { getPatientContracts } = useServices();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [listBusiness, setListBusiness] = useState<PatientContracts[]>([]);
     const [searchBusiness, setSearchBusiness] = useState<string>("");
+
+    const deleteBusinessContract = useCallback((contractRow: number) => {
+        setListBusiness(prevList => prevList.filter(contract => contract.row !== contractRow));
+    }, []);
 
     const filteredListBusiness = useMemo(() => listBusiness.filter(business => {
         const businessName = business.business.name;
@@ -76,12 +80,21 @@ export const Business = ({ patient }: BusinessFormProps) => {
                         <p>Cargando...</p>
                         :
                         filteredListBusiness.map(business => (
-                            <BusinessCard business={business.business} insurance={business.insurance} />
+                            <BusinessCard
+                                key={business.row} // Usar el ID único como key
+                                row={business.row} // 🚨 Pasar el ID único
+                                business={business.business}
+                                insurance={business.insurance}
+                                onDelete={deleteBusinessContract}
+                            />
                         ))
                 }
             </div>
             <Separator className='my-5' />
-            <BusinessFormAdd onSubmit={() => { }} />
+            <BusinessFormAdd patientId={patient} listBusiness={{
+                set: setListBusiness,
+                value: listBusiness
+            }} />
         </>
     );
 };

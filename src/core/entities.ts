@@ -19,9 +19,9 @@ export interface Mapper<Param, Return> {
 }
 
 export interface Business {
-    id: string;
+    id: string | number;
     name: string;
-    code: string;
+    code?: string;
     insurances?: {
         id: string;
         name: string;
@@ -71,7 +71,7 @@ export interface Visit {
 }
 
 export type IdName = {
-    id: number;
+    id: number | string;
     name: string;
 }
 
@@ -94,19 +94,37 @@ export interface PatientRelationship {
 
 export interface NewPatient {
     ci: string,
-    id_paciente: string,
+    id_paciente: string | null,
     nombre: string,
     apellido: string,
     fecha_nacimiento: string | null,
     sexo: string | null,
-    tlfn: string | null,
+    tlf: string | null,
     email: string | null,
     direccion: string | null,
     co_us: string | null,
 }
 
+export interface NewContracts {
+    id_paciente: string,
+    id_empresa: string,
+    id_baremo: string,
+    id_dependencia: string | null;
+    id_aseguradora: string | null,
+    CO_US: string | null,
+}
 
+export interface DeleteContracts {
+    id_paciente: string,
+    id_empresa: string,
+    id_aseguradora: string | null,
+    CO_US: string | null,
+}
 
+export type Response = {
+    status: number;
+    resultado: string;
+}
 
 export type StatusVisit = "Ingresado" | "En Espera" | "En Consulta" | "Atendido" | "Pendiente";
 

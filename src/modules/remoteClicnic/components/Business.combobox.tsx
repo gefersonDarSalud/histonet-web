@@ -21,25 +21,35 @@ import type { state } from "#/utils/types"
 
 interface BusinessComboboxProps {
     listBusiness: Business[];
-    businessId: state<string | null>;
-    businessObject?: Business | undefined;
+    value: Business | undefined;
+    onChange: (value: Business | null) => void;
+    onBlur: () => void;
     disabled?: boolean;
     text?: state<string>;
     isLoading?: boolean;
 }
 
-export const BusinessCombobox = ({ listBusiness, businessId, disabled = false, businessObject, text }: BusinessComboboxProps) => {
+export const BusinessCombobox = ({ listBusiness, value, onChange, disabled = false, text, onBlur }: BusinessComboboxProps) => {
     const [open, setOpen] = React.useState(false)
 
     const commandItemHandler = (currentBusiness: string) => {
-        const selected = listBusiness.find(b => b.id.toLowerCase() === currentBusiness.toLowerCase());
-        if (selected) businessId.set(selected.id === businessId.value ? "" : selected.id);
-        else businessId.set("");
+        const selected = listBusiness.find(b => b.id.toString().toLowerCase() === currentBusiness.toLowerCase());
+        if (selected) onChange(value && value.id === selected.id ? null : selected);
+        else onChange(null);
         setOpen(false)
     }
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover
+            open={open}
+            onOpenChange={(newOpen) => {
+                setOpen(newOpen);
+                if (!newOpen) {
+                    // Llamar a onBlur cuando se cierra el combobox
+                    onBlur?.();
+                }
+            }}
+        >
             <PopoverTrigger asChild >
                 <Button
                     variant="outline"
@@ -48,8 +58,8 @@ export const BusinessCombobox = ({ listBusiness, businessId, disabled = false, b
                     className="w-[200px] justify-between"
                     disabled={disabled}
                 >
-                    {businessObject
-                        ? businessObject.name
+                    {value
+                        ? value.name
                         : "Selecciona la empresa..."}
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
@@ -68,11 +78,11 @@ export const BusinessCombobox = ({ listBusiness, businessId, disabled = false, b
                             {listBusiness.map((business) =>
                                 <CommandItem
                                     key={`${business.id}`}
-                                    value={business.id}
+                                    value={business.id.toString()}
                                     onSelect={commandItemHandler}
                                 >
                                     {business.name}
-                                    <Check className={cn("ml-auto", businessId.value === business.id ? "opacity-100" : "opacity-0")} />
+                                    <Check className={cn("ml-auto", value && value.id === business.id ? "opacity-100" : "opacity-0")} />
                                 </CommandItem>
                             )
                             }
