@@ -5,10 +5,16 @@ import { AlertCircleIcon, CheckCircle2Icon, X } from "lucide-react";
 export type Message = {
     title: string;
     description?: string;
-    variant: 'default' | 'destructive';
+    variant: 'default' | 'destructive' | "success" | "warning" | "info";
 };
 
 export const AppAlert = ({ message, onClose }: { message: Message, onClose: () => void }) => {
+    const finalAlertVariant = useMemo(() => {
+        if (message.variant === "success" || message.variant === "warning" || message.variant === "info") {
+            return "default";
+        }
+        return message.variant;
+    }, [message.variant]);
 
     const Icon = useMemo(() => {
         return message.variant === 'default' ? CheckCircle2Icon : AlertCircleIcon;
@@ -19,7 +25,7 @@ export const AppAlert = ({ message, onClose }: { message: Message, onClose: () =
 
     return (
         <div className="fixed bottom-4 right-4 z-50 transition-transform duration-300">
-            <Alert variant={message.variant} className="min-w-[300px] max-w-sm shadow-xl">
+            <Alert variant={finalAlertVariant} className="min-w-[300px] max-w-sm shadow-xl">
                 <Icon className="h-4 w-4" />
 
                 {/* Botón de cerrar */}

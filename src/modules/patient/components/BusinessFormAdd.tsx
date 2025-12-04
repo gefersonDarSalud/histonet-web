@@ -6,17 +6,14 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { BusinessCombobox } from '@/remoteClicnic/components/Business.combobox';
-import type { Business, IdName, PatientContracts } from '#/core/entities';
+import type { Business, IdName } from '#/core/entities';
 import { useServices } from '#/hooks/useServices';
 import { Select } from '@/components/app/select';
 import { useFetch } from '#/hooks/useFetch';
 import { useToast } from '@/hooks/useToast';
 import type { SetPatientContractsServiceProps } from '#/core/services/patient/setPatientContractsService';
 import { Code } from '@/components/app/code';
-import type { state } from '#/utils/types';
-// import type { FeeSchedule } from '#/core/entities';
 
-// 🚨 Paso 1: Definir el esquema para los objetos { id, name }
 const IdNameSchema = z.object({
     id: z.union([
         z.string().min(1, "El ID string es requerido."),
@@ -25,10 +22,9 @@ const IdNameSchema = z.object({
     name: z
         .string()
         .min(1, "El nombre es requerido para la selección."),
-}).nullable(); // Permitimos que sea null inicialmente o antes de seleccionar
+}).nullable();
 
 const formSchema = z.object({
-    // 🚨 CAMBIO CLAVE: Ahora esperamos el objeto completo o null
     nombreEmpresa: IdNameSchema.refine(val => val !== null, { message: "Debe seleccionar una empresa." }),
     departamento: IdNameSchema.refine(val => val !== null, { message: "Debe seleccionar un departamento." }),
     aseguradora: IdNameSchema,
@@ -40,16 +36,17 @@ type FormValues = z.infer<typeof formSchema>;
 type BusinessFormProps = {
     patientId: string;
     initialValues?: Partial<FormValues>;
-    listBusiness: state<PatientContracts[]>,
 };
 
-export const BusinessFormAdd = ({ patientId, initialValues, listBusiness }: BusinessFormProps) => {
+export const BusinessFormAdd = ({ patientId, initialValues }: BusinessFormProps) => {
     const { searchBusinessService, getBusinessDataListService, setPatientContracts } = useServices();
-    const { toast, message } = useToast();
+    const { toast } = useToast();
 
     // field
     const [isBusinessLoading, setIsBusinessLoading] = useState(false);
     const [isDepartamentLoading, setIsDepartamentLoading] = useState(false);
+    console.log(isDepartamentLoading);
+
     const [businessList, setBusinessList] = useState<Business[]>([]);
     const [departamentList, setDepartamentList] = useState<IdName[]>([]);
 
@@ -79,10 +76,10 @@ export const BusinessFormAdd = ({ patientId, initialValues, listBusiness }: Busi
             baremo: null,
         },
     });
-    const { watch, resetField } = form; // 🚨 Desestructurar resetField
+    const { resetField } = form; // 🚨 Desestructurar resetField
 
     const selectedBusinessObject = form.watch('nombreEmpresa');
-    const selectedDepartamentObject = form.watch('departamento');
+    // const selectedDepartamentObject = form.watch('departamento');
 
     const selectedBusinessId = selectedBusinessObject ? selectedBusinessObject.id : null;
 
@@ -134,17 +131,17 @@ export const BusinessFormAdd = ({ patientId, initialValues, listBusiness }: Busi
     );
 
     useEffect(
-        () => { if (selectedBusinessId) fetchDataDepartamentList(selectedBusinessId) },
+        () => { if (selectedBusinessId) fetchDataDepartamentList(selectedBusinessId.toString()) },
         [fetchDataDepartamentList, selectedBusinessId]
     );
 
     useEffect(
-        () => { if (selectedBusinessId) insuranceListFetch({ id: selectedBusinessId, list: 'ASEGURADORA' }) },
+        () => { if (selectedBusinessId) insuranceListFetch({ id: selectedBusinessId.toString(), list: 'ASEGURADORA' }) },
         [insuranceListFetch, selectedBusinessId]
     )
 
     useEffect(
-        () => { if (selectedBusinessId) feeeScheduleListFetch({ id: selectedBusinessId, list: 'BAREMO' }) },
+        () => { if (selectedBusinessId) feeeScheduleListFetch({ id: selectedBusinessId.toString(), list: 'BAREMO' }) },
         [feeeScheduleListFetch, selectedBusinessId]
     )
 

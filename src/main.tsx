@@ -6,17 +6,29 @@ import { useAuth } from '@/auth/hooks/useAuth.ts';
 import { AuthProvider } from '@/auth/components/authProvider.tsx';
 import { ServiceProvider } from './serviceProvider.tsx';
 import { AppAlert } from '@/components/app/appAlert.tsx';
+import { useToast } from '@/hooks/useToast.tsx';
+import { ToastProvider } from './hooks/toastProvider.tsx';
 
 const RootApp = () => {
-    const { message, setMessage } = useAuth();
-    const handleCloseAlert = useCallback(() => setMessage(null), [setMessage]);
+    const { message: authMessage, setMessage: setAuthMessage } = useAuth();
+    const { message: toastMessage, setMessage: setToastMessage } = useToast();
+    const authHandleCloseAlert = useCallback(() => setAuthMessage(null), [setAuthMessage]);
+    const toastHandleCloseAlert = useCallback(() => setToastMessage(null), [setToastMessage]);
+
     return (
         <StrictMode>
             <RouterProvider router={router} />
-            {message && (
+            {authMessage && (
                 <AppAlert
-                    message={message}
-                    onClose={handleCloseAlert}
+                    message={authMessage}
+                    onClose={authHandleCloseAlert}
+                />
+            )}
+
+            {toastMessage && (
+                <AppAlert
+                    message={toastMessage}
+                    onClose={toastHandleCloseAlert}
                 />
             )}
         </StrictMode>
@@ -27,7 +39,9 @@ const RootApp = () => {
 const AppWrapper = () => (
     <ServiceProvider>
         <AuthProvider>
-            <RootApp />
+            <ToastProvider>
+                <RootApp />
+            </ToastProvider>
         </AuthProvider>
     </ServiceProvider>
 );

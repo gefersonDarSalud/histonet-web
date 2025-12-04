@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import * as z from 'zod';
-import { Upload, Calendar, X, Save, CheckCircle } from 'lucide-react';
+import { Upload, Calendar, X, Save } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { PatientFull } from "#/core/entities";
@@ -60,7 +60,7 @@ const genders = ["Masculino", "Femenino"];
 export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, patientId }: PatientProfileFormProps) => {
     const { setPatientData } = useServices();
 
-    const { toast, message } = useToast();
+    const { toast } = useToast();
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const initialValues = useMemo(() => {
@@ -132,15 +132,6 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
                 title="Confirmar Eliminación"
                 message="¿Está seguro que desea eliminar este paciente? Esta acción no se puede deshacer y eliminará permanentemente todos sus registros."
             />
-
-            {message && message !== null && message.description !== '' && (
-                <div className={cn("fixed bottom-4 right-4 p-4 rounded-lg shadow-xl flex items-center z-50 transition-transform duration-300",
-                    message.variant === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                )}>
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    <span className="font-semibold">{message.title}</span> {message.description}
-                </div>
-            )}
 
             <Card>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="">

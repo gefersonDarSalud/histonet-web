@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/useToast';
 
 type BusinessFormProps = {
-    patient: string,
+    patient: string | number,
 }
 
 export const BusinessForm = ({ patient }: BusinessFormProps) => {
@@ -23,7 +23,7 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
         setIsLoading(true);
         const { business, insurance, row: contractRow } = contract;
         try {
-            const response = await deletePatientContracts.execute(patient, {
+            const response = await deletePatientContracts.execute(patient.toString(), {
                 business: business.id.toString(),
                 insurance: insurance.id.toString(),
             });
@@ -67,10 +67,10 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
         return resultBusiness || resultInsurance;
     }), [listBusiness, searchBusiness]);
 
-    const fetchData = useCallback(async (patient_id: string) => {
+    const fetchData = useCallback(async (patient_id: string | number) => {
         setIsLoading(true);
         try {
-            const results: PatientContracts[] = await getPatientContracts.execute(patient_id);
+            const results: PatientContracts[] = await getPatientContracts.execute(patient_id.toString());
             setListBusiness(results);
         }
         catch (error) {
@@ -85,6 +85,8 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
     useEffect(() => {
         fetchData(patient);
     }, [fetchData, patient])
+
+
 
     return (
         <>
@@ -114,10 +116,7 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
                 }
             </div>
             <Separator className='my-5' />
-            <BusinessFormAdd patientId={patient} listBusiness={{
-                set: setListBusiness,
-                value: listBusiness
-            }} />
+            <BusinessFormAdd patientId={patient.toString()} />
         </>
     );
 };
