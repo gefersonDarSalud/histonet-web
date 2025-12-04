@@ -46,8 +46,6 @@ export const InsuranceType = ({ list, state, selectedInsurance, className, selfB
                 <SelectGroup>
                     <SelectLabel>Aseguradora</SelectLabel>
                     {list.map((insurance, index) => {
-                        console.log(insurance);
-
                         return (<SelectItem key={index} value={String(insurance.id) ? String(insurance.id) : ''}>
                             {insurance.name ? insurance.name.charAt(0).toUpperCase() + insurance.name.slice(1) : selfBusiness.name}
                         </SelectItem>)

@@ -79,8 +79,8 @@ export const PatientContractsMapper: Mapper<PatientContractsApiDto, PatientContr
                 name: dto.empresa,
             },
             insurance: {
-                id: dto.id_aseguradora,
-                name: dto.aseguradora,
+                id: dto.id_aseguradora ?? '',
+                name: dto.aseguradora ?? '',
             },
             departament: {
                 id: dto.id_dependencia,

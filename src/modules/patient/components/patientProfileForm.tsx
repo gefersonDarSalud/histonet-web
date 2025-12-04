@@ -105,7 +105,6 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
     };
 
     const confirmDeletion = () => {
-        console.log(`Paciente ${patientState.value?.code || 'NUEVO'} eliminado.`);
         setIsConfirmModalOpen(false);
         toast({
             title: "Eliminado",

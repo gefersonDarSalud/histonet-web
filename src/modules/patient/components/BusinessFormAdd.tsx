@@ -86,9 +86,6 @@ export const BusinessFormAdd = ({ patientId, initialValues, listBusiness }: Busi
 
     const selectedBusinessId = selectedBusinessObject ? selectedBusinessObject.id : null;
 
-    const addBusinessToList = (data: FormValues) => {
-        listBusiness.value
-    }
 
     const fetchDataBusinessList = useCallback(async (text: string) => {
         try {
@@ -181,7 +178,6 @@ export const BusinessFormAdd = ({ patientId, initialValues, listBusiness }: Busi
     };
 
     const handlerOnSubmit = (data: FormValues) => {
-        console.log("Datos enviados:", data);
         onSubmit(data)
         setSubmissionData(data);
     }

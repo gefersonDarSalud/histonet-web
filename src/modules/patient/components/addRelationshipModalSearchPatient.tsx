@@ -29,14 +29,9 @@ interface props {
 }
 // selectedList.id === selected.value.id_patient ? "" : selectedList.id
 export const AddRelationshipModalSearchPatient = ({ list, selected, disabled = false, text, patient }: props) => {
-    console.log("patient", patient);
-    console.log("selected", selected);
-
     const [open, setOpen] = useState(false);
-
     const commandItemHandler = (currentPatient: string) => {
         const selectedList = list.find(p => p.id.toLowerCase() === currentPatient.toLowerCase());
-        console.log("selectedList: ", selectedList);
         if (selectedList) selected.set(selectedList.id === selected.value ? "" : selectedList.id);
         else selected.set(null);
         setOpen(false)

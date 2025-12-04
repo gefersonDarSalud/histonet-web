@@ -16,7 +16,6 @@ export class AuthService implements IService<AuthServiceProps, AuthServiceRespon
 
     constructor({ userRepository }: AuthServiceDependencies) {
         this.userRepository = userRepository;
-        console.log("AuthService inicializado.");
     }
 
     async execute({ email, password }: AuthServiceProps): Promise<AuthServiceResponse> {

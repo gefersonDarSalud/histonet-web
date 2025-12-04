@@ -65,7 +65,6 @@ export const Header = ({ activePath }: HeaderProps): React.ReactElement => {
                                     key={item.name}
                                     href={item.path}
                                     onClick={(e) => {
-                                        console.log(item);
                                         e.preventDefault();
                                         onNavigate(item.path);
                                     }}

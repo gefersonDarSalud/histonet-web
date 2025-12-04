@@ -6,27 +6,54 @@ import { BusinessCard } from './businessCard';
 import { Input } from '@/components/ui/input';
 import { BusinessFormAdd } from './BusinessFormAdd';
 import { Separator } from '@/components/ui/separator';
-
-// const initialsValue = {
-//     nombreEmpresa: '',
-//     departamento: '',
-//     aseguradora: '',
-//     baremo: {},
-// }
+import { useToast } from '@/hooks/useToast';
 
 type BusinessFormProps = {
     patient: string,
 }
 
 export const BusinessForm = ({ patient }: BusinessFormProps) => {
-    const { getPatientContracts } = useServices();
+    const { getPatientContracts, deletePatientContracts } = useServices();
+    const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [listBusiness, setListBusiness] = useState<PatientContracts[]>([]);
     const [searchBusiness, setSearchBusiness] = useState<string>("");
 
-    const deleteBusinessContract = useCallback((contractRow: number) => {
-        setListBusiness(prevList => prevList.filter(contract => contract.row !== contractRow));
-    }, []);
+    const deleteBusinessContract = useCallback(async (contract: PatientContracts) => {
+        setIsLoading(true);
+        const { business, insurance, row: contractRow } = contract;
+        try {
+            const response = await deletePatientContracts.execute(patient, {
+                business: business.id.toString(),
+                insurance: insurance.id.toString(),
+            });
+            if (response.status !== 1) {
+                return toast({
+                    title: "Error:",
+                    description: `No se ha podido eliminar la empresa. ${response.resultado}`,
+                    variant: "destructive"
+                });
+            }
+            setListBusiness(prevList => prevList.filter(c => c.row !== contractRow));
+            toast({
+                title: "Completado",
+                description: `Se ha eliminado la empresa. ${response.resultado}`,
+                variant: "success"
+            });
+        }
+
+        catch (error) {
+            console.error("Error al eliminar contrato:", error);
+            toast({
+                title: "Error del sistema:",
+                description: "Ocurrió un error inesperado al contactar con el servicio.",
+                variant: "destructive"
+            });
+        }
+        finally {
+            setIsLoading(false);
+        }
+    }, [deletePatientContracts, patient, toast]);
 
     const filteredListBusiness = useMemo(() => listBusiness.filter(business => {
         const businessName = business.business.name;
@@ -59,10 +86,6 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
         fetchData(patient);
     }, [fetchData, patient])
 
-    // function onSubmit(data: FormValues) {
-    //     console.log("Datos enviados:", data);
-    // }
-
     return (
         <>
             <div className="w-full md:max-w-md my-3 flex flex-col justify-between items-center">
@@ -79,13 +102,13 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
                     isLoading ?
                         <p>Cargando...</p>
                         :
-                        filteredListBusiness.map(business => (
+                        filteredListBusiness.map(businessContract => (
                             <BusinessCard
-                                key={business.row} // Usar el ID único como key
-                                row={business.row} // 🚨 Pasar el ID único
-                                business={business.business}
-                                insurance={business.insurance}
-                                onDelete={deleteBusinessContract}
+                                key={businessContract.row} // Usar el ID único como key
+                                contract={businessContract} // 🚨 Pasar el ID único
+                                business={businessContract.business}
+                                insurance={businessContract.insurance}
+                                onDelete={() => deleteBusinessContract(businessContract)}
                             />
                         ))
                 }

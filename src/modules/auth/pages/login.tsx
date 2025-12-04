@@ -49,7 +49,6 @@ export const Login = (): Component => {
 
         try {
             const result = await authService.execute({ email: email, password: password });
-            console.log("Login exitoso. Datos recibidos:", result);
             login(result.auth);
             setMessage(messages.sessionSuccess);
             navigate(from, { replace: true });

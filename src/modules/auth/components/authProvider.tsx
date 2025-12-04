@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
     const ACCESS_TOKEN_KEY = 'histonet_access_token';
 
     useEffect(() => {
-        console.log("Verificando sesión en localStorage...");
         const token = localStorage.getItem(ACCESS_TOKEN_KEY);
         if (token) {
             setIsLoggedIn(true);

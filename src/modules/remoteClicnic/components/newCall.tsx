@@ -58,9 +58,6 @@ export const NewCall = () => {
         const insurance = business?.insurances?.find(i => String(i.id) === String(selectedIsurance));
         const feeSchedulesInsurance = insurance?.feeSchedules;
         const feeSchedulesBusiness = business?.insurances?.find(i => typeof i.id === 'undefined')?.feeSchedules;
-        console.log("business: ", business)
-        console.log("feeSchedulesBusiness: ", feeSchedulesBusiness)
-
         return {
             insuranceName: insurance?.name ?? null,
             getFeeSchedulesInsurance: feeSchedulesInsurance,

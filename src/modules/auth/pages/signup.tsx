@@ -94,12 +94,8 @@ export const Signup = (): Component => {
         const isConfirmValid = validateConfirmation(confirmPassword, password);
 
         if (isPasswordValid && isConfirmValid && name && email) {
-            // Aquí iría la lógica de registro real
-            console.log('¡Registro exitoso!', { name, email, password });
-            // Mostrar un mensaje de éxito, limpiar formulario, o redirigir
             alert('Formulario válido. Viendo consola para datos.');
         } else {
-            // Asegurar que todos los errores se muestren si faltan campos
             console.error('El formulario contiene errores o campos vacíos.');
         }
     };

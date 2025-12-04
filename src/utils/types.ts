@@ -45,8 +45,8 @@ export type PatientContractsApiDto = {
     empresa: string,
     id_dependencia: number,
     dependecia: string,
-    id_aseguradora: number,
-    aseguradora: string,
+    id_aseguradora: number | null,
+    aseguradora: string | null,
     id_baremo: number,
     baremo: string,
 }
