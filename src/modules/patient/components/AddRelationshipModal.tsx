@@ -17,13 +17,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // import { Avatar, AvatarFallback } from '@radix-ui/react-avatar'; // Usamos Avatar para el resultado de búsqueda
 import { useFetch } from '#/hooks/useFetch';
 import { useServices } from '#/hooks/useServices';
-import type { Patient, Response } from '#/core/entities';
+import type { IdName, Patient, Response } from '#/core/entities';
 import { AddRelationshipModalSearchPatient } from './addRelationshipModalSearchPatient';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useToast } from '@/hooks/useToast';
 import type { ToastProps } from '#/hooks/toastProvider';
 import type { SetPatientRelationshipServiceProps } from '#/core/services/patient/setPatientRelationship';
-import { Code } from '@/components/app/code';
 
 interface AddRelationshipModalProps {
     triggerText: string;
@@ -53,24 +52,22 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
     const [relationshipType, setRelationshipType] = useState<'TITULAR' | 'BENEFICIARIO'>('BENEFICIARIO');
     const [isSaving, setIsSaving] = useState(false);
 
-    const { setPatientRelationship, searchPatientsService } = useServices(); // Añadimos setPatientRelationship
+    const { setPatientRelationship, searchPatientsService, getPatientRelationshipName } = useServices(); // Añadimos setPatientRelationship
     const { toast } = useToast();
 
     const { data: patientSearched, execute: patientSearchedFetch } = useFetch<Patient[], string[]>(searchPatientsService.execute, []);
-
-    // Datos simulados para el parentesco
-    const relationshipOptions = [
-        { value: 'madre', label: 'Madre' },
-        { value: 'padre', label: 'Padre' },
-        { value: 'hermano', label: 'Hermano(a)' },
-        { value: 'primo', label: 'Primo(a)' },
-        { value: 'otro', label: 'Otro' },
-    ];
+    const { data: relationshipOptions, execute: relationshipOptionsFetch } = useFetch<IdName[], []>(getPatientRelationshipName.execute, []);
 
     useEffect(
         () => { if (searchTerm !== '') patientSearchedFetch(searchTerm) },
         [patientSearchedFetch, searchTerm]
     );
+
+    useEffect(
+        () => { relationshipOptionsFetch() },
+        [relationshipOptionsFetch]
+    );
+
 
     const handleClose = () => {
         setIsOpen(false);
@@ -208,9 +205,9 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
                                 <SelectValue placeholder="Seleccione Parentesco" />
                             </SelectTrigger>
                             <SelectContent>
-                                {relationshipOptions.map(option => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                        {option.label}
+                                {(relationshipOptions ?? []).map(option => (
+                                    <SelectItem key={option.id} value={option.id.toString()}>
+                                        {option.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -226,15 +223,6 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
                     <Button type="button" onClick={handleSaveRelationship} disabled={isSaving || !selectedPatient || !relationship}>
                         {isSaving ? "Guardando..." : "Guardar"}
                     </Button>
-                    <Code data={{
-                        isOpen,
-                        searchTerm,
-                        selectedPatient,
-                        relationship,
-                        relationshipType,
-                        isSaving,
-                        patientSelected
-                    }} />
                 </DialogFooter>
             </DialogContent>
         </Dialog >

@@ -60,7 +60,7 @@ export type PatientRelationshipApiDto = {
     id_paciente: string;
     id_cliente: string;
     cedula: string;
-    nombre: string;
+    nombre_apellido: string;
     id_parentesco: string;
     parentesco: string;
 }

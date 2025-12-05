@@ -58,6 +58,9 @@ export class PatientRepository implements PatientRepositoryCore {
         }
         const dtos = await response.json() as PatientRelationshipApiDto[];
 
+        console.log(dtos);
+
+
         return PatientRelationsMapper.fromApiArrayToDomainArray(dtos);
     }
 
