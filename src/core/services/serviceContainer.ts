@@ -25,7 +25,8 @@ import { SetPatientData } from "./patient/setPatientDataService";
 import { SetPatientContractsService } from "./patient/setPatientContractsService";
 import { SetPatientRelationshipService } from "./patient/setPatientRelationship";
 import { DeletePatientContractsService } from "./patient/deletePatientContractsService";
-import { GetPatientRelationshipNameService } from "./patient/getPatientRelationshipName";
+import { GetPatientRelationshipNameService } from "./patient/getPatientRelationshipNameService";
+import { DeletePatientRelationshipService } from "./patient/deletePatientRelationship";
 
 type Repositories = {
     user: UserRepositoryCore;
@@ -58,6 +59,7 @@ export class ServiceContainer {
     public readonly setPatientContracts: SetPatientContractsService;
     public readonly setPatientRelationship: SetPatientRelationshipService;
     public readonly deletePatientContracts: DeletePatientContractsService;
+    public readonly deletePatientRelationship: DeletePatientRelationshipService;
 
 
 
@@ -90,5 +92,6 @@ export class ServiceContainer {
         this.setPatientContracts = new SetPatientContractsService(this.repository.patient);
         this.setPatientRelationship = new SetPatientRelationshipService(this.repository.patient);
         this.deletePatientContracts = new DeletePatientContractsService(this.repository.patient);
+        this.deletePatientRelationship = new DeletePatientRelationshipService(this.repository.patient);
     }
 }

@@ -17,9 +17,10 @@ type props = {
     // La prop 'beneficiaries' es ahora el objeto que contiene 'value' y 'set'
     beneficiaries: TableData;
     isLoading: boolean;
+    onDeleteBeneficiary: (beneficiary: PatientRelationship) => void;
 }
 
-export const BeneficiariesTable = ({ beneficiaries, isLoading }: props) => {
+export const BeneficiariesTable = ({ beneficiaries, isLoading, onDeleteBeneficiary }: props) => {
 
     const deleteBeneficiaries = (index: number) => {
         beneficiaries.set((prev) => {
@@ -34,7 +35,13 @@ export const BeneficiariesTable = ({ beneficiaries, isLoading }: props) => {
         })
     }
 
+    const handleClickDelete = (index: number, beneficiary: PatientRelationship) => {
+        deleteBeneficiaries(index);
+        onDeleteBeneficiary(beneficiary);
+    }
+
     const hasBeneficiaries = beneficiaries.value.length > 0;
+
     return (
         <Table className="divide-y divide-gray-100" >
             <TableHeader >
@@ -61,15 +68,15 @@ export const BeneficiariesTable = ({ beneficiaries, isLoading }: props) => {
                             </TableCell>
                         </TableRow>
                         :
-                        beneficiaries.value.map((beneficiaries, index) =>
+                        beneficiaries.value.map((beneficiary, index) =>
                             <TableRow className="grid grid-cols-5 border-b border-gray-100 transition-colors items-center text-sm md:grid-cols-[0.5fr_2fr_1fr_0.5Fr] min-h-[60px] px-5"
                                 key={index}
                             >
-                                <TableCell className="hidden md:block text-gray-600">{beneficiaries.patient_code}</TableCell>
-                                <TableCell className="text-center font-medium text-gray-900 ">{beneficiaries.fullname}</TableCell>
-                                <TableCell className="font-medium text-gray-900">{beneficiaries.relationship}</TableCell>
+                                <TableCell className="hidden md:block text-gray-600">{beneficiary.patient_code}</TableCell>
+                                <TableCell className="text-center font-medium text-gray-900 ">{beneficiary.fullname}</TableCell>
+                                <TableCell className="font-medium text-gray-900">{beneficiary.relationship}</TableCell>
                                 <TableCell className="font-medium text-gray-900">
-                                    <Button className=" hover:bg-red-100" variant={"outline"} onClick={() => deleteBeneficiaries(index)}>
+                                    <Button className=" hover:bg-red-100" variant={"outline"} onClick={() => handleClickDelete(index, beneficiary)}>
                                         <X className="text-red-400" />
                                     </Button>
                                 </TableCell>

@@ -16,9 +16,10 @@ type TableData = {
 type props = {
     owners: TableData;
     isLoading: boolean;
+    onDeleteOwner: (owner: PatientRelationship) => void;
 }
 
-export const OwnersTable = ({ owners, isLoading }: props) => {
+export const OwnersTable = ({ owners, isLoading, onDeleteOwner }: props) => {
 
     const deleteOwner = (index: number) => {
         owners.set((prev) => {
@@ -31,6 +32,13 @@ export const OwnersTable = ({ owners, isLoading }: props) => {
                 data: newData,
             };
         })
+    }
+
+    const handlerClickDelete = (index: number, owner: PatientRelationship) => {
+        deleteOwner(index);
+        console.log("owner", owner);
+
+        onDeleteOwner(owner);
     }
 
     const hasOwners = Array.isArray(owners.value) ? owners.value.length > 0 : false;
@@ -64,15 +72,15 @@ export const OwnersTable = ({ owners, isLoading }: props) => {
                         : (
                             <>
 
-                                {owners.value.map((owners, index) =>
+                                {owners.value.map((owner, index) =>
                                     <TableRow className="grid grid-cols-5 p-4 border-b border-gray-100 transition-colors items-center text-sm md:grid-cols-[0.5fr_2fr_1fr_0.5Fr] min-h-[60px]"
                                         key={index}
                                     >
-                                        <TableCell className="hidden md:block text-gray-600">{owners.patient_code}</TableCell>
-                                        <TableCell className="md:col-span-1 font-medium text-gray-900 pl-4 text-center">{owners.fullname}</TableCell>
-                                        <TableCell className="md:col-span-1 font-medium text-gray-900 pl-4">{owners.relationship}</TableCell>
+                                        <TableCell className="hidden md:block text-gray-600">{owner.patient_code}</TableCell>
+                                        <TableCell className="md:col-span-1 font-medium text-gray-900 pl-4 text-center">{owner.fullname}</TableCell>
+                                        <TableCell className="md:col-span-1 font-medium text-gray-900 pl-4">{owner.relationship}</TableCell>
                                         <TableCell className="font-medium text-gray-900">
-                                            <Button className=" hover:bg-red-100" variant={"outline"} onClick={() => deleteOwner(index)}>
+                                            <Button className=" hover:bg-red-100" variant={"outline"} onClick={() => handlerClickDelete(index, owner)}>
                                                 <X className="text-red-400" />
                                             </Button>
                                         </TableCell>

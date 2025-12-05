@@ -115,7 +115,7 @@ export const PatientRelationsMapper: Mapper<PatientRelationshipApiDto, PatientRe
 
         return {
             id_patient: dto.id_paciente,
-            id_client: dto.id_cliente,
+            id_client: dto.id_titular,
             patient_code: dto.cedula,
             fullname: dto.nombre_apellido,
             id_relationship: dto.id_parentesco,

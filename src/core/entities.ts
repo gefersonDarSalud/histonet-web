@@ -130,8 +130,7 @@ export interface DeleteContracts {
 
 export interface DeleteRelationship {
     id_paciente: string,
-    id_empresa: string,
-    id_aseguradora: string | null,
+    id_titular: string,
     CO_US: string | null,
 }
 
