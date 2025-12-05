@@ -22,7 +22,7 @@ export class SetPatientContractsService {
             id_empresa: contracts.business,
             id_dependencia: contracts.departament,
             id_baremo: contracts.feeSchedule ?? '',
-            id_aseguradora: contracts.insurance ?? '',
+            id_aseguradora: contracts.insurance,
             CO_US: 'web',
         }
         return await this.repository.setContracts(newContracts);

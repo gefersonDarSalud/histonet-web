@@ -19,6 +19,27 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
     const [listBusiness, setListBusiness] = useState<PatientContracts[]>([]);
     const [searchBusiness, setSearchBusiness] = useState<string>("");
 
+    const fetchData = useCallback(async (patient: string | number) => {
+        setIsLoading(true);
+        try {
+            const response = await getPatientContracts.execute(patient.toString());
+            setListBusiness(response);
+        } catch (error) {
+            console.error("Error al cargar contratos:", error);
+            toast({
+                title: "Error de Carga",
+                description: "No se pudieron cargar los contratos de empresa.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [getPatientContracts, toast]);
+
+    useEffect(() => {
+        fetchData(patient);
+    }, [fetchData, patient]); // Asegúrate de que fetchData esté en las dependencias
+
     const deleteBusinessContract = useCallback(async (contract: PatientContracts) => {
         setIsLoading(true);
         const { business, insurance, row: contractRow } = contract;
@@ -67,24 +88,24 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
         return resultBusiness || resultInsurance;
     }), [listBusiness, searchBusiness]);
 
-    const fetchData = useCallback(async (patient_id: string | number) => {
-        setIsLoading(true);
-        try {
-            const results: PatientContracts[] = await getPatientContracts.execute(patient_id.toString());
-            setListBusiness(results);
-        }
-        catch (error) {
-            console.error("Error al buscar pacientes:", error);
-            setListBusiness([]);
-        }
-        finally {
-            setIsLoading(false);
-        }
-    }, [getPatientContracts])
+    // const fetchData = useCallback(async (patient_id: string | number) => {
+    //     setIsLoading(true);
+    //     try {
+    //         const results: PatientContracts[] = await getPatientContracts.execute(patient_id.toString());
+    //         setListBusiness(results);
+    //     }
+    //     catch (error) {
+    //         console.error("Error al buscar pacientes:", error);
+    //         setListBusiness([]);
+    //     }
+    //     finally {
+    //         setIsLoading(false);
+    //     }
+    // }, [getPatientContracts])
 
-    useEffect(() => {
-        fetchData(patient);
-    }, [fetchData, patient])
+    // useEffect(() => {
+    //     fetchData(patient);
+    // }, [fetchData, patient])
 
 
 
@@ -116,7 +137,7 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
                 }
             </div>
             <Separator className='my-5' />
-            <BusinessFormAdd patientId={patient.toString()} />
+            <BusinessFormAdd patientId={patient.toString()} onSuccess={() => fetchData(patient)} />
         </>
     );
 };

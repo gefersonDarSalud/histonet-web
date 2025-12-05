@@ -16,7 +16,7 @@ import { RelationshipForm } from "../components/relationshipForm";
 
 export const PatientProfile = () => {
     const { getPatientDataService } = useServices();
-    const patientDefault: PatientFull = useMemo(() => ({
+    const patientDefault: PatientFull = useMemo((): PatientFull => ({
         code: '',
         firstName: null,
         lastName: null,
@@ -25,7 +25,7 @@ export const PatientProfile = () => {
         phone: null,
         address: null,
         email: null,
-    }), [])
+    } as PatientFull), [])
 
     const [isLoading, setIsLoading] = useState(false);
     const { patientId } = useParams();

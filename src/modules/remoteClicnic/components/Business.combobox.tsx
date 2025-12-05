@@ -16,12 +16,19 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import type { Business } from "#/core/entities"
+import type { Business, IdName } from "#/core/entities"
 import type { state } from "#/utils/types"
+
+type IdNameOptionalId = {
+    id?: string | number;
+    name: string;
+}
+
+type RHFValue = IdName | IdNameOptionalId | null | undefined;
 
 interface BusinessComboboxProps {
     listBusiness: Business[];
-    value: Business | undefined;
+    value: RHFValue;
     onChange: (value: Business | null) => void;
     onBlur: () => void;
     disabled?: boolean;
@@ -39,13 +46,14 @@ export const BusinessCombobox = ({ listBusiness, value, onChange, disabled = fal
         setOpen(false)
     }
 
+    const displayValue = value ? value.name : "Seleciona una empresa...";
+
     return (
         <Popover
             open={open}
             onOpenChange={(newOpen) => {
                 setOpen(newOpen);
                 if (!newOpen) {
-                    // Llamar a onBlur cuando se cierra el combobox
                     onBlur?.();
                 }
             }}
@@ -58,9 +66,7 @@ export const BusinessCombobox = ({ listBusiness, value, onChange, disabled = fal
                     className="w-[200px] justify-between"
                     disabled={disabled}
                 >
-                    {value
-                        ? value.name
-                        : "Selecciona la empresa..."}
+                    {displayValue}
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>

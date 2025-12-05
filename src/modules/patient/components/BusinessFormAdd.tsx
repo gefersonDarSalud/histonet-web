@@ -12,7 +12,7 @@ import { Select } from '@/components/app/select';
 import { useFetch } from '#/hooks/useFetch';
 import { useToast } from '@/hooks/useToast';
 import type { SetPatientContractsServiceProps } from '#/core/services/patient/setPatientContractsService';
-import { Code } from '@/components/app/code';
+// import { Code } from '@/components/app/code';
 
 const IdNameSchema = z.object({
     id: z.union([
@@ -36,16 +36,16 @@ type FormValues = z.infer<typeof formSchema>;
 type BusinessFormProps = {
     patientId: string;
     initialValues?: Partial<FormValues>;
+    onSuccess: () => void;
 };
 
-export const BusinessFormAdd = ({ patientId, initialValues }: BusinessFormProps) => {
+export const BusinessFormAdd = ({ patientId, initialValues, onSuccess }: BusinessFormProps) => {
     const { searchBusinessService, getBusinessDataListService, setPatientContracts } = useServices();
     const { toast } = useToast();
 
     // field
     const [isBusinessLoading, setIsBusinessLoading] = useState(false);
     const [isDepartamentLoading, setIsDepartamentLoading] = useState(false);
-    console.log(isDepartamentLoading);
 
     const [businessList, setBusinessList] = useState<Business[]>([]);
     const [departamentList, setDepartamentList] = useState<IdName[]>([]);
@@ -145,7 +145,7 @@ export const BusinessFormAdd = ({ patientId, initialValues }: BusinessFormProps)
         [feeeScheduleListFetch, selectedBusinessId]
     )
 
-    const onSubmit = async (data: FormValues) => {
+    const onSubmit = useCallback(async (data: FormValues) => {
         const dataMapped: SetPatientContractsServiceProps = {
             business: data.nombreEmpresa!.id.toString(),
             insurance: data.aseguradora ? data.aseguradora.id.toString() : null,
@@ -153,14 +153,20 @@ export const BusinessFormAdd = ({ patientId, initialValues }: BusinessFormProps)
             departament: data.departamento!.id.toString(),
         }
         try {
-            const result = await setPatientContracts.execute(patientId, dataMapped)
-            if (result.status !== 1) throw new Error("Algo salio mal");
+            const response = await setPatientContracts.execute(patientId, dataMapped)
+            if (response.status !== 1) return toast({
+                title: "Error al guardar:",
+                description: `No se pudo agregar la empresa. ${response.resultado}`,
+                variant: "destructive",
+            });
 
             toast({
                 title: "Éxito",
-                description: `${result.resultado}`,
+                description: `${response.resultado}`,
                 variant: "success"
             });
+            onSuccess();
+            form.reset();
         }
 
         catch (e) {
@@ -172,7 +178,7 @@ export const BusinessFormAdd = ({ patientId, initialValues }: BusinessFormProps)
                 });
             }
         }
-    };
+    }, [patientId, form, setPatientContracts, toast, onSuccess]);
 
     const handlerOnSubmit = (data: FormValues) => {
         onSubmit(data)
@@ -196,7 +202,7 @@ export const BusinessFormAdd = ({ patientId, initialValues }: BusinessFormProps)
                                 <Field data-invalid={fieldState.invalid} className=' col-span-2'>
                                     <FieldLabel htmlFor={field.name}>Nombre de la Empresa</FieldLabel>
                                     <BusinessCombobox
-                                        value={field.value ?? undefined}
+                                        value={field.value}
                                         listBusiness={businessList}
                                         disabled={isBusinessLoading}
                                         onChange={field.onChange}
@@ -271,7 +277,7 @@ export const BusinessFormAdd = ({ patientId, initialValues }: BusinessFormProps)
                         />
                     </FieldGroup>
                 </form>
-                {submissionData && <Code data={submissionData} />}
+                {/* {submissionData && <Code data={submissionData} />} */}
             </CardContent>
             <CardFooter className="justify-end space-x-2">
                 <Button type="button" variant="outline" onClick={() => form.reset()}>

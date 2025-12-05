@@ -14,16 +14,18 @@ import {
 // Asumo que IdName es { id: string | number, name: string } según tu entidad.
 type IdNameType = IdName;
 
+type IdNameOptionalId = {
+    id?: string | number;
+    name: string;
+}
+
+type RHFValue = IdNameType | IdNameOptionalId | null | undefined;
 
 type SelectProps = {
     list: IdNameType[];
     title: string;
     placeholder: string;
-
-    // 🚨 1. ACEPTAR EL VALOR ACTUAL (OBJETO COMPLETO O UNDEFINED/NULL)
-    value: IdNameType | undefined | null;
-
-    // 🚨 2. ACEPTAR EL SETTER DE RHF (DEBE REPORTAR EL OBJETO COMPLETO O UNDEFINED)
+    value: RHFValue;
     onChange: (value: IdNameType | undefined | null) => void;
     onBlur: () => void;
 }
@@ -32,22 +34,13 @@ type SelectProps = {
 export const Select = (props: SelectProps) => {
     const handleValueChange = (stringId: string) => {
         if (!stringId) {
-            // Manejar deselección (si es aplicable, aunque Select suele requerir selección)
             props.onChange(null);
             return;
         }
-
-        // 🚨 PASO CLAVE: Buscar el objeto completo que corresponde al ID string
         const selectedItem = props.list.find(item => item.id.toString() === stringId);
-
-        // 🚨 Reportar el objeto completo a React Hook Form
         props.onChange(selectedItem ?? null);
     }
-
-    // El Select de shadcn/ui (Radix) necesita un valor de string para la prop `value`.
-    // Usamos el ID del objeto completo que recibimos de RHF.
     const displayIdString = props.value ? props.value.id.toString() : '';
-
 
     return (
         <SelectComponent
