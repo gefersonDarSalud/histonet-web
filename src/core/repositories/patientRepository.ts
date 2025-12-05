@@ -1,4 +1,4 @@
-import type { Business, DeleteContracts, DeleteRelationship, NewContracts, NewPatient, NewRelationship, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "../entities";
+import type { Business, DeleteContracts, DeleteRelationship, IdName, NewContracts, NewPatient, NewRelationship, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "../entities";
 
 export interface PatientRepository {
 
@@ -21,6 +21,7 @@ export interface PatientRepository {
     getContracts(patient: { id: string; }): Promise<PatientContracts[]>;
 
     getRelationship(patient: string, list: 'BENEFICIARIO' | 'TITULAR'): Promise<PatientRelationship[]>;
+    getRelationshipName(): Promise<IdName[]>;
 
     setData(newPatient: NewPatient): Promise<Response>;
 

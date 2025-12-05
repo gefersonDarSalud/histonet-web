@@ -51,6 +51,11 @@ export type PatientContractsApiDto = {
     baremo: string,
 }
 
+export type PatientRelationshipNameApiDto = {
+    id_parentesco: string,
+    parentesco: string
+}
+
 export type PatientRelationshipApiDto = {
     id_paciente: string;
     id_cliente: string;

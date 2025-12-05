@@ -1,8 +1,8 @@
-import type { Business, DeleteContracts, DeleteRelationship, NewContracts, NewPatient, NewRelationship, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "#/core/entities";
+import type { Business, DeleteContracts, DeleteRelationship, IdName, NewContracts, NewPatient, NewRelationship, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "#/core/entities";
 import type { PatientRepository as PatientRepositoryCore } from "#/core/repositories/patientRepository";
-import { PatientBusinessMapper, PatientContractsMapper, PatientFullMapper, PatientMapper, PatientRelationsMapper } from "#/data/mappers/patient.mappers";
+import { PatientBusinessMapper, PatientContractsMapper, PatientFullMapper, PatientMapper, PatientRelationShipNameMapper, PatientRelationsMapper } from "#/data/mappers/patient.mappers";
 import { getServerUrl } from "#/utils/functions";
-import type { PatientContractsApiDto, PatientFullApiDto, PatientRelationshipApiDto } from "#/utils/types";
+import type { PatientContractsApiDto, PatientFullApiDto, PatientRelationshipApiDto, PatientRelationshipNameApiDto } from "#/utils/types";
 
 export class PatientRepository implements PatientRepositoryCore {
     async search(params: { id?: string, fullname?: string }): Promise<Patient[]> {
@@ -186,5 +186,13 @@ export class PatientRepository implements PatientRepositoryCore {
             console.error('[PatientRepository] Error en el intento de login:', error);
             throw error;
         }
+    }
+
+    async getRelationshipName(): Promise<IdName[]> {
+        const urlFull = getServerUrl('paciente/relacion/nombre');
+        const response = await fetch(urlFull)
+        if (!response.ok) throw new Error(`Error ${response.status}: Fallo al buscar las empresas`);
+        const dtos = await response.json() as PatientRelationshipNameApiDto[];
+        return PatientRelationShipNameMapper.fromApiArrayToDomainArray(dtos);
     }
 }

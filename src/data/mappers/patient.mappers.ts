@@ -1,5 +1,5 @@
-import type { Business, Mapper, Patient, PatientContracts, PatientFull, PatientRelationship } from "#/core/entities";
-import type { PatientApiDto, PatientBusinessApiDto, PatientContractsApiDto, PatientFullApiDto, PatientRelationshipApiDto } from "#/utils/types";
+import type { Business, IdName, Mapper, Patient, PatientContracts, PatientFull, PatientRelationship } from "#/core/entities";
+import type { PatientApiDto, PatientBusinessApiDto, PatientContractsApiDto, PatientFullApiDto, PatientRelationshipApiDto, PatientRelationshipNameApiDto } from "#/utils/types";
 
 
 export const PatientMapper: Mapper<PatientApiDto, Patient> = {
@@ -93,6 +93,19 @@ export const PatientContractsMapper: Mapper<PatientContractsApiDto, PatientContr
         }
     },
     fromApiArrayToDomainArray(dtos: PatientContractsApiDto[]): PatientContracts[] {
+        return dtos.map(dto => this.fromApiToDomain(dto));
+    }
+}
+
+export const PatientRelationShipNameMapper: Mapper<PatientRelationshipNameApiDto, IdName> = {
+    fromApiToDomain(dto: PatientRelationshipNameApiDto): IdName {
+        return {
+            id: dto.id_parentesco,
+            name: dto.parentesco
+        }
+    },
+
+    fromApiArrayToDomainArray(dtos: PatientRelationshipNameApiDto[]): IdName[] {
         return dtos.map(dto => this.fromApiToDomain(dto));
     }
 }
