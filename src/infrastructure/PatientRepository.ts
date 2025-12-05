@@ -1,4 +1,4 @@
-import type { Business, DeleteContracts, NewContracts, NewPatient, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "#/core/entities";
+import type { Business, DeleteContracts, DeleteRelationship, NewContracts, NewPatient, NewRelationship, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "#/core/entities";
 import type { PatientRepository as PatientRepositoryCore } from "#/core/repositories/patientRepository";
 import { PatientBusinessMapper, PatientContractsMapper, PatientFullMapper, PatientMapper, PatientRelationsMapper } from "#/data/mappers/patient.mappers";
 import { getServerUrl } from "#/utils/functions";
@@ -120,6 +120,58 @@ export class PatientRepository implements PatientRepositoryCore {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(contract),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: 'Error de red o API desconocido.' }));
+                throw new Error(errorData.message || `Fallo en el login. Estado: ${response.status}`);
+            }
+            const data = await response.json() as Response[];
+            return data[0];
+        }
+
+        catch (error) {
+            console.error('[PatientRepository] Error en el intento de login:', error);
+            throw error;
+        }
+    }
+
+    async setRelationship(newRelationship: NewRelationship): Promise<Response> {
+        const urlFull = getServerUrl('paciente/relacion');
+        console.log("newRelationship", newRelationship);
+
+        try {
+            const response = await fetch(urlFull, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newRelationship),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: 'Error de red o API desconocido.' }));
+                throw new Error(errorData.message || `Fallo en el login. Estado: ${response.status}`);
+            }
+            const data = await response.json() as Response[];
+            return data[0];
+        }
+
+        catch (error) {
+            console.error('[PatientRepository] Error en el intento de login:', error);
+            throw error;
+        }
+    }
+
+    async deleteRelationship(deleteRelationship: DeleteRelationship): Promise<Response> {
+        const urlFull = getServerUrl('paciente/relacion');
+        try {
+            const response = await fetch(urlFull, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(deleteRelationship),
             });
 
             if (!response.ok) {

@@ -114,7 +114,21 @@ export interface NewContracts {
     CO_US: string | null,
 }
 
+export interface NewRelationship {
+    id_paciente: string,
+    id_titular: string,
+    id_parentesco: string,
+    CO_US: string | null,
+}
+
 export interface DeleteContracts {
+    id_paciente: string,
+    id_empresa: string,
+    id_aseguradora: string | null,
+    CO_US: string | null,
+}
+
+export interface DeleteRelationship {
     id_paciente: string,
     id_empresa: string,
     id_aseguradora: string | null,

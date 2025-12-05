@@ -17,45 +17,46 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // import { Avatar, AvatarFallback } from '@radix-ui/react-avatar'; // Usamos Avatar para el resultado de búsqueda
 import { useFetch } from '#/hooks/useFetch';
 import { useServices } from '#/hooks/useServices';
-import type { Patient } from '#/core/entities';
+import type { Patient, Response } from '#/core/entities';
 import { AddRelationshipModalSearchPatient } from './addRelationshipModalSearchPatient';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
-
-// Interfaz para el paciente seleccionado en la búsqueda (basada en tu PatientRelationship)
-// export interface SelectedPatient {
-//     patient_code: string; // Código/Cédula
-//     id_patient: string;
-//     id_client: string;
-//     fullname: string;
-// }
+import { useToast } from '@/hooks/useToast';
+import type { ToastProps } from '#/hooks/toastProvider';
+import type { SetPatientRelationshipServiceProps } from '#/core/services/patient/setPatientRelationship';
+import { Code } from '@/components/app/code';
 
 interface AddRelationshipModalProps {
     triggerText: string;
+    mainPatientId: string;
+    onSaveSuccess: () => void;
 }
 
-export const AddRelationshipModal = ({ triggerText }: AddRelationshipModalProps): React.ReactElement => {
+const validationErrors: ToastProps[] = [
+    {
+        title: "Error de Validación",
+        description: "Debe seleccionar el beneficiario/titular y el tipo de relación.",
+        variant: 'destructive',
+    },
+    {
+        title: "Error de Validación",
+        description: "No se puede establecer una relación con el paciente actual.",
+        variant: 'destructive',
+    }
+]
 
-    // Estado del modal (abierto/cerrado)
+export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess }: AddRelationshipModalProps): React.ReactElement => {
+
     const [isOpen, setIsOpen] = useState(false);
-    // Estado para el texto de búsqueda (simulación)
     const [searchTerm, setSearchTerm] = useState('');
-    // Estado para el paciente seleccionado
     const [selectedPatient, setSelectedPatient] = useState<string | null>(null);
-    // Estado para el parentesco
     const [relationship, setRelationship] = useState<string>('');
-    // Estado para el tipo de relación a agregar
     const [relationshipType, setRelationshipType] = useState<'TITULAR' | 'BENEFICIARIO'>('BENEFICIARIO');
+    const [isSaving, setIsSaving] = useState(false);
 
-    const {
-        data: patientSearched,
-        // loading: isLoadingPatientSearched,
-        // error: beneficiariesError,
-        execute: patientSearchedFetch,
-        // set: setGrouppatientSearched,
-    } = useFetch<Patient[], string[]>(
-        useServices().searchPatientsService.execute,
-        []
-    );
+    const { setPatientRelationship, searchPatientsService } = useServices(); // Añadimos setPatientRelationship
+    const { toast } = useToast();
+
+    const { data: patientSearched, execute: patientSearchedFetch } = useFetch<Patient[], string[]>(searchPatientsService.execute, []);
 
     // Datos simulados para el parentesco
     const relationshipOptions = [
@@ -66,13 +67,67 @@ export const AddRelationshipModal = ({ triggerText }: AddRelationshipModalProps)
         { value: 'otro', label: 'Otro' },
     ];
 
-    // Función que simula la búsqueda de un paciente (basado en la imagen)
     useEffect(
-        () => {
-            if (searchTerm !== '') patientSearchedFetch(searchTerm)
-        },
+        () => { if (searchTerm !== '') patientSearchedFetch(searchTerm) },
         [patientSearchedFetch, searchTerm]
     );
+
+    const handleClose = () => {
+        setIsOpen(false);
+        setSearchTerm('');
+        setSelectedPatient(null);
+        setRelationship('');
+        setIsSaving(false); // Limpiar también el estado de guardado
+    };
+
+    const handleSaveRelationship = async () => {
+        if (!selectedPatient || !relationship) return toast(validationErrors[0]);
+        if (selectedPatient === mainPatientId) return toast(validationErrors[1]);
+
+        setIsSaving(true);
+
+        try {
+            let beneficiary: string = selectedPatient;
+            let owner: string = mainPatientId;
+            if (relationshipType === 'TITULAR') {
+                beneficiary = mainPatientId;
+                owner = selectedPatient;
+            }
+            const relationshipData: SetPatientRelationshipServiceProps = { beneficiary, owner, relationship };
+            const response: Response = await setPatientRelationship.execute(relationshipData);
+
+            // 5. Manejar la respuesta
+            if (response.status === 1) {
+                toast({
+                    title: "Éxito",
+                    description: response.resultado || "Relación guardada correctamente.",
+                    variant: 'default',
+                });
+                handleClose();
+                onSaveSuccess();
+            }
+            else {
+                toast({
+                    title: "Error al guardar",
+                    description: "Ocurrió un error al guardar la relación.",
+                    variant: 'destructive',
+                });
+            }
+        }
+
+        catch (error) {
+            console.error("Error saving relationship:", error);
+            toast({
+                title: "Error de Conexión",
+                description: "No se pudo comunicar con el servidor para guardar la relación.",
+                variant: 'destructive',
+            });
+        }
+
+        finally {
+            setIsSaving(false);
+        }
+    };
 
     const patientSelected = useMemo(() => {
         return patientSearched?.find(patient => patient.id.toLowerCase() === selectedPatient?.toLowerCase());
@@ -99,17 +154,10 @@ export const AddRelationshipModal = ({ triggerText }: AddRelationshipModalProps)
                         <FieldLabel htmlFor="search-patient" className="text-left">
                             Buscar Paciente
                         </FieldLabel>
-                        {/* <Search className="h-4 w-4 text-gray-400 absolute ml-3" /> */}
                         <AddRelationshipModalSearchPatient
-                            list={patientSearched !== null ? patientSearched : []}
-                            selected={{
-                                value: selectedPatient,
-                                set: setSelectedPatient
-                            }}
-                            text={{
-                                value: searchTerm,
-                                set: setSearchTerm,
-                            }}
+                            list={patientSearched ?? []}
+                            selected={{ value: selectedPatient, set: setSelectedPatient }}
+                            text={{ value: searchTerm, set: setSearchTerm }}
                             patient={typeof patientSelected !== 'undefined' ? patientSelected : null}
                         />
                     </Field>
@@ -132,41 +180,6 @@ export const AddRelationshipModal = ({ triggerText }: AddRelationshipModalProps)
                 </FieldGroup>
 
                 <FieldGroup className='flex-row'>
-
-                    {/* Resultado de la Búsqueda */}
-                    {/* <div className="border p-3 rounded-lg flex items-center justify-between min-h-[60px]">
-                        {selectedPatient ? (
-                            <>
-                                <div className="flex items-center space-x-3">
-                                    <Avatar>
-                                        <AvatarFallback className="bg-gray-200 p-2 rounded-full h-8 w-8 flex items-center justify-center">
-                                            {selectedPatient.fullname.slice(0, 2).toUpperCase()}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <div className="font-medium text-sm">{selectedPatient.fullname}</div>
-                                        <div className="text-xs text-gray-500">C.I. {selectedPatient.patient_code}</div>
-                                    </div>
-                                </div>
-                                <Button
-                                    size="sm"
-                                    onClick={() => handleSelectPatient(selectedPatient!)}
-                                    // Desactivamos el botón si ya está seleccionado (solo para el ejemplo)
-                                    // En la práctica real, este botón solo aparece al buscar
-                                    disabled
-                                >
-                                    Seleccionar
-                                </Button>
-                            </>
-                        ) : (
-                            // Simulación: Si hay texto de búsqueda pero no se encontró nada, mostramos un mensaje
-                            searchTerm.length > 0 ? (
-                                <span className="text-sm text-gray-500">No se encontró paciente.</span>
-                            ) : (
-                                <span className="text-sm text-gray-400">Escriba para buscar...</span>
-                            )
-                        )}
-                    </div> */}
 
                     {/* Código (Campo de solo lectura) */}
                     <Field>
@@ -207,14 +220,21 @@ export const AddRelationshipModal = ({ triggerText }: AddRelationshipModalProps)
 
                 </FieldGroup>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" onClick={handleClose}>
                         Cancelar
                     </Button>
-                    <Button
-                        type="submit"
-                    >
-                        Guardar
+                    <Button type="button" onClick={handleSaveRelationship} disabled={isSaving || !selectedPatient || !relationship}>
+                        {isSaving ? "Guardando..." : "Guardar"}
                     </Button>
+                    <Code data={{
+                        isOpen,
+                        searchTerm,
+                        selectedPatient,
+                        relationship,
+                        relationshipType,
+                        isSaving,
+                        patientSelected
+                    }} />
                 </DialogFooter>
             </DialogContent>
         </Dialog >

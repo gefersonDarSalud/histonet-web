@@ -1,4 +1,4 @@
-import type { Business, DeleteContracts, NewContracts, NewPatient, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "../entities";
+import type { Business, DeleteContracts, DeleteRelationship, NewContracts, NewPatient, NewRelationship, Patient, PatientContracts, PatientFull, PatientRelationship, Response } from "../entities";
 
 export interface PatientRepository {
 
@@ -25,6 +25,7 @@ export interface PatientRepository {
     setData(newPatient: NewPatient): Promise<Response>;
 
     setContracts(newPatient: NewContracts): Promise<Response>;
-
+    setRelationship(newPatient: NewRelationship): Promise<Response>;
     deleteContracts(contract: DeleteContracts): Promise<Response>;
+    deleteRelationship(contract: DeleteRelationship): Promise<Response>;
 }

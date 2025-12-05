@@ -1,6 +1,6 @@
 import { createContext, useState, type ReactNode } from "react";
 
-type ToastProps = {
+export type ToastProps = {
     title: string;
     description?: string;
     variant: 'default' | 'destructive' | "success" | "warning" | "info";

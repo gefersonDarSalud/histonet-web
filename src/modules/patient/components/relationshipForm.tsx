@@ -46,37 +46,6 @@ export const RelationshipForm = ({ id_patient }: props) => {
         PatientRelationship[], ownersType[]
     >(getPatientRelationship.execute, []);
 
-    // const handleAddRelationship = (
-    //     patient: { patient_code: string, id_patient: string, fullname: string },
-    //     relationshipName: string,
-    //     type: 'TITULAR' | 'BENEFICIARIO'
-    // ) => {
-    //     // Crear el nuevo objeto PatientRelationship
-    //     const newRelationship: PatientRelationship = {
-    //         patient_code: patient.patient_code,
-    //         id_patient: patient.id_patient,
-    //         fullname: patient.fullname,
-    //         id_client: id_patient || "temp-client-id", // Usar el id_patient del paciente actual
-    //         id_relationship: relationshipName.toLowerCase(), // Usar el nombre de parentesco como ID temporal
-    //         relationship: relationshipName,
-    //     };
-
-    //     if (type === 'BENEFICIARIO') {
-    //         setGroupBeneficiaries((prev) => ({
-    //             ...prev,
-    //             data: prev.data ? [...prev.data, newRelationship] : [newRelationship],
-    //         }));
-    //     } else {
-    //         setGroupOwners((prev) => ({
-    //             ...prev,
-    //             data: prev.data ? [...prev.data, newRelationship] : [newRelationship],
-    //         }));
-    //     }
-
-    //     // NOTA: En un caso real, aquí deberías llamar a un servicio de guardado (API)
-    //     // y luego actualizar el estado si la llamada es exitosa.
-    // };
-
     useEffect(
         () => { if (id_patient) beneficiariesFetch({ patient: id_patient, list: 'BENEFICIARIO' }) },
         [id_patient, beneficiariesFetch]
@@ -95,6 +64,11 @@ export const RelationshipForm = ({ id_patient }: props) => {
                 <CardAction>
                     <AddRelationshipModal
                         triggerText="Agregar Paciente"
+                        mainPatientId={id_patient}
+                        onSaveSuccess={() => {
+                            beneficiariesFetch({ patient: id_patient, list: 'BENEFICIARIO' });
+                            ownerFetch({ patient: id_patient, list: 'TITULAR' })
+                        }}
                     />
                 </CardAction>
             </CardHeader>
