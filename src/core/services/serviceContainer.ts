@@ -35,6 +35,7 @@ type Repositories = {
     patient: PatientRepositoryCore;
 }
 
+export type Services = ServiceContainer;
 export class ServiceContainer {
     public readonly repository: Repositories;
 

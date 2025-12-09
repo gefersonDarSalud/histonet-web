@@ -1,5 +1,6 @@
-import type { NewContracts, Response } from "#/core/entities";
+import type { Response } from "#/core/entities";
 import type { PatientRepository } from "#/core/repositories/patientRepository";
+import type { NewContractsRequest } from "#/data/types/patient";
 
 
 export type SetPatientContractsServiceProps = {
@@ -17,7 +18,7 @@ export class SetPatientContractsService {
     }
 
     async execute(patientId: string, contracts: SetPatientContractsServiceProps): Promise<Response> {
-        const newContracts: NewContracts = {
+        const newContracts: NewContractsRequest = {
             id_paciente: patientId,
             id_empresa: contracts.business,
             id_dependencia: contracts.departament,

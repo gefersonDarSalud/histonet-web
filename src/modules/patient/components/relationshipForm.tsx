@@ -10,13 +10,13 @@ import {
 import { BeneficiariesTable } from "./beneficiariesTable"
 import { OwnersTable } from "./ownersTable"
 import { Button } from "@/components/ui/button"
-import { useFetch } from "#/hooks/useFetch"
-import { useServices } from "#/hooks/useServices"
+import { useFetch } from "@/components/hooks/useFetch"
+import { useServices } from "@/components/hooks/useServices"
 import type { PatientRelationship, Response } from "#/core/entities"
 import { useCallback, useEffect } from "react"
 import { AddRelationshipModal } from "./AddRelationshipModal"
-import { useToast } from "@/hooks/useToast"
-import type { ToastProps } from "#/hooks/toastProvider"
+import { useToast } from "@/components/hooks/useToast"
+import type { ToastProps } from "#/context/providers/toastProvider"
 
 export type beneficiariesType = { patient: string; list: 'BENEFICIARIO'; }
 export type ownersType = { patient: string; list: 'TITULAR'; }

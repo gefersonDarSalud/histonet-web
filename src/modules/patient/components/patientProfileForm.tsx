@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import * as z from 'zod';
-import { Upload, Calendar, X, Save } from 'lucide-react';
+import { Calendar, Save, PowerOff, Power } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import type { PatientFull } from "#/core/entities";
+import type { IdName, Patient } from "#/core/entities";
 import type { state } from "#/utils/types";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -12,35 +12,37 @@ import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/fie
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from "@/hooks/useToast";
+import { useToast } from "@/components/hooks/useToast";
 import { mapPatientToFormValues } from "../hooks/mappedForm";
-import { ConfirmationModal } from "@/components/app/confirmationModal";
+// import { ConfirmationModal } from "@/components/app/confirmationModal";
 import { cn } from "@/lib/utils";
 import { CalendarComponent } from "./calendar";
 import { Loading } from "@/components/app/loading";
 import { Card } from "@/components/ui/card";
-import { useServices } from "#/hooks/useServices";
+import { useServices } from "@/components/hooks/useServices";
+import { Toggle } from "@/components/ui/toggle";
 
 export type PatientProfileFormValues = z.infer<typeof patientProfileSchema>;
 
 export interface PatientProfileFormProps {
-    patientState: state<PatientFull>;
+    patientState: state<Patient>;
     isNewPatient: boolean;
     isLoading: boolean;
     patientId: string | null;
 }
 
 const patientProfileSchema = z.object({
+    isActive: z.boolean(),
     firstName: z.string().min(1, { message: "El nombre es requerido." }),
     lastName: z.string().min(1, { message: "El apellido es requerido." }),
     code: z.string().regex(/^[VP]\d{6,10}$/, { message: "Cédula inválida. Debe tener entre 7 y 10 dígitos, y comenzar por V o P" }),
     email: z.string().email({ message: "Correo electrónico inválido." }),
+    gender: z.enum(["M", "F"]),
     phone: z.string().optional(),
-    // country: z.string().optional(),
-    // city: z.string().optional(),
     address: z.string().optional(),
     birthdate: z.date().nullable().optional(), // Usamos z.date() para el componente de calendario
-    gender: z.enum(["Masculino", "Femenino", "Otro"]).optional(),
+    // country: z.string().optional(),
+    // city: z.string().optional(),
     // profilePictureUrl: z.string().url().optional().nullable(),
 });
 
@@ -55,24 +57,35 @@ const emptyDefaults: Partial<PatientProfileFormValues> = {
     gender: undefined,
 };
 
-const genders = ["Masculino", "Femenino"];
+const genders: IdName[] = [
+    { id: "M", name: "Masculino" },
+    { id: "F", name: "Femenino" },
+];
 
 export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, patientId }: PatientProfileFormProps) => {
     const { setPatientData } = useServices();
 
     const { toast } = useToast();
-    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    // const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const initialValues = useMemo(() => {
         if (isNewPatient) {
             return emptyDefaults;
         }
+
         return patientState.value || emptyDefaults;
     }, [isNewPatient, patientState.value]);
 
+    const mappedDefaults = mapPatientToFormValues(initialValues);
+
+    const defaultValuesWithIsActive = {
+        ...mappedDefaults,
+        isActive: mappedDefaults.isActive ?? false,
+    };
+
     const form = useForm<PatientProfileFormValues>({
         resolver: zodResolver(patientProfileSchema),
-        defaultValues: mapPatientToFormValues(initialValues),
+        defaultValues: defaultValuesWithIsActive,
         mode: "onBlur",
     });
 
@@ -100,18 +113,19 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
         }
     };
 
-    const handleDelete = () => {
-        setIsConfirmModalOpen(true);
-    };
+    // const handleDelete = () => {
+    //     setIsConfirmModalOpen(true);
+    // };
 
-    const confirmDeletion = () => {
-        setIsConfirmModalOpen(false);
-        toast({
-            title: "Eliminado",
-            description: "El paciente ha sido eliminado.",
-            variant: "destructive"
-        });
-    };
+    // const confirmDeletion = () => {
+    //     setIsConfirmModalOpen(false);
+
+    //     toast({
+    //         title: "Eliminado",
+    //         description: "El paciente ha sido eliminado.",
+    //         variant: "destructive"
+    //     });
+    // };
 
     const isSaving = form.formState.isSubmitting;
 
@@ -125,13 +139,13 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
 
     return (
         <>
-            <ConfirmationModal
+            {/* <ConfirmationModal
                 isOpen={isConfirmModalOpen}
                 onConfirm={confirmDeletion}
                 onCancel={() => setIsConfirmModalOpen(false)}
                 title="Confirmar Eliminación"
                 message="¿Está seguro que desea eliminar este paciente? Esta acción no se puede deshacer y eliminará permanentemente todos sus registros."
-            />
+            /> */}
 
             <Card>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="">
@@ -198,14 +212,14 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
                                             <Field>
                                                 <FieldLabel>Sexo</FieldLabel>
                                                 <FieldContent>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                    <Select onValueChange={field.onChange} value={field.value || ""}>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Seleccionar" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {genders.map((gender) => (
-                                                                <SelectItem key={gender} value={gender}>
-                                                                    {gender}
+                                                                <SelectItem key={gender.id} value={gender.id.toString()}>
+                                                                    {gender.name}
                                                                 </SelectItem>
                                                             ))}
                                                         </SelectContent>
@@ -246,37 +260,6 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
                                         )}
                                     />
 
-                                    {/* País (Uncommented in schema) */}
-                                    {/* <Controller
-                                                name="country"
-                                                control={form.control}
-                                                render={({ field, fieldState }) => (
-                                                    <Field>
-                                                        <FieldLabel>País</FieldLabel>
-                                                        <FieldContent>
-                                                            <Input placeholder="Ej. España" {...field} />
-                                                        </FieldContent>
-                                                        {fieldState.error && (<FieldError errors={[fieldState.error]} />)}
-                                                    </Field>
-                                                )}
-                                            /> */}
-
-                                    {/* Ciudad (Uncommented in schema) */}
-                                    {/* <Controller
-                                                name="city"
-                                                control={form.control}
-                                                render={({ field, fieldState }) => (
-                                                    <Field>
-                                                        <FieldLabel>Ciudad</FieldLabel>
-                                                        <FieldContent>
-                                                            <Input placeholder="Ej. Madrid" {...field} />
-                                                        </FieldContent>
-                                                        {fieldState.error && (<FieldError errors={[fieldState.error]} />)}
-                                                    </Field>
-                                                )}
-                                            /> */}
-
-                                    {/* Fecha de Nacimiento (Usando Popover y shadcn Calendar) */}
                                     <Controller
                                         name="birthdate"
                                         control={form.control}
@@ -335,34 +318,6 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
                                 </div>
                             </div>
 
-                            {/* Columna Derecha: Foto del Paciente */}
-                            <div className="w-full md:w-56 flex-shrink-0 pt-10">
-                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 border-b pb-2">Foto</h2>
-                                <div className="flex flex-col items-center">
-                                    {/* <Avatar className="w-40 h-40 border-4 border-gray-100 dark:border-gray-700 shadow-md mb-4">
-                                                <AvatarImage
-                                                    src={form.watch("profilePictureUrl") || undefined}
-                                                    alt="Foto del Paciente"
-                                                />
-                                                <AvatarFallback className="text-3xl font-semibold bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                                                    {initials || 'JP'}
-                                                </AvatarFallback>
-                                            </Avatar> */}
-
-                                    {/* Botón de Subir Foto (simulado) */}
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="w-full"
-                                    >
-                                        <Upload className="mr-2 h-4 w-4" />
-                                        Subir foto
-                                    </Button>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                                        JPG, PNG o GIF. Máx 5MB.
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -371,23 +326,36 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
 
                         {/* Botón Eliminar Paciente (Solo visible si NO es un paciente nuevo) */}
                         {!isNewPatient && (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                className="w-full sm:w-auto text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 order-2 sm:order-1"
-                                onClick={handleDelete} // Triggers custom modal
-                                disabled={isSaving}
-                            >
-                                <X className="mr-2 h-4 w-4" />
-                                Eliminar Paciente
-                            </Button>
+                            <Controller
+                                name="isActive" // Nombre del campo en Zod y RHF
+                                control={form.control}
+                                render={({ field }) => (
+                                    <Toggle
+                                        pressed={field.value}
+                                        onPressedChange={field.onChange}
+                                        variant="outline"
+                                        className={cn(
+                                            "w-full sm:w-auto text-base font-medium transition-colors order-2 sm:order-1",
+                                            "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
+                                            "data-[state=off]:bg-red-50 data-[state=off]:text-red-600 data-[state=off]:font-semibold data-[state=off]:hover:bg-red-100",
+                                            "data-[state=on]:bg-blue-50 data-[state=on]:text-blue-600 data-[state=on]:font-semibold data-[state=on]:hover:bg-blue-100"
+                                        )}
+                                        aria-label="Paciente Inactivo"
+                                    >
+                                        {field.value
+                                            ? <Power className="mr-2 h-4 w-4" />
+                                            : <PowerOff className="mr-2 h-4 w-4" />}
+                                        {field.value ? "Paciente Activo" : "Paciente Inactivo"}
+                                    </Toggle>
+                                )}
+                            />
                         )}
 
                         {/* Botón Guardar Cambios */}
                         <div className={cn("flex w-full sm:w-auto", !isNewPatient ? 'order-1 sm:order-2' : 'justify-end')}>
                             <Button
                                 type="submit"
-                                className="w-full sm:w-auto bg-blue-600 text-white dark:bg-blue-500 dark:text-white hover:bg-blue-700 dark:hover:bg-blue-600"
+                                className="w-full sm:w-auto"
                                 disabled={isSaving}
                             >
                                 <Save className="mr-2 h-4 w-4" />

@@ -2,7 +2,7 @@ import React from "react";
 import { Breadcrumb as BreadcrumbComponent, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../ui/breadcrumb";
 
 import { Link } from "react-router-dom";
-import type { BreadcrumbItemData } from "#/hooks/useBreadCrumbPath";
+import type { BreadcrumbItemData } from "@/components/hooks/useBreadCrumbPath";
 
 interface AppBreadcrumbProps {
     items: BreadcrumbItemData[];

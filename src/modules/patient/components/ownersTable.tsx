@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import type { PatientRelationship } from "#/core/entities";
-import type { UseFetchSetState } from "#/hooks/useFetch";
+import type { UseFetchSetState } from "@/components/hooks/useFetch";
 
 type TableData = {
     // 2. 'value' contiene el array de datos

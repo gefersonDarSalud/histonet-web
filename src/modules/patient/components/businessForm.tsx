@@ -1,12 +1,12 @@
 
 import type { PatientContracts } from '#/core/entities';
-import { useServices } from '#/hooks/useServices';
+import { useServices } from '@/components/hooks/useServices';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BusinessCard } from './businessCard';
 import { Input } from '@/components/ui/input';
 import { BusinessFormAdd } from './BusinessFormAdd';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/components/hooks/useToast';
 
 type BusinessFormProps = {
     patient: string | number,

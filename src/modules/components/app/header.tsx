@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/hooks/useAuth";
 import { Brandmark } from "./brandmark";
 import { Breadcrumb } from "./breadcrumb";
-import { useBreadcrumbPath } from "#/hooks/useBreadCrumbPath";
+import { useBreadcrumbPath } from "@/components/hooks/useBreadCrumbPath";
 import { routeLabel } from "#/routes";
 
 interface HeaderProps {

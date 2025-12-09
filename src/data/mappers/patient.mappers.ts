@@ -1,9 +1,9 @@
-import type { Business, IdName, Mapper, Patient, PatientContracts, PatientFull, PatientRelationship } from "#/core/entities";
-import type { PatientApiDto, PatientBusinessApiDto, PatientContractsApiDto, PatientFullApiDto, PatientRelationshipApiDto, PatientRelationshipNameApiDto } from "#/utils/types";
+import type { Business, IdName, Mapper, Patient, PatientContracts, PatientRelationship } from "#/core/entities";
+import type { PatientContractsResponse, PatientRelationshipNameResponse, PatientRelationshipResponse, PatientResponse } from "../types/patient";
 
 
-export const PatientMapper: Mapper<PatientApiDto, Patient> = {
-    fromApiToDomain(dto: PatientApiDto): Patient {
+export const PatientMapper: Mapper<PatientResponse, Patient> = {
+    fromApiToDomain(dto: PatientResponse): Patient {
         return {
             id: String(dto.id),
             code: dto.ci,
@@ -13,12 +13,12 @@ export const PatientMapper: Mapper<PatientApiDto, Patient> = {
         };
     },
 
-    fromApiArrayToDomainArray(dtos: PatientApiDto[]): Patient[] {
+    fromApiArrayToDomainArray(dtos: PatientResponse[]): Patient[] {
         return dtos.map(this.fromApiToDomain);
     }
 };
 
-export const PatientBusinessMapper: Mapper<PatientBusinessApiDto, Business> = {
+export const PatientBusinessMapper: Mapper<PatientBusinessRe, Business> = {
     fromApiToDomain(dto: PatientBusinessApiDto): Business {
         if (!dto || !dto.id) return {} as Business;
         const insurances = dto.aseguradoras?.map(aseguradora => {
@@ -50,9 +50,10 @@ export const PatientBusinessMapper: Mapper<PatientBusinessApiDto, Business> = {
 }
 
 
-export const PatientFullMapper: Mapper<PatientFullApiDto, PatientFull> = {
-    fromApiToDomain(dto: PatientFullApiDto): PatientFull {
+export const PatientFullMapper: Mapper<PatientResponse, Patient> = {
+    fromApiToDomain(dto: PatientResponse): Patient {
         return {
+            id: dto.id ?? dto.ci,
             firstName: dto.nombre,
             lastName: dto.apellido,
             code: dto.ci,
@@ -61,17 +62,17 @@ export const PatientFullMapper: Mapper<PatientFullApiDto, PatientFull> = {
             email: dto.correo,
             phone: dto.tlfn,
             address: dto.dir,
+            isActive: dto.status !== '1' ? true : false,
         }
     },
 
-    fromApiArrayToDomainArray(dtos: PatientFullApiDto[]): PatientFull[] {
+    fromApiArrayToDomainArray(dtos: PatientResponse[]): Patient[] {
         return dtos.map(dto => this.fromApiToDomain(dto));
     }
 }
 
-export const PatientContractsMapper: Mapper<PatientContractsApiDto, PatientContracts> = {
-    fromApiToDomain(dto: PatientContractsApiDto): PatientContracts {
-
+export const PatientContractsMapper: Mapper<PatientContractsResponse, PatientContracts> = {
+    fromApiToDomain(dto: PatientContractsResponse): PatientContracts {
         return {
             row: dto.id,
             business: {
@@ -92,27 +93,26 @@ export const PatientContractsMapper: Mapper<PatientContractsApiDto, PatientContr
             }
         }
     },
-    fromApiArrayToDomainArray(dtos: PatientContractsApiDto[]): PatientContracts[] {
+    fromApiArrayToDomainArray(dtos: PatientContractsResponse[]): PatientContracts[] {
         return dtos.map(dto => this.fromApiToDomain(dto));
     }
 }
 
-export const PatientRelationShipNameMapper: Mapper<PatientRelationshipNameApiDto, IdName> = {
-    fromApiToDomain(dto: PatientRelationshipNameApiDto): IdName {
+export const PatientRelationShipNameMapper: Mapper<PatientRelationshipNameResponse, IdName> = {
+    fromApiToDomain(dto: PatientRelationshipNameResponse): IdName {
         return {
             id: dto.id_parentesco,
             name: dto.parentesco
         }
     },
 
-    fromApiArrayToDomainArray(dtos: PatientRelationshipNameApiDto[]): IdName[] {
+    fromApiArrayToDomainArray(dtos: PatientRelationshipNameResponse[]): IdName[] {
         return dtos.map(dto => this.fromApiToDomain(dto));
     }
 }
 
-export const PatientRelationsMapper: Mapper<PatientRelationshipApiDto, PatientRelationship> = {
-    fromApiToDomain(dto: PatientRelationshipApiDto): PatientRelationship {
-
+export const PatientRelationsMapper: Mapper<PatientRelationshipResponse, PatientRelationship> = {
+    fromApiToDomain(dto: PatientRelationshipResponse): PatientRelationship {
         return {
             id_patient: dto.id_paciente,
             id_client: dto.id_titular,
@@ -122,7 +122,7 @@ export const PatientRelationsMapper: Mapper<PatientRelationshipApiDto, PatientRe
             relationship: dto.parentesco,
         }
     },
-    fromApiArrayToDomainArray(dtos: PatientRelationshipApiDto[]): PatientRelationship[] {
+    fromApiArrayToDomainArray(dtos: PatientRelationshipResponse[]): PatientRelationship[] {
         return dtos.map(dto => this.fromApiToDomain(dto));
     }
 }

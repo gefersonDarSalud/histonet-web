@@ -1,6 +1,3 @@
-
-// src/hooks/useBreadcrumbPath.ts (o utils/useBreadcrumbPath.ts)
-
 import { routeLabel } from '#/routes';
 import { useMemo } from 'react';
 
@@ -9,8 +6,6 @@ export interface BreadcrumbItemData {
     path: string;
     isLast: boolean;
 }
-
-
 
 /**
  * Procesa la ruta activa para generar la estructura del Breadcrumb.

@@ -12,7 +12,7 @@ import { Logo } from '../components/logo';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { useServices } from '#/hooks/useServices';
+import { useServices } from '@/components/hooks/useServices';
 import { routeLabel } from '#/routes';
 import type { objectList } from '#/utils/types';
 import type { Message } from '@/components/app/appAlert';

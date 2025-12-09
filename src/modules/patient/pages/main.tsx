@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { PatientTable } from '../components/patientTable';
 import type { Patient as PatientEntity } from '#/core/entities';
-import { useServices } from '#/hooks/useServices';
+import { useServices } from '@/components/hooks/useServices';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { routeLabel } from '#/routes';

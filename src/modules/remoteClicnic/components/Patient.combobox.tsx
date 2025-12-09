@@ -17,7 +17,7 @@ import {
 import { useCallback, useEffect, useState } from "react"
 import type { PatientComboboxProps, PatientState, SelectOption } from "#/utils/types"
 import type { Patient } from "#/core/entities"
-import { useServices } from "#/hooks/useServices"
+import { useServices } from "@/components/hooks/useServices"
 
 export const PatientCombobox = ({ patient, setPatient }: PatientComboboxProps) => {
     const { searchPatientsService } = useServices();

@@ -29,7 +29,7 @@ import { Loader2 } from "lucide-react"
 import { FeeScheduleType } from "./feeScheduleType"
 import type { Business, TypeVisit } from "#/core/entities"
 import { InsuranceType } from "./InsuranceType"
-import { useServices } from "#/hooks/useServices"
+import { useServices } from "@/components/hooks/useServices"
 
 
 export const NewCall = () => {

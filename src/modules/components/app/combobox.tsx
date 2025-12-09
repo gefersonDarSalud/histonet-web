@@ -21,7 +21,7 @@ import {
 
 // Tipos requeridos (asume que los importas desde tus rutas correctas)
 import type { state } from "#/utils/types" // state<string> = [string, Dispatch<SetStateAction<string>>]
-import type { UseFetchSetState } from "#/hooks/useFetch" // Tipo del setter para listas de useFetch
+import type { UseFetchSetState } from "@/components/hooks/useFetch" // Tipo del setter para listas de useFetch
 
 // --- TIPOS AGNOSTICOS AJUSTADOS ---
 

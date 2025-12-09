@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NewCall } from '../components/newCall';
 import { PatientVisitTable } from '../components/PatientVisitTable';
 import type { SearchResponse } from '#/data/mappers/visitMappers';
-import { useServices } from '#/hooks/useServices';
+import { useServices } from '@/components/hooks/useServices';
 import type { VisitRepositorySearchParams } from '#/core/repositories/visitRepository';
 import { formatDate } from '#/utils/functions';
 import { ButtonGroup } from '@/components/ui/button-group';

@@ -15,13 +15,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 // import { Avatar, AvatarFallback } from '@radix-ui/react-avatar'; // Usamos Avatar para el resultado de búsqueda
-import { useFetch } from '#/hooks/useFetch';
-import { useServices } from '#/hooks/useServices';
+import { useFetch } from '@/components/hooks/useFetch';
+import { useServices } from '@/components/hooks/useServices';
 import type { IdName, Patient, Response } from '#/core/entities';
 import { AddRelationshipModalSearchPatient } from './addRelationshipModalSearchPatient';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { useToast } from '@/hooks/useToast';
-import type { ToastProps } from '#/hooks/toastProvider';
+import { useToast } from '@/components/hooks/useToast';
+import type { ToastProps } from '#/context/providers/toastProvider';
 import type { SetPatientRelationshipServiceProps } from '#/core/services/patient/setPatientRelationship';
 
 interface AddRelationshipModalProps {

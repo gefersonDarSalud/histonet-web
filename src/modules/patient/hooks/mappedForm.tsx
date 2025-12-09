@@ -9,12 +9,13 @@ export const mapPatientToFormValues = (patientData: PatientFull | Partial<Patien
         : null;
 
     // 2. Transformación de género (string | null a Enum | undefined)
-    const validGenders = ["Masculino", "Femenino", "Otro"];
+    const validGenders = ["M", "F"];
     const patientGender = patientData.gender && validGenders.includes(patientData.gender)
-        ? (patientData.gender as "Masculino" | "Femenino" | "Otro")
+        ? (patientData.gender as "M" | "F")
         : undefined;
 
     // 3. Mapeo de valores
+    const isActive = patientData.isActive ?? true;
     return {
         // Campos requeridos (Convertir null a "" para evitar errores TS y asegurar inicialización)
         firstName: patientData.firstName ?? '',
@@ -29,5 +30,6 @@ export const mapPatientToFormValues = (patientData: PatientFull | Partial<Patien
         // Campos con transformación de tipo
         birthdate: dateOfBirth,
         gender: patientGender,
+        isActive: isActive,
     };
 };

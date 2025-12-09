@@ -2,7 +2,7 @@ import type { IdName, PatientContracts } from "#/core/entities"
 import { ConfirmationModal } from "@/components/app/confirmationModal"
 import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/useToast"
+import { useToast } from "@/components/hooks/useToast"
 import { X } from "lucide-react"
 import { useState } from "react"
 

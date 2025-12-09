@@ -7,16 +7,16 @@ import {
 
 import { useParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { PatientFull } from "#/core/entities";
 import type { state } from "#/utils/types";
-import { useServices } from "#/hooks/useServices";
+import { useServices } from "@/components/hooks/useServices";
 import { PatientProfileForm } from "../components/patientProfileForm";
 import { BusinessForm } from "../components/businessForm";
 import { RelationshipForm } from "../components/relationshipForm";
+import type { Patient } from "#/core/entities";
 
 export const PatientProfile = () => {
     const { getPatientDataService } = useServices();
-    const patientDefault: PatientFull = useMemo((): PatientFull => ({
+    const patientDefault: Patient = useMemo((): Patient => ({
         code: '',
         firstName: null,
         lastName: null,
@@ -25,13 +25,13 @@ export const PatientProfile = () => {
         phone: null,
         address: null,
         email: null,
-    } as PatientFull), [])
+    } as Patient), [])
 
     const [isLoading, setIsLoading] = useState(false);
     const { patientId } = useParams();
-    const [patient, setPatient] = useState<PatientFull>(patientDefault)
+    const [patient, setPatient] = useState<Patient>(patientDefault)
 
-    const patientState: state<PatientFull> = { value: patient, set: setPatient };
+    const patientState: state<Patient> = { value: patient, set: setPatient };
 
     const fetchData = useCallback(async (id: string) => {
         setIsLoading(true);

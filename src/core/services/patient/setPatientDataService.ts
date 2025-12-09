@@ -1,5 +1,6 @@
-import type { NewPatient, Response } from "#/core/entities";
+import type { Response } from "#/core/entities";
 import type { PatientRepository } from "#/core/repositories/patientRepository";
+import type { NewPatientRequest } from "#/data/types/patient";
 import { formatDate } from "#/utils/functions";
 import type { PatientProfileFormValues } from "@/patient/components/patientProfileForm";
 
@@ -13,7 +14,7 @@ export class SetPatientData {
             status: 0,
             resultado: "no Procesado"
         };
-        const newPatient: NewPatient = {
+        const newPatient: NewPatientRequest = {
             id_paciente: patientId,
             ci: patient.code,
             nombre: patient.firstName,
@@ -24,7 +25,9 @@ export class SetPatientData {
             email: patient.email,
             co_us: 'web',
             fecha_nacimiento: patient.birthdate ? formatDate(patient.birthdate) : '',
+            inactivar: patient.isActive ? "0" : "1",
         }
+
         return await this.repository.setData(newPatient);
     }
 }

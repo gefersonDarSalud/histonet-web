@@ -1,5 +1,6 @@
-import type { DeleteContracts, Response } from "#/core/entities";
+import type { Response } from "#/core/entities";
 import type { PatientRepository } from "#/core/repositories/patientRepository";
+import type { DeleteContractsRequest } from "#/data/types/patient";
 
 
 export type DeletePatientContractsServiceProps = {
@@ -15,7 +16,7 @@ export class DeletePatientContractsService {
     }
 
     async execute(patientId: string, contracts: DeletePatientContractsServiceProps): Promise<Response> {
-        const deleteContracts: DeleteContracts = {
+        const deleteContracts: DeleteContractsRequest = {
             id_paciente: patientId,
             id_empresa: contracts.business,
             id_aseguradora: contracts.insurance,

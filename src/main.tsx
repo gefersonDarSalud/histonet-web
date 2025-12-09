@@ -6,8 +6,8 @@ import { useAuth } from '@/auth/hooks/useAuth.ts';
 import { AuthProvider } from '@/auth/components/authProvider.tsx';
 import { ServiceProvider } from './serviceProvider.tsx';
 import { AppAlert } from '@/components/app/appAlert.tsx';
-import { useToast } from '@/hooks/useToast.tsx';
-import { ToastProvider } from './hooks/toastProvider.tsx';
+import { useToast } from '@/components/hooks/useToast.tsx';
+import { ToastProvider } from './context/providers/toastProvider.tsx';
 
 const RootApp = () => {
     const { message: authMessage, setMessage: setAuthMessage } = useAuth();

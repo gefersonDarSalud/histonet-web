@@ -1,8 +1,7 @@
 import { createContext, useMemo, type ReactNode } from "react";
 import { ServiceContainer } from "./core/services/serviceContainer";
-import type { Services } from "./core/entities";
 
-export const ServiceContext = createContext<Services | undefined>(undefined);
+export const ServiceContext = createContext<ServiceContainer | undefined>(undefined);
 
 export const ServiceProvider = ({ children }: {
     children: ReactNode;
