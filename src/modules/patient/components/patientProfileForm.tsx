@@ -64,6 +64,8 @@ const genders: IdName[] = [
 
 export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, patientId }: PatientProfileFormProps) => {
     const { setPatientData } = useServices();
+    console.log("patientId", patientId);
+
 
     const { toast } = useToast();
     // const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -95,7 +97,7 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
 
     const onSubmit = async (data: PatientProfileFormValues) => {
         try {
-            const result = await setPatientData.execute(patientId, data)
+            const result = await setPatientData.execute(patientId === 'new' ? null : patientId, data)
             if (result.status !== 1) throw new Error("Algo salio mal");
             toast({
                 title: "Éxito",

@@ -28,6 +28,9 @@ export class SetPatientData {
             inactivar: patient.isActive ? "0" : "1",
         }
 
+        console.log("newPatient", newPatient);
+
+
         return await this.repository.setData(newPatient);
     }
 }

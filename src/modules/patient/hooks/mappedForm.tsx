@@ -1,7 +1,7 @@
-import type { PatientFull } from "#/core/entities";
+import type { Patient } from "#/core/entities";
 import type { PatientProfileFormValues } from "../components/patientProfileForm";
 
-export const mapPatientToFormValues = (patientData: PatientFull | Partial<PatientProfileFormValues>): PatientProfileFormValues => {
+export const mapPatientToFormValues = (patientData: Patient | Partial<PatientProfileFormValues>): PatientProfileFormValues => {
 
     // 1. Transformación de fecha (string | null a Date | null)
     const dateOfBirth = patientData.birthdate

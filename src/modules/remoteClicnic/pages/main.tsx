@@ -93,6 +93,9 @@ export const RemoteClinic = () => {
         return () => clearTimeout(timeoutId);
     }, [fechDataVistList, textSearch]);
 
+
+    // const data = { visitList, isLoadingVisitList, currentPage, tabs, activeTab, textSearch, }
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -164,6 +167,8 @@ export const RemoteClinic = () => {
                 </Card>
 
             </main>
+
+            {/* <Code data={data} /> */}
 
         </div>
     );

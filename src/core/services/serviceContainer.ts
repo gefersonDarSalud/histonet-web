@@ -20,6 +20,7 @@ import { SearchPatientsService } from "./patient/searchPatientservice";
 import { GetPatientDataService } from "./patient/getPatientDataService";
 import { GetPatientContracts } from "./patient/getPatientContractsService";
 import { SearchVisitService } from "./visit/searchVisitService";
+import { GetMedicalVisitService } from "./visit/getMedicalVisitService";
 import { GetPatientRelationshipService } from "./patient/getPatientRelationshipService";
 import { SetPatientData } from "./patient/setPatientDataService";
 import { SetPatientContractsService } from "./patient/setPatientContractsService";
@@ -44,6 +45,7 @@ export class ServiceContainer {
 
     // visit
     public readonly searchVisit: SearchVisitService;
+    public readonly getMedicalVisit: GetMedicalVisitService;
 
     // business
     public readonly searchBusinessService: SearchBusinessService;
@@ -77,6 +79,7 @@ export class ServiceContainer {
 
         // visit
         this.searchVisit = new SearchVisitService(this.repository.visit);
+        this.getMedicalVisit = new GetMedicalVisitService(this.repository.visit);
 
         // business
         this.searchBusinessService = new SearchBusinessService(this.repository.business)

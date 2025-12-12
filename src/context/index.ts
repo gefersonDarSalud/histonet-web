@@ -11,7 +11,7 @@ export const ToastContext = createContext<{
 
 
 export const MedicalVisitContext = createContext<{
-    state: MedicalVisitNursingDetails;
+    state: Partial<MedicalVisitNursingDetails>;
     dispatch: React.Dispatch<MedicalVisitAction>;
 } | undefined>(undefined);
 

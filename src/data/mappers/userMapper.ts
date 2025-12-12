@@ -1,20 +1,19 @@
-import type { BasicResponse, Mapper } from "#/core/entities";
+import type { Mapper, Response } from "#/core/entities";
 
 export type UserLoginApi = {
-    STATUS: string;
+    STATUS: number;
     RESULTADO: string;
 }
 
-export const UserLoginMapper: Mapper<UserLoginApi, BasicResponse> = {
-    fromApiToDomain(dto: UserLoginApi): BasicResponse {
-
+export const UserLoginMapper: Mapper<UserLoginApi, Response> = {
+    fromApiToDomain(dto: UserLoginApi): Response {
         return {
-            status: Number(dto.STATUS) === 1 ? 'success' : 'failed',
-            message: dto.RESULTADO,
+            status: dto.STATUS,
+            resultado: dto.RESULTADO,
         }
     },
 
-    fromApiArrayToDomainArray(dtos: UserLoginApi[]): BasicResponse[] {
-        return dtos.map(this.fromApiToDomain);
+    fromApiArrayToDomainArray(dtos: UserLoginApi[]): Response[] {
+        return dtos.map(dto => (this.fromApiToDomain(dto)));
     }
 };

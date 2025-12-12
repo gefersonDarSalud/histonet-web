@@ -1,4 +1,5 @@
-import type { Mapper, MedicalVisitNursingDetails, VisitStatus } from "#/core/entities";
+import type { Mapper, MedicalVisitNursingDetails } from "#/core/entities";
+import { mapStatus, mapVisitType } from "#/utils/functions";
 import type { MedicalVisitResponse } from "../types/visit";
 
 export type SearchApi = {
@@ -57,33 +58,13 @@ export const seachMapper: Mapper<SearchApi, SearchResponse> = {
     }
 };
 
-/**
- * Función auxiliar para determinar el estado de la visita basado en la lógica de negocio.
- * Por defecto, la API no proporciona un campo 'status', así que asumimos 'PENDIENTE'.
- */
-const mapStatus = (apiStatus: number | null): VisitStatus => {
-    switch (apiStatus) {
-        case 0: return 'CANCELADA';
-        case 2: return 'EN_CURSO';
-        case 3: return 'CERRADA';
-        default: return 'PENDIENTE';
-    }
-};
 
-export const MedicalVisitMapper: Mapper<MedicalVisitResponse, MedicalVisitNursingDetails> = {
+export const getMapper: Mapper<MedicalVisitResponse, MedicalVisitNursingDetails> = {
 
-    /**
-     * Transforma un objeto DTO de la API en el Modelo de Dominio de Visita Médica.
-     * @param {MedicalVisitResponse} dto - El objeto de datos crudos de la API.
-     * @returns {MedicalVisit} - El objeto limpio y estructurado del Dominio.
-     */
     fromApiToDomain(dto: MedicalVisitResponse): MedicalVisitNursingDetails {
-        // 💡 Mejor práctica: Las fechas deben ser manejadas consistentemente. 
-        // Usamos new Date(string).toISOString() para asegurar formato uniforme, 
-        // aunque dto.fecha_visita ya parece ser un formato ISO.
-
         return {
             visitNumber: dto.nro_documento,
+            visitType: mapVisitType(dto.tipo),
             status: mapStatus(dto.tipo),
             patient: dto.ci && dto.nombre_apellido ? {
                 id: dto.ci,
@@ -91,19 +72,17 @@ export const MedicalVisitMapper: Mapper<MedicalVisitResponse, MedicalVisitNursin
                 fullname: dto.nombre_apellido,
                 birthdate: '',
             } : null,
-            company: dto.id_empresa && dto.tipo_paciente !== 'Particular' ? {
-                id: String(dto.id_empresa),
-                name: dto.nombre_empresa,
-            } : (dto.id_aseguradora && dto.nombre_aseguradora ? {
-                id: String(dto.id_aseguradora),
-                name: dto.nombre_aseguradora,
-            } : null), // Priorizar Empresa, luego Aseguradora. Si es 'Particular', se deja nulo.
 
             dateTime: new Date(dto.fecha_visita).toISOString(),
 
-            FeeSchedule: {
+            feeSchedule: {
                 id: dto.id_baremo.toString(),
                 name: dto.nombre_baremo,
+            },
+
+            motive: {
+                id: dto.tipo.toString(),
+                name: dto.motivo,
             },
 
             // Mapeo de Datos Biométricos (Campo estructurado extra del modelo de dominio)
@@ -119,11 +98,6 @@ export const MedicalVisitMapper: Mapper<MedicalVisitResponse, MedicalVisitNursin
         };
     },
 
-    /**
-     * Mapea un array de DTOs de la API a un array de Modelos de Dominio.
-     * @param {MedicalVisitResponse[]} dtos - Array de objetos DTO.
-     * @returns {MedicalVisit[]} - Array de objetos del Dominio.
-     */
     fromApiArrayToDomainArray(dtos: MedicalVisitResponse[]): MedicalVisitNursingDetails[] {
         return dtos.map(this.fromApiToDomain);
     }

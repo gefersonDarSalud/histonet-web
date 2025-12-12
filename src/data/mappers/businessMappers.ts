@@ -33,7 +33,7 @@ export const searchMapper: Mapper<SearchApi, Business> = {
     },
 
     fromApiArrayToDomainArray(dtos: SearchApi[]): Business[] {
-        const result = dtos.map(this.fromApiToDomain);
+        const result = dtos.map(dto => this.fromApiToDomain(dto));
         return result;
     }
 };
@@ -42,13 +42,13 @@ export const searchMapper: Mapper<SearchApi, Business> = {
 export const getListMapper: Mapper<GetListApi, IdName> = {
     fromApiToDomain(dto: GetListApi): IdName {
         return {
-            id: Number(dto.id),
+            id: dto.id,
             name: dto.nombre
         }
     },
 
     fromApiArrayToDomainArray(dtos: GetListApi[]): IdName[] {
-        const result = dtos.map(this.fromApiToDomain);
+        const result = dtos.map(dto => this.fromApiToDomain(dto));
         return result;
     }
 };

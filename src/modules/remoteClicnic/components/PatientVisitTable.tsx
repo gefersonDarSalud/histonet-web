@@ -3,6 +3,7 @@ import { Loading } from "@/components/app/loading";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { StatusBadge } from "@/home/components/StatusTabs"
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type PatientVisitTableProps = {
     visits: SearchResponse[];
@@ -12,7 +13,9 @@ type PatientVisitTableProps = {
 export const PatientVisitTable = ({ visits, isLoading }: PatientVisitTableProps) => {
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     const hasPatients = visits.length > 0;
-    setTimeout(() => setIsLoaded(true), 1000);
+    setTimeout(() => setIsLoaded(true), 500);
+    const navigate = useNavigate();
+    const handleRowClick = (visitId: string): void => { navigate(`/visita/${visitId}`); };
     return (
         <Table className="divide-y divide-gray-100">
             {/* Encabezado de la Tabla (shadcn Table Header) */}
@@ -28,7 +31,7 @@ export const PatientVisitTable = ({ visits, isLoading }: PatientVisitTableProps)
 
             {/* Cuerpo de la Tabla */}
             <TableBody>{isLoading || isLoaded === false ?
-                <TableRow className="grid grid-cols-5 p-4 border-b border-gray-100 transition-colors hover:bg-gray-50 items-center text-sm md:grid-cols-[1fr] min-h-[60px]">
+                <TableRow className="grid grid-cols-5 p-4 border-b border-gray-100 transition-colors hover:bg-gray-50 items-center text-sm md:grid-cols-[1fr] min-h-[60px] select-none transition-colors">
                     <TableCell className="hidden md:block text-gray-600 ">
                         <div className="w-full flex justify-center items-center">
                             <Loading />
@@ -38,7 +41,9 @@ export const PatientVisitTable = ({ visits, isLoading }: PatientVisitTableProps)
                 :
                 hasPatients
                     ? visits.map((visit, index) =>
-                        <TableRow key={index} className="grid grid-cols-5 p-4 border-b border-gray-100 transition-colors hover:bg-gray-50 items-center text-sm md:grid-cols-[1fr_2fr_1fr_0.5fr_0.5fr] min-h-[60px]">
+                        <TableRow className="grid grid-cols-5 p-4 border-b border-gray-100 transition-colors hover:bg-gray-50 items-center text-sm md:grid-cols-[1fr_2fr_1fr_0.5fr_0.5fr] min-h-[60px] active:bg-blue-50 cursor-pointer select-none transition-colors"
+                            key={index}
+                            onClick={() => handleRowClick(visit.id)}>
                             <TableCell className="hidden md:block text-gray-600">{visit.code}</TableCell>
                             <TableCell className="col-span-2 md:col-span-1 font-medium text-gray-900 pl-4 text-left">{visit.patient}</TableCell>
                             <TableCell className="hidden md:block text-gray-600">{visit.topic}</TableCell>

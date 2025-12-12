@@ -1,4 +1,4 @@
-import type { Business, IdName, Mapper, Patient, PatientContracts, PatientRelationship } from "#/core/entities";
+import type { IdName, Mapper, Patient, PatientContracts, PatientRelationship } from "#/core/entities";
 import type { PatientContractsResponse, PatientRelationshipNameResponse, PatientRelationshipResponse, PatientResponse } from "../types/patient";
 
 
@@ -17,37 +17,6 @@ export const PatientMapper: Mapper<PatientResponse, Patient> = {
         return dtos.map(this.fromApiToDomain);
     }
 };
-
-export const PatientBusinessMapper: Mapper<PatientBusinessRe, Business> = {
-    fromApiToDomain(dto: PatientBusinessApiDto): Business {
-        if (!dto || !dto.id) return {} as Business;
-        const insurances = dto.aseguradoras?.map(aseguradora => {
-            const feeSchedules = aseguradora.baremos?.map(baremo => ({
-                id: Number(baremo.id),
-                name: baremo.nombre,
-            })) ?? [];
-            return {
-                id: aseguradora.id,
-                name: aseguradora.nombre,
-                code: aseguradora.rif,
-                feeSchedules,
-            };
-        }) ?? null;
-
-        const result = {
-            id: dto.id,
-            name: dto.nombre,
-            code: dto.rif,
-            insurances,
-        } as Business
-
-        return result;
-    },
-
-    fromApiArrayToDomainArray(dtos: PatientBusinessApiDto[]): Business[] {
-        return dtos.map(dto => this.fromApiToDomain(dto));
-    }
-}
 
 
 export const PatientFullMapper: Mapper<PatientResponse, Patient> = {

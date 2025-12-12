@@ -1,3 +1,5 @@
+import type { MedicalVisitResponse } from "#/data/types/visit";
+import type { MedicalVisitNursingDetails } from "../entities";
 
 export type VisitRepositorySearchParams = {
     inicio: string;
@@ -12,4 +14,5 @@ export type VisitRepositorySearchParams = {
 
 export interface VisitRepository {
     search(params: VisitRepositorySearchParams): Promise<any[]>;
+    get(id: string): Promise<MedicalVisitNursingDetails>;
 }

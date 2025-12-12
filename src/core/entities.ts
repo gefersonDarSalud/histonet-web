@@ -14,12 +14,23 @@ export type Response = {
 }
 
 export interface Mapper<Param, Return> {
+    /**
+     * Transforma un objeto DTO de la API en el Modelo de Dominio.
+     * @param {Param} dto - El objeto de datos crudos de la API.
+     * @returns {Return} - El objeto limpio y estructurado del Dominio.
+     */
     fromApiToDomain(dto: Param): Return;
+
+    /**
+     * Mapea un array de DTOs de la API a un array de Modelos de Dominio.
+     * @param {Param[]} dtos - Array de objetos DTO.
+     * @returns {Return[]} - Array de objetos del Dominio.
+     */
     fromApiArrayToDomainArray(dtos: Param[]): Return[];
 }
 
 export type MedicalVisitAction =
-    | { type: 'SET_VISIT_DATA'; payload: Partial<MedicalVisitNursingDetails> } // Actualiza múltiples campos
+    | { type: 'SET_MEDICAL_VISIT'; payload: Partial<MedicalVisitNursingDetails> } // Actualiza múltiples campos
     | { type: 'SET_STATUS'; payload: VisitStatus }
     | { type: 'SET_PATIENT'; payload: Patient }
     | { type: 'UPDATE_BIOMETRICS'; payload: Partial<MedicalVisitNursingDetails['biometrics']> }
@@ -66,19 +77,26 @@ export interface PatientRelationship {
 }
 
 export type VisitStatus = 'PENDIENTE' | 'EN_CURSO' | 'CERRADA' | 'CANCELADA';
-export type TypeVisit = 'ASEGURADO' | 'AFILIADO' | 'PARTICULAR';
+
+export type GroupTypeVisit = 'CONTRATO' | 'INDIVIDUAL';
+export type ContractType = 'ASEGURADO' | 'AFILIADO' | 'EMPRESA';
+export type ContractVisit = { groupType: 'CONTRATO'; subType: ContractType; };
+export type IndividualType = 'PARTICULAR';
+export type IndividualVisit = { groupType: 'INDIVIDUAL'; subType: IndividualType; };
+export type VisitType = ContractVisit | IndividualVisit;
 
 export interface MedicalVisit {
     visitNumber: string;
+    visitType: VisitType;
     status: VisitStatus;
     patient: Patient | null;
     services?: string;
     business?: Business | null;
-    Insurance?: IdName | null;
-    FeeSchedule: IdName;
-    company?: IdName;
-    branchOffice?: IdName;
+    insurance?: IdName | null;
+    insuranceCode?: string | null;
+    feeSchedule: IdName;
     dateTime: string;
+    motive: IdName;
 }
 
 export interface MedicalVisitNursingDetails extends MedicalVisit {

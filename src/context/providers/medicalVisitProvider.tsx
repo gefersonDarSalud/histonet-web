@@ -2,13 +2,16 @@ import type { MedicalVisitAction, MedicalVisitNursingDetails } from "#/core/enti
 import { useReducer, type ReactNode } from "react";
 import { MedicalVisitContext } from "..";
 
-const initialMedicalVisitState: MedicalVisitNursingDetails = {
+type PatialMedicalVisit = Partial<MedicalVisitNursingDetails>;
+
+const initialMedicalVisitState: PatialMedicalVisit = {
     visitNumber: '',
     status: 'PENDIENTE', // Usamos el estado inicial definido en tus tipos
     patient: null,
-    business: { id: '', name: 'N/A' },
-    FeeSchedule: { id: '', name: 'N/A' },
+    feeSchedule: { id: '', name: 'N/A' },
     dateTime: new Date().toISOString(),
+    motive: { id: '', name: 'N/A' },
+    visitType: { subType: 'PARTICULAR', groupType: 'INDIVIDUAL' },
     // Inicialización del objeto biometrics
     biometrics: {
         size: 0,
@@ -25,9 +28,9 @@ const initialMedicalVisitState: MedicalVisitNursingDetails = {
 const medicalVisitReducer = (
     state: MedicalVisitNursingDetails,
     action: MedicalVisitAction
-): MedicalVisitNursingDetails => {
+): PatialMedicalVisit => {
     switch (action.type) {
-        case 'SET_VISIT_DATA':
+        case 'SET_MEDICAL_VISIT':
             // 💡 Permite actualizar cualquier campo parcial en el nivel superior de MedicalVisit
             return { ...state, ...action.payload };
 

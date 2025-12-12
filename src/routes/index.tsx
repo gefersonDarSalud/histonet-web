@@ -1,6 +1,5 @@
 
 import { createBrowserRouter } from "react-router-dom";
-import { Home } from "@/home/pages/main";
 import { NotFoundPage } from "@/errors/404";
 import { Login } from "@/auth/pages/login";
 import { Signup } from "@/auth/pages/signup";
@@ -8,11 +7,16 @@ import { RemoteClinic } from "@/remoteClicnic/pages/main";
 import { Patient } from "@/patient/pages/main";
 import { PatientProfile } from "@/patient/pages/profile";
 import { ProtectedRoute } from "@/auth/components/protectedRoute";
-import App from "#/app";
+import Visit from "@/remoteClicnic/pages/visit";
+import App from "#/App";
+import { MedicalVisitProvider } from "#/context/providers/medicalVisitProvider";
+import { ErrorBoundary } from "@/components/app/errorBoundary";
+import { ErrorFallback } from "@/components/app/errorFallback";
 
 export const routeLabel: Record<string, string> = {
     // home: "/inicio",
     remoteClinic: "/telemedicina",
+    medicalVisit: "/visita/:visitId",
     patient: "/paciente",
     patientProfile: "/paciente/:patientId",
     login: "/iniciar-sesion",
@@ -31,11 +35,19 @@ export const routesConfig = [
         children: [
             {
                 index: true,
-                element: <Home />,
-            },
-            {
                 path: routeLabel.remoteClinic,
                 element: <RemoteClinic />,
+            },
+            {
+                index: true,
+                path: routeLabel.medicalVisit,
+                element:
+                    <MedicalVisitProvider>
+                        <ErrorBoundary fallback={<ErrorFallback error={new Error("error pues")} />}>
+                            <Visit />
+                        </ErrorBoundary>
+                    </MedicalVisitProvider>
+                ,
             },
             {
                 path: routeLabel.patient,

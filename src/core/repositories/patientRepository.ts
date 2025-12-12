@@ -1,11 +1,9 @@
 import type { DeleteContractsRequest, DeleteRelationshipRequest, NewContractsRequest, NewPatientRequest, NewRelationshipRequest } from "#/data/types/patient";
-import type { Business, IdName, Patient, PatientContracts, PatientRelationship, Response } from "../entities";
+import type { IdName, Patient, PatientContracts, PatientRelationship, Response } from "../entities";
 
 export interface PatientRepository {
 
     search(params: { id?: string; fullname?: string; birthdate?: string; }): Promise<Patient[]>;
-
-    getVisitContracts(params: { id: string; },): Promise<Business[]>;
 
     getData(patient: { id: string; }): Promise<Patient>;
 
