@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Badge, BadgeCheck, MapIcon, Stethoscope } from 'lucide-react';
+import { MapIcon, Stethoscope } from 'lucide-react';
 import type { MedicalVisitNursingDetails, VisitStatus } from '#/core/entities';
 import { AdmissionDataPanel } from '../components/AdmissionDataPanel';
 import { useMedicalVisit } from '@/components/hooks/useMedicalVisit';
@@ -9,6 +9,7 @@ import { useServices } from '@/components/hooks/useServices';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loading } from '@/components/app/loading';
 import { capitalizeText } from '#/utils/functions';
+import { ClinicalInterview } from '../components/ClinicalInterview';
 
 const TABS = [
     { id: 'ficha-tecnica', label: 'Ficha Técnica', icon: 'User' },
@@ -43,6 +44,10 @@ export default function Visit() {
         }
     };
 
+    const activeTabClass: string = 'border-b-gray-800 dark:border-b-gray-200 text-gray-800 dark:text-gray-200 rounded-none';
+    const desactiveTabClass: string = 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:border-b-gray-300 dark:hover:border-b-gray-500 rounded-none';
+    const toggleTab = (id: string) => activeTab === id ? activeTabClass : desactiveTabClass;
+
     return (isLoadContext == true
         ?
         <div className="flex-1 w-full max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -62,38 +67,27 @@ export default function Visit() {
             </div>
 
             <div className="space-y-8">
-                {/* Componente Tabs de Shadcn UI */}
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                     <TabsList className="grid w-fit grid-cols-3 border-b border-gray-200 dark:border-[#2d2d2d] rounded-none">
                         {TABS.map((tab) => (
-                            // El 'value' debe coincidir con el 'value' de TabsContent
-                            <TabsTrigger key={tab.id} value={tab.id}
-                                className={`shrink-0 border-b-2 px-1 pb-3 text-sm font-semibold inline-flex items-center gap-2 transition-colors duration-200 ease-in-out rounded-none ${activeTab === tab.id ? 'border-b-gray-800 dark:border-b-gray-200 text-gray-800 dark:text-gray-200 rounded-none' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:border-b-gray-300 dark:hover:border-b-gray-500 rounded-none'}`}
+                            <TabsTrigger className={`shrink-0 border-b-2 px-1 pb-3 text-sm font-semibold inline-flex items-center gap-2 transition-colors duration-200 ease-in-out rounded-none ${toggleTab(tab.id)}`}
+                                key={tab.id}
+                                value={tab.id}
                             >
-                                {/* Nota: Aquí debes usar el componente de ícono real, por ejemplo:
-                                {tab.icon === 'User' && <User className="w-4 h-4" />}
-                                */}
-                                <MapIcon className="w-4 h-4" /> {/* Usado como placeholder */}
+                                <MapIcon className="w-4 h-4" />
                                 {tab.label}
                             </TabsTrigger>
                         ))}
                     </TabsList>
 
-                    {/* Contenido de las pestañas */}
                     <div className="mt-6">
-                        {/* Ficha Técnica */}
                         <TabsContent value="ficha-tecnica">
                             <AdmissionDataPanel />
                         </TabsContent>
 
                         {/* Entrevista Clínica */}
                         <TabsContent value="entrevista-clinica">
-                            {/* Descomentar y pasar los props adecuados cuando el componente EntrevistaClinicaContent esté disponible */}
-                            {/* <EntrevistaClinicaContent
-                                formData={formData}
-                                setFormData={setFormData}
-                                onSave={handleSave}
-                            /> */}
+                            <ClinicalInterview />
                             <p className="text-gray-500 dark:text-gray-400">Contenido de Entrevista Clínica (Pendiente de implementación)</p>
                         </TabsContent>
 

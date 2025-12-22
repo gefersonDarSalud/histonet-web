@@ -28,6 +28,9 @@ import { SetPatientRelationshipService } from "./patient/setPatientRelationship"
 import { DeletePatientContractsService } from "./patient/deletePatientContractsService";
 import { GetPatientRelationshipNameService } from "./patient/getPatientRelationshipNameService";
 import { DeletePatientRelationshipService } from "./patient/deletePatientRelationship";
+import { UpdateProfileService } from "./user/updateProfileService";
+import { GetOneProfileService } from "./user/GetOneProfileService";
+import { GetProfileEspecialityService } from "./user/getProfileEspecialityService";
 
 type Repositories = {
     user: UserRepositoryCore;
@@ -42,6 +45,9 @@ export class ServiceContainer {
 
     // user 
     public readonly authService: AuthService;
+    public readonly updateProfileService: UpdateProfileService;
+    public readonly getOneProfileService: GetOneProfileService;
+    public readonly getProfileEspecialityService: GetProfileEspecialityService;
 
     // visit
     public readonly searchVisit: SearchVisitService;
@@ -76,6 +82,10 @@ export class ServiceContainer {
 
         // user
         this.authService = new AuthService({ userRepository: this.repository.user });
+        this.updateProfileService = new UpdateProfileService();
+        this.getOneProfileService = new GetOneProfileService();
+        this.getProfileEspecialityService = new GetProfileEspecialityService();
+
 
         // visit
         this.searchVisit = new SearchVisitService(this.repository.visit);

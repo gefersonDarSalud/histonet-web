@@ -8,6 +8,7 @@ import { ServiceProvider } from './serviceProvider.tsx';
 import { AppAlert } from '@/components/app/appAlert.tsx';
 import { useToast } from '@/components/hooks/useToast.tsx';
 import { ToastProvider } from './context/providers/toastProvider.tsx';
+import { QueryClient, QueryClientContext, QueryClientProvider } from '@tanstack/react-query';
 
 const RootApp = () => {
     const { message: authMessage, setMessage: setAuthMessage } = useAuth();
@@ -37,13 +38,16 @@ const RootApp = () => {
 
 // 2. Componente principal que envuelve toda la aplicación en el proveedor de contexto.
 const AppWrapper = () => (
-    <ServiceProvider>
-        <AuthProvider>
-            <ToastProvider>
-                <RootApp />
-            </ToastProvider>
-        </AuthProvider>
-    </ServiceProvider>
+    <QueryClientProvider client={new QueryClient()}>
+        <ServiceProvider>
+            <AuthProvider>
+                <ToastProvider>
+                    <RootApp />
+                </ToastProvider>
+            </AuthProvider>
+        </ServiceProvider>
+    </QueryClientProvider>
+
 );
 
 

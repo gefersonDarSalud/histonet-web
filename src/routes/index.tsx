@@ -12,11 +12,12 @@ import App from "#/App";
 import { MedicalVisitProvider } from "#/context/providers/medicalVisitProvider";
 import { ErrorBoundary } from "@/components/app/errorBoundary";
 import { ErrorFallback } from "@/components/app/errorFallback";
+import { AuthRedirectRoute } from "@/auth/components/authRedirectRoute";
 
 export const routeLabel: Record<string, string> = {
     // home: "/inicio",
     remoteClinic: "/telemedicina",
-    medicalVisit: "/visita/:visitId",
+    medicalVisit: `/telemedicina/:visitId`,
     patient: "/paciente",
     patientProfile: "/paciente/:patientId",
     login: "/iniciar-sesion",
@@ -61,7 +62,11 @@ export const routesConfig = [
     },
     {
         path: routeLabel.login,
-        element: <Login />
+        element:
+            <AuthRedirectRoute>
+                <Login />
+            </AuthRedirectRoute>
+
         ,
         NotFoundPage: <NotFoundPage />,
     },

@@ -1,5 +1,5 @@
 import type { IService } from "#/core/entities";
-import type { AuthServiceResponse } from "#/core/repositories/userRepository";
+import type { UserLoginResponse } from "#/data/mappers/userMapper";
 import type { UserRepository } from "#/infrastructure/userRepository";
 
 type AuthServiceProps = {
@@ -11,25 +11,16 @@ type AuthServiceDependencies = {
     userRepository: UserRepository;
 };
 
-export class AuthService implements IService<AuthServiceProps, AuthServiceResponse> {
+export class AuthService implements IService<AuthServiceProps, UserLoginResponse> {
     private userRepository: UserRepository;
 
     constructor({ userRepository }: AuthServiceDependencies) {
         this.userRepository = userRepository;
     }
 
-    async execute({ email, password }: AuthServiceProps): Promise<AuthServiceResponse> {
+    async execute({ email, password }: AuthServiceProps): Promise<UserLoginResponse> {
         if (!email || !password) throw new Error("El email y la contraseña son obligatorios.");
-
-        try {
-            const result = await this.userRepository.login({ email, password });
-            if (result.data.status !== 'success') throw new Error(result.data.message);
-            return result;
-        }
-
-        catch (error) {
-            console.error('[AuthService] Fallo en la lógica de autenticación:', error);
-            throw error;
-        }
+        const result = await this.userRepository.login({ email, password });
+        return result;
     }
 }

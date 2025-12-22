@@ -1,15 +1,6 @@
-import type { BasicResponse } from "../entities";
+import type { UserLoginResponse } from "#/data/mappers/userMapper";
 
-export type AuthResult = {
-    accessToken: string;
-    refreshToken: string;
-};
-
-export type AuthServiceResponse = {
-    data: BasicResponse;
-    auth: AuthResult;
-};
 
 export interface UserRepository {
-    login(credentials: { email: string; password: string; }): Promise<AuthServiceResponse>;
+    login(credentials: { email: string; password: string; }): Promise<UserLoginResponse>;
 }

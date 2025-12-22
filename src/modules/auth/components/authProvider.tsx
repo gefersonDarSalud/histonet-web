@@ -1,15 +1,16 @@
-import type { AuthResult } from "#/core/repositories/userRepository";
+import { serverUrl } from "#/utils/globals";
 import type { objectList } from "#/utils/types";
 import type { Message } from "@/components/app/appAlert";
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 interface AuthContextType {
     isLoggedIn: boolean;
-    login: (authData: AuthResult) => void; // <-- Ahora recibe los datos de autenticación
+    login: () => void;
     logout: () => void;
     message: Message | null;
     setMessage: React.Dispatch<React.SetStateAction<Message | null>>;
-    isAuthReady: boolean; // Nuevo: indica si la verificación inicial terminó
+    isAuthReady: boolean;
+    isLoading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,40 +33,73 @@ const messages: objectList<Message> = {
     },
 }
 
+const apiFetch = async (url: string, method: 'POST' | 'GET') => {
+    const response = await fetch(url, {
+        method: method,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+    });
+    return response;
+};
+
 
 export const AuthProvider = ({ children }: React.PropsWithChildren) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [message, setMessage] = useState<Message | null>(null);
     const [isAuthReady, setIsAuthReady] = useState(false);
-
-    const ACCESS_TOKEN_KEY = 'histonet_access_token';
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem(ACCESS_TOKEN_KEY);
-        if (token) {
-            setIsLoggedIn(true);
-        }
-        setIsAuthReady(true);
+        const checkAuthStatus = async () => {
+            setIsLoading(true);
+            try {
+                const url = `${serverUrl}/sesion/verificar`;
+                const response = await apiFetch(url, 'GET');
+                if (response.ok) setIsLoggedIn(true);
+                else if (response.status === 401) setIsLoggedIn(false);
+                else throw new Error("algo salio mal");
+            }
+
+            catch (error) {
+                console.error("Error al verificar la sesión:", error);
+                setIsLoggedIn(false);
+            }
+
+            finally {
+                setIsLoading(false);
+                setIsAuthReady(true);
+            }
+        };
+
+        checkAuthStatus();
     }, []);
 
-
-    const login = useCallback((authData: AuthResult) => {
-        if (authData.accessToken) {
-            localStorage.setItem(ACCESS_TOKEN_KEY, authData.accessToken);
-            setIsLoggedIn(true);
-            setMessage(messages.sessionSuccess);
-            setTimeout(() => setMessage(null), 3000);
-        } else {
-            setMessage(messages.sessionError);
-            setTimeout(() => setMessage(null), 3000);
-        }
-    }, []);
-
-    const logout = useCallback(() => {
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
-        setIsLoggedIn(false);
-        setMessage(messages.sessionLogout);
+    const login = useCallback(() => {
+        setIsLoggedIn(true);
+        setMessage(messages.sessionSuccess);
         setTimeout(() => setMessage(null), 3000);
+    }, []);
+
+    const logout = useCallback(async () => {
+        try {
+            const response = await apiFetch(`${serverUrl}/cerrar-sesion`, 'POST');
+
+            if (response.ok) {
+                setIsLoggedIn(false);
+                setMessage(messages.sessionLogout);
+                setTimeout(() => setMessage(null), 3000);
+            }
+
+            else {
+                setMessage(messages.sessionError);
+                setTimeout(() => setMessage(null), 3000);
+            }
+        }
+
+        catch (error) {
+            console.error("Error en el logout:", error);
+            setIsLoggedIn(false);
+        }
     }, []);
 
     const contextValue = useMemo(() => ({
@@ -74,12 +108,9 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         logout,
         message,
         setMessage,
-        isAuthReady
-    }), [isLoggedIn, login, logout, message, setMessage, isAuthReady]);
+        isAuthReady,
+        isLoading,
+    }), [isLoggedIn, login, logout, message, isAuthReady, isLoading]);
 
-    return (
-        <AuthContext.Provider value={contextValue}>
-            {children}
-        </AuthContext.Provider>
-    );
+    return <AuthContext.Provider value={contextValue}> {children} </AuthContext.Provider>;
 };

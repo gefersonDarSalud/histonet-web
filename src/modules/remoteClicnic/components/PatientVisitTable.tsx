@@ -1,4 +1,5 @@
 import type { SearchResponse } from "#/data/mappers/visitMappers";
+import { routeLabel } from "#/routes";
 import { Loading } from "@/components/app/loading";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { StatusBadge } from "@/home/components/StatusTabs"
@@ -15,7 +16,7 @@ export const PatientVisitTable = ({ visits, isLoading }: PatientVisitTableProps)
     const hasPatients = visits.length > 0;
     setTimeout(() => setIsLoaded(true), 500);
     const navigate = useNavigate();
-    const handleRowClick = (visitId: string): void => { navigate(`/visita/${visitId}`); };
+    const handleRowClick = (visitId: string): void => { navigate(`${routeLabel.remoteClinic}/${visitId}`); };
     return (
         <Table className="divide-y divide-gray-100">
             {/* Encabezado de la Tabla (shadcn Table Header) */}

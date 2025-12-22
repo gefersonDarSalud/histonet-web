@@ -120,3 +120,95 @@ export function capitalizeText(text: string): string {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
 }
+
+
+
+
+
+/**
+ * Interface que modela el cuerpo de la solicitud POST.
+ * TData permite extender el cuerpo con datos adicionales específicos.
+ */
+interface LoginRequestBody {
+    [key: string]: any;
+}
+
+
+export async function post<TResponse extends object, TData extends object>(
+    urlBase: string,
+    endpoint: string,
+    data: TData = {} as TData
+): Promise<TResponse> {
+    const urlFull: string = `${urlBase}${endpoint}`;
+    const requestBody: LoginRequestBody = data;
+    const options: RequestInit = {
+        method: 'POST',
+        credentials: 'include',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' } as HeadersInit,
+        body: JSON.stringify(requestBody),
+    };
+
+    try {
+        const response: Response = await fetch(urlFull, options);
+        if (!response.ok) {
+            let errorDetail: any;
+            try { errorDetail = await response.json(); }
+            catch { errorDetail = { message: response.statusText }; }
+            const errorMessage: string = `HTTP error! Status: ${response.status} - ${errorDetail.message || 'Error desconocido'}`;
+            console.error('Error en la API:', errorMessage, errorDetail);
+            throw new Error(errorMessage);
+        }
+        return await response.json() as TResponse;
+    }
+
+    catch (error) {
+        const errorMsg: string = error instanceof Error ? error.message : 'An unknown error occurred during fetch';
+        console.error('Error durante la solicitud fetch:', errorMsg);
+        throw error;
+    }
+}
+
+export async function get<TResponse extends object>(
+    urlBase: string,
+    endpoint: string,
+    params: Record<string, string | number | boolean | undefined> = {}
+): Promise<TResponse> {
+    const queryParams: URLSearchParams = new URLSearchParams();
+
+    for (const key in params) {
+        const value = params[key];
+        if (value !== undefined) queryParams.append(key, String(value));
+    }
+
+    const queryString: string = queryParams.toString();
+    const fullEndpoint: string = queryString ? `${endpoint}?${queryString}` : endpoint;
+    const urlFull: string = `${urlBase}${fullEndpoint}`;
+
+    const options: RequestInit = {
+        method: 'GET',
+        credentials: 'include',
+        mode: 'cors',
+    };
+
+    try {
+        console.log(urlFull);
+
+        const response: Response = await fetch(urlFull, options);
+        if (!response.ok) {
+            let errorDetail: any;
+            try { errorDetail = await response.json(); }
+            catch { errorDetail = { message: response.statusText }; }
+            const errorMessage: string = `HTTP error! Status: ${response.status} - ${errorDetail.message || 'Error desconocido'}`;
+            console.error('Error en la API:', errorMessage, errorDetail);
+            throw new Error(errorMessage);
+        }
+
+        return await response.json() as TResponse;
+    }
+    catch (error) {
+        const errorMsg: string = error instanceof Error ? error.message : 'An unknown error occurred during fetch';
+        console.error('Error durante la solicitud fetch:', errorMsg);
+        throw error;
+    }
+}

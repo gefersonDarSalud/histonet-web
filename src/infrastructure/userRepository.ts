@@ -1,17 +1,20 @@
 
-import { UserLoginMapper } from "#/data/mappers/userMapper";
+import { UserLoginMapper, type UserLoginResponse } from "#/data/mappers/userMapper";
 import { getServerUrl } from "#/utils/functions";
-import type { AuthServiceResponse, UserRepository as UserRepositoryCore } from "#/core/repositories/userRepository";
+import type { UserRepository as UserRepositoryCore } from "#/core/repositories/userRepository";
+
 
 
 
 export class UserRepository implements UserRepositoryCore {
-    async login(credentials: { email: string; password: string; }): Promise<AuthServiceResponse> {
-        const urlFull = getServerUrl('usuario/iniciar-sesion');
+    async login(credentials: { email: string; password: string; }): Promise<UserLoginResponse> {
+        const urlFull = getServerUrl('sesion/iniciar');
 
         try {
             const response = await fetch(urlFull, {
                 method: 'POST',
+                credentials: 'include',
+                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -23,18 +26,11 @@ export class UserRepository implements UserRepositoryCore {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ message: 'Error de red o API desconocido.' }));
-
                 throw new Error(errorData.message || `Fallo en el login. Estado: ${response.status}`);
             }
-            const data = await response.json();
 
-            return {
-                data: UserLoginMapper.fromApiToDomain(data),
-                auth: {
-                    accessToken: "mock-jwt-" + Math.random().toString(36).substring(7),
-                    refreshToken: "mock-refresh-" + Math.random().toString(36).substring(7),
-                },
-            };
+            const data = await response.json();
+            return UserLoginMapper.fromApiToDomain(data)
         }
 
         catch (error) {
