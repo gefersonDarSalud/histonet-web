@@ -8,7 +8,7 @@ import { routeLabel } from '#/routes';
 
 export const AuthRedirectRoute: React.FC<{ children: React.ReactNode; }> = ({ children }) => {
     const auth = useAuth();
-    if (auth.isLoading) return <div className="p-10 text-center"><LoadingCircle /></div>;
-    if (auth.isLoggedIn) return <Navigate to={routeLabel.remoteClinic} replace />;
+    if (auth.isLoading && auth.isProfileSelected) return <div className="p-10 text-center"><LoadingCircle /></div>;
+    if (auth.isLoggedIn && auth.isProfileSelected) return <Navigate to={routeLabel.remoteClinic} replace />;
     return children;
 };

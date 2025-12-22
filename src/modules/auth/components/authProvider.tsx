@@ -11,6 +11,8 @@ interface AuthContextType {
     setMessage: React.Dispatch<React.SetStateAction<Message | null>>;
     isAuthReady: boolean;
     isLoading: boolean;
+    isProfileSelected: boolean;
+    setIsProfileSelected: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,6 +50,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
     const [message, setMessage] = useState<Message | null>(null);
     const [isAuthReady, setIsAuthReady] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isProfileSelected, setIsProfileSelected] = useState(false);
 
     useEffect(() => {
         const checkAuthStatus = async () => {
@@ -110,7 +113,9 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         setMessage,
         isAuthReady,
         isLoading,
-    }), [isLoggedIn, login, logout, message, isAuthReady, isLoading]);
+        isProfileSelected,
+        setIsProfileSelected,
+    }), [isLoggedIn, login, logout, message, isAuthReady, isLoading, isProfileSelected]);
 
     return <AuthContext.Provider value={contextValue}> {children} </AuthContext.Provider>;
 };

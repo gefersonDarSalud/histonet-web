@@ -157,7 +157,7 @@ export async function post<TResponse extends object, TData extends object>(
             catch { errorDetail = { message: response.statusText }; }
             const errorMessage: string = `HTTP error! Status: ${response.status} - ${errorDetail.message || 'Error desconocido'}`;
             console.error('Error en la API:', errorMessage, errorDetail);
-            throw new Error(errorMessage);
+            throw new Error(response.statusText);
         }
         return await response.json() as TResponse;
     }
@@ -201,7 +201,7 @@ export async function get<TResponse extends object>(
             catch { errorDetail = { message: response.statusText }; }
             const errorMessage: string = `HTTP error! Status: ${response.status} - ${errorDetail.message || 'Error desconocido'}`;
             console.error('Error en la API:', errorMessage, errorDetail);
-            throw new Error(errorMessage);
+            throw new Error(response.statusText);
         }
 
         return await response.json() as TResponse;

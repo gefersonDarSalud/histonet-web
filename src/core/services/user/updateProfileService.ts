@@ -11,7 +11,9 @@ type UpdateProfileServiceProps = {
 
 export class UpdateProfileService implements IService<UpdateProfileServiceProps, Response> {
     async execute(data: UpdateProfileServiceProps): Promise<Response> {
+        console.log(data);
+
         return post<Response, UpdateProfileServiceProps>
-            (serverUrl, 'perfil/cambiar', data)
+            (serverUrl, '/perfil/cambiar', data)
     }
 }

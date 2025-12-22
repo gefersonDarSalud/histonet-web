@@ -25,6 +25,8 @@ import * as z from "zod"
 import { useServices } from "@/components/hooks/useServices";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { useToast } from "@/components/hooks/useToast";
 
 
 const idNameSchema = z.object({
@@ -55,7 +57,9 @@ type props = {
 }
 
 export const ModalProfile = ({ open, onOpenChange, isDoctor }: props) => {
+    const { setMessage } = useToast();
     const { updateProfileService, getOneProfileService, getProfileEspecialityService } = useServices();
+    const auth = useAuth();
     const navigate = useNavigate();
     const from = useLocation().state?.from?.pathname || "/";
     const form = useForm({
@@ -89,19 +93,26 @@ export const ModalProfile = ({ open, onOpenChange, isDoctor }: props) => {
         queryFn: () => getProfileEspecialityService.execute(medicalProfileId.toString() ?? "no"),
     });
 
-    const hadleFormSubimt = form.handleSubmit((data: FormSchema) => {
-        console.log("here");
+    const hadleFormSubimt = form.handleSubmit(async (data: FormSchema) => {
+        try {
+            await updateProfileService.execute({
+                branchId: data.branch.id.toString(),
+                companyId: data.company.id.toString(),
+                queueId: data.medicalProfile.id.toString(),
+                especialityId: data.especiality.id.toString(),
+            });
 
-        updateProfileService.execute({
-            branchId: data.branch.id.toString(),
-            companyId: data.company.id.toString(),
-            queueId: data.medicalProfile.id.toString(),
-            especialityId: data.especiality.id.toString(),
-        });
-        navigate(from, { replace: true });
-        onOpenChange(false);
+            auth.setIsProfileSelected(true);
+            navigate(from, { replace: true });
+            onOpenChange(false);
+        } catch (error) {
+            setMessage({
+                title: "Error",
+                variant: "destructive",
+                description: `algo ha salido mal | ${error}`
+            });
+        }
     });
-
 
     useEffect(() => {
         if (medicalProfileId !== undefined) form.setValue('especiality', null, { shouldValidate: true });
