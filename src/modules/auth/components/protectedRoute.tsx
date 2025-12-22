@@ -18,7 +18,9 @@ export const ProtectedRoute = ({ children }: { children: ReactElement; }) => {
         );
     }
 
-    if (!isLoggedIn) return <Navigate to={routeLabel.login} replace state={{ from: location }} />;
+    const toMain = () => <Navigate to={routeLabel.login} replace state={{ from: location }} />
+
+    if (!isLoggedIn) return toMain();
 
     return children;
 };
