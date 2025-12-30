@@ -64,12 +64,7 @@ const genders: IdName[] = [
 
 export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, patientId }: PatientProfileFormProps) => {
     const { setPatientData } = useServices();
-    console.log("patientId", patientId);
-
-
     const { toast } = useToast();
-    // const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-
     const initialValues = useMemo(() => {
         if (isNewPatient) {
             return emptyDefaults;

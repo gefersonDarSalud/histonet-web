@@ -3,8 +3,14 @@ import { z } from "zod";
 // --- Esquema de Validación Zod ---
 export const VisitSchema = z.object({
     // Sección: Entrevista Clínica
-    clinicalInterview: z.string().min(20, "Detalle la entrevista clínica (mínimo 20 caracteres).").max(2000),
-    chiefComplaint: z.string().min(20, "Detalle la enfermedad actual (mínimo 20 caracteres).").max(2000),
+    clinicalInterview: z.string()
+        // .min(20, "Detalle la entrevista clínica (mínimo 20 caracteres).")
+        .max(10000)
+        .optional(),
+
+    chiefComplaint: z.string()
+        // .min(20, "Detalle la enfermedad actual (mínimo 20 caracteres).")
+        .max(2000),
 
     // Sección: Antecedentes
     familyHistory: z.array(z.string()).optional(), // Ej: ['Diabetes', 'Cáncer']

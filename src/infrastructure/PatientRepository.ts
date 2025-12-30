@@ -26,7 +26,7 @@ export class PatientRepository implements PatientRepositoryCore {
         }
         const dtos = await response.json() as PatientResponse;
         const patientMapped = PatientFullMapper.fromApiToDomain(dtos);
-        return patientMapped
+        return patientMapped;
     }
 
     async getContracts(patient: { id: string; }): Promise<PatientContracts[]> {
@@ -47,10 +47,6 @@ export class PatientRepository implements PatientRepositoryCore {
             throw new Error(`Error ${response.status}: Fallo al buscar las relaciones del paciente`);
         }
         const dtos = await response.json() as PatientRelationshipResponse[];
-
-        console.log(dtos);
-
-
         return PatientRelationsMapper.fromApiArrayToDomainArray(dtos);
     }
 
@@ -131,8 +127,6 @@ export class PatientRepository implements PatientRepositoryCore {
 
     async setRelationship(newRelationship: NewRelationshipRequest): Promise<Response> {
         const urlFull = getServerUrl('paciente/relacion');
-        console.log("newRelationship", newRelationship);
-
         try {
             const response = await fetch(urlFull, {
                 method: 'POST',

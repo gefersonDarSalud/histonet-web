@@ -27,10 +27,6 @@ export class SetPatientData {
             fecha_nacimiento: patient.birthdate ? formatDate(patient.birthdate) : '',
             inactivar: patient.isActive ? "0" : "1",
         }
-
-        console.log("newPatient", newPatient);
-
-
         return await this.repository.setData(newPatient);
     }
 }

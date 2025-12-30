@@ -36,8 +36,6 @@ export const OwnersTable = ({ owners, isLoading, onDeleteOwner }: props) => {
 
     const handlerClickDelete = (index: number, owner: PatientRelationship) => {
         deleteOwner(index);
-        console.log("owner", owner);
-
         onDeleteOwner(owner);
     }
 

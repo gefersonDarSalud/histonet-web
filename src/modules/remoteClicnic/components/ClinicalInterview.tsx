@@ -12,6 +12,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator'; // Sugiero añadir este componente
 import { habitsOptions, otherFamilyHistoryOptions, VisitSchema, type VisitFormValues } from '../validations/ClinicalInterview';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { WysiwigEditor } from '@/components/app/wysiwyg';
+import Editor from 'react-simple-wysiwyg';
+import { Activity, FileUser } from 'lucide-react';
+import { InputTag } from './inputTag';
+import { InputTagBadge } from './inputTagBadge';
+import { SelectSearch } from '@/components/app/selectSearch';
+import { PersonalHistory } from './clinicalInterview/personalHistory';
+import { ClinicalInterviewSection } from './clinicalInterview/clinicalInterviewSection';
+import { ChiefComplaint } from './clinicalInterview/chiefComplaint';
 
 
 // --- Tipo para los elementos del Plan Médico (para el estado interno) ---
@@ -52,8 +61,9 @@ const defaultFormData: VisitFormValues = {
 
 
 export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
-    // Estado para manejar el campo temporal de "Añadir antecedente"
+
     const [newHistory, setNewHistory] = useState('');
+
     // Estado para el Plan Médico (a menudo es mejor manejar esta lista con su propia lógica)
     const [medicalPlan, setMedicalPlan] = useState<MedicalPlanItem[]>([]);
 
@@ -79,12 +89,7 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
         }
     };
 
-    // Función para remover un antecedente personal
-    const handleRemovePersonalHistory = (history: string) => {
-        const current = form.getValues('personalHistory') || [];
-        const updated = current.filter(a => a !== history);
-        form.setValue('personalHistory', updated, { shouldDirty: true, shouldValidate: true });
-    };
+
 
     // Función de ejemplo para añadir un elemento al Plan Médico
     const handleAddMedicalPlan = () => {
@@ -111,202 +116,24 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                 <div className="bg-card p-6 rounded-lg border">
                     <div className="space-y-10">
 
-                        <div className='flex  justify-between gap-3 '>
-
-                            {/* ========================================================================= */}
-                            {/* 1. Entrevista Clínica (Adaptado a Controller + Field) */}
-                            {/* ========================================================================= */}
-                            <section className='w-full'>
-                                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-                                    <span className="material-symbols-outlined text-primary">forum</span> Entrevista Clínica
-                                </h2>
-                                <Controller
-                                    name="clinicalInterview"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor={field.name}>Motivo de consulta y descripción detallada</FieldLabel>
-                                            <Textarea
-                                                id={field.name}
-                                                placeholder="Describa el motivo de la visita y la entrevista clínica..."
-                                                className="min-h-[120px]"
-                                                aria-invalid={fieldState.invalid}
-                                                {...field}
-                                            />
-                                            <FieldDescription>
-                                                Mínimo 20 caracteres. Este campo es crucial.
-                                            </FieldDescription>
-                                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                        </Field>
-                                    )}
-                                />
-                            </section>
-                            {/* <Separator orientation='vertical' className='mx-5' /> */}
-
-                            {/* ========================================================================= */}
-                            {/* 2. Enfermedad Actual (Adaptado a Controller + Field) */}
-                            {/* ========================================================================= */}
-                            <section className='w-full'>
-                                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-                                    <span className="material-symbols-outlined text-primary">history</span> Enfermedad Actual
-                                </h2>
-                                <Controller
-                                    name="chiefComplaint"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor={field.name}>Cronología, evolución de los síntomas</FieldLabel>
-                                            <Textarea
-                                                id={field.name}
-                                                placeholder="Detalle la cronología y evolución de los síntomas..."
-                                                className="min-h-[120px]"
-                                                aria-invalid={fieldState.invalid}
-                                                {...field}
-                                            />
-                                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                        </Field>
-                                    )}
-                                />
-                            </section>
+                        {/* wysiwix */}
+                        <div className='flex flex-col justify-between gap-3 '>
+                            <ClinicalInterviewSection form={form} />
+                            <ChiefComplaint form={form} />
                         </div>
 
                         <Separator className="my-8" />
 
-                        {/* ========================================================================= */}
                         {/* 3. Antecedentes (Grid) - Adaptación de Checkbox Group y Tags */}
-                        {/* ========================================================================= */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 
                             {/* --- 3.1 Antecedentes Familiares (Checkbox Group) --- */}
                             <section>
-                                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-                                    <span className="material-symbols-outlined text-primary">family_restroom</span> Antecedentes Familiares
-                                </h2>
+                                <PersonalHistory form={form} />
 
-                                {/* Controllador para el grupo de Checkboxes */}
-                                <Controller
-                                    name="familyHistory"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid} className="space-y-4">
-                                            <div>
-                                                <FieldLabel className="text-base">Condiciones comunes</FieldLabel>
-                                                <FieldDescription>Seleccione las condiciones relevantes.</FieldDescription>
-                                            </div>
-
-                                            <div className="flex flex-wrap gap-2">
-                                                {otherFamilyHistoryOptions.map((item) => (
-                                                    <label
-                                                        key={item}
-                                                        className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-full hover:bg-muted/50 cursor-pointer"
-                                                        htmlFor={`${field.name}-${item}`} // Enlazamos label con input
-                                                    >
-                                                        <Checkbox
-                                                            id={`${field.name}-${item}`}
-                                                            checked={field.value?.includes(item)}
-                                                            onCheckedChange={(checked) => {
-                                                                // Lógica de RHF para manejar arrays con Checkboxes
-                                                                const newValue = checked
-                                                                    ? [...(field.value || []), item]
-                                                                    : field.value?.filter((value) => value !== item);
-                                                                field.onChange(newValue);
-                                                            }}
-                                                        />
-                                                        <span className="text-sm font-normal cursor-pointer">
-                                                            {item}
-                                                        </span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                        </Field>
-                                    )}
-                                />
-
-                                {/* Campo para Otros/Notas (Input simple) */}
-                                <Controller
-                                    name="otherFamilyHistory"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid} className="mt-4">
-                                            <FieldLabel htmlFor={field.name}>Otros / Notas</FieldLabel>
-                                            <Input
-                                                id={field.name}
-                                                placeholder="Añadir otra condición..."
-                                                aria-invalid={fieldState.invalid}
-                                                {...field}
-                                                // Convertir null a string vacío para el input
-                                                value={field.value ?? ''}
-                                            />
-                                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                        </Field>
-                                    )}
-                                />
                             </section>
 
-                            {/* --- 3.2 Antecedentes Personales (Tag Input - Sigue con estado local para la adición) --- */}
-                            <section>
-                                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-                                    <span className="material-symbols-outlined text-primary">person</span> Antecedentes Personales
-                                </h2>
 
-                                {/* Controller sólo para mostrar errores y la etiqueta asociada al campo (personalHistory) */}
-                                <Controller
-                                    name="personalHistory"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid} className="space-y-4">
-                                            <FieldLabel className="text-base">Condiciones y hábitos</FieldLabel>
-                                            <FieldDescription>Antecedentes personales (alergias, cirugías, etc.).</FieldDescription>
-
-                                            {/* Visualización de Tags/Chips (usando form.watch) */}
-                                            <div className="flex flex-wrap gap-2 min-h-8">
-                                                {form.watch('personalHistory')?.map((antecedente) => (
-                                                    <div
-                                                        key={antecedente}
-                                                        className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-secondary text-secondary-foreground"
-                                                    >
-                                                        {antecedente}
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="size-4 p-0 rounded-full hover:bg-secondary/70 text-secondary-foreground/70 hover:text-secondary-foreground"
-                                                            onClick={() => handleRemovePersonalHistory(antecedente)}
-                                                            aria-label={`Eliminar antecedente ${antecedente}`}
-                                                        >
-                                                            <span className="material-symbols-outlined text-sm">close</span>
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            {/* Input para añadir (Añadido con estado local) */}
-                                            <FieldLabel htmlFor="antecedentes-personales-input">Añadir antecedente</FieldLabel>
-                                            <div className="flex gap-2">
-                                                <Input
-                                                    id="antecedentes-personales-input"
-                                                    placeholder="Ej. Tabaquismo, cirugía previa..."
-                                                    value={newHistory}
-                                                    onChange={(e) => setNewHistory(e.target.value)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            e.preventDefault();
-                                                            handleAddPersonalHistory();
-                                                        }
-                                                    }}
-                                                />
-                                                <Button type="button" onClick={handleAddPersonalHistory} disabled={!newHistory.trim()} variant="secondary">
-                                                    Añadir
-                                                </Button>
-                                            </div>
-
-                                            {/* Mostramos el error del array completo */}
-                                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                        </Field>
-                                    )}
-                                />
-                            </section>
                         </div>
 
                         <Separator className="my-8" />

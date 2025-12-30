@@ -32,10 +32,11 @@ export function getServerUrl(route: string, params?: string | object, url?: stri
             urlFull = `${url}/${route}?${queryParams.toString()}`;
             break;
         default:
+
             urlFull = `${url}/${route}`;
             break;
     }
-    return urlFull;
+    return `/${urlFull}`;
 }
 
 export function cn(...classes: string[]): string {
@@ -192,8 +193,6 @@ export async function get<TResponse extends object>(
     };
 
     try {
-        console.log(urlFull);
-
         const response: Response = await fetch(urlFull, options);
         if (!response.ok) {
             let errorDetail: any;

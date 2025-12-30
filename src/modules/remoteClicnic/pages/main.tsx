@@ -39,16 +39,13 @@ export const RemoteClinic = () => {
         try {
             const currentDate = formatDate(new Date());
             const params: VisitRepositorySearchParams = {
-                inicio: '1/1/2025',
+                inicio: '1/1/2024',
                 fin: currentDate,
                 texto: text,
-                compania: (1).toString(),
-                sucursal: (2).toString(),
                 cantidad: (10).toString(),
                 pagina: (currentPage).toString(),
             }
             const result = await searchVisit.execute(params)
-
             setVisitList(result);
         }
 

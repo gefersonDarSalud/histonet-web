@@ -9,8 +9,6 @@ interface AppBreadcrumbProps {
 }
 
 export const Breadcrumb = ({ items }: AppBreadcrumbProps) => {
-    console.log("Breadcrumb component", items);
-
     return (
         <BreadcrumbComponent className="text-sm font-medium">
             <BreadcrumbList>
