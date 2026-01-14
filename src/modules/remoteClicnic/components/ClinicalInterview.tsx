@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator'; // Sugiero añadir este componente
-import { habitsOptions, otherFamilyHistoryOptions, VisitSchema, type VisitFormValues } from '../validations/ClinicalInterview';
+import { otherFamilyHistoryOptions, VisitSchema, type VisitFormValues } from '../validations/ClinicalInterview';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import { WysiwigEditor } from '@/components/app/wysiwyg';
 import Editor from 'react-simple-wysiwyg';
@@ -21,6 +21,7 @@ import { SelectSearch } from '@/components/app/selectSearch';
 import { PersonalHistory } from './clinicalInterview/personalHistory';
 import { ClinicalInterviewSection } from './clinicalInterview/clinicalInterviewSection';
 import { ChiefComplaint } from './clinicalInterview/chiefComplaint';
+import { FamilyHistory } from './clinicalInterview/familyHistory';
 
 
 // --- Tipo para los elementos del Plan Médico (para el estado interno) ---
@@ -118,23 +119,23 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
 
                         {/* wysiwix */}
                         <div className='flex flex-col justify-between gap-3 '>
-                            <ClinicalInterviewSection form={form} />
-                            <ChiefComplaint form={form} />
+                            {/* <ClinicalInterviewSection form={form} /> */}
+                            {/* <ChiefComplaint form={form} /> */}
                         </div>
 
                         <Separator className="my-8" />
 
                         {/* 3. Antecedentes (Grid) - Adaptación de Checkbox Group y Tags */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-
-                            {/* --- 3.1 Antecedentes Familiares (Checkbox Group) --- */}
-                            <section>
-                                <PersonalHistory form={form} />
-
-                            </section>
 
 
-                        </div>
+                        {/* --- 3.1 Antecedentes Familiares (Checkbox Group) --- */}
+                        <section className='grid grid-cols-2 gap-6 max-h-64 '>
+                            <FamilyHistory form={form} />
+                            {/* <PersonalHistory form={form} /> */}
+                        </section>
+
+
+
 
                         <Separator className="my-8" />
 
@@ -142,65 +143,9 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                         {/* 4. Hábitos (Adaptado a Controller + Field) */}
                         {/* ========================================================================= */}
                         <section>
-                            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-                                <span className="material-symbols-outlined text-primary">directions_run</span> Hábitos
-                            </h2>
-                            <Controller
-                                name="habit" // Asumo que el nombre es 'habit'
-                                control={form.control}
-                                render={({ field, fieldState }) => (
-                                    <Field data-invalid={fieldState.invalid} className="space-y-4">
-                                        <div>
-                                            <FieldLabel className="text-base">Hábitos comunes</FieldLabel>
-                                            <FieldDescription>Marque los hábitos relevantes del paciente.</FieldDescription>
-                                        </div>
 
-                                        <div className="flex flex-wrap gap-2">
-                                            {habitsOptions.map((item) => (
-                                                <label
-                                                    key={item}
-                                                    className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-full hover:bg-muted/50 cursor-pointer"
-                                                    htmlFor={`${field.name}-${item}`}
-                                                >
-                                                    <Checkbox
-                                                        id={`${field.name}-${item}`}
-                                                        checked={field.value?.includes(item)}
-                                                        onCheckedChange={(checked) => {
-                                                            const newValue = checked
-                                                                ? [...(field.value || []), item]
-                                                                : field.value?.filter((value) => value !== item);
-                                                            field.onChange(newValue);
-                                                        }}
-                                                    />
-                                                    <span className="text-sm font-normal cursor-pointer">
-                                                        {item}
-                                                    </span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                        {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                    </Field>
-                                )}
-                            />
 
-                            {/* Detalles Adicionales */}
-                            <Controller
-                                name="habitDetails" // Asumo que el nombre es 'habitDetails'
-                                control={form.control}
-                                render={({ field, fieldState }) => (
-                                    <Field data-invalid={fieldState.invalid} className="mt-4">
-                                        <FieldLabel htmlFor={field.name}>Detalles Adicionales</FieldLabel>
-                                        <Input
-                                            id={field.name}
-                                            placeholder="Ej. Fuma 10 cigarrillos al día, corre 3 veces por semana..."
-                                            aria-invalid={fieldState.invalid}
-                                            {...field}
-                                            value={field.value ?? ''}
-                                        />
-                                        {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                    </Field>
-                                )}
-                            />
+
                         </section>
 
                         <Separator className="my-8" />

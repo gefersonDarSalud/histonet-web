@@ -18,17 +18,19 @@ import {
 import type { IdName } from "#/core/entities"
 import type { state } from "#/utils/types" // Mantengo 'state' si lo usas en otros sitios, pero aquí solo necesitamos 'open'
 
+type IdNameExtended = IdName & { description?: string };
+
 type props = {
-    list: IdName[];
+    list: IdNameExtended[];
     children: React.ReactNode;
     placeholder?: string;
     empty?: string;
     // Control del Popover
     open: state<boolean>;
     // Función de callback al seleccionar un item
-    onSelect: (item: IdName) => void;
+    onSelect: (item: IdNameExtended) => void;
     // Lista de valores que ya están seleccionados (para mostrar el Check)
-    selectedValue: string[];
+    selectedValue: IdNameExtended[];
 }
 
 
@@ -53,9 +55,7 @@ export const SelectSearch = ({
                         <CommandEmpty>{empty ?? "No hay items en la lista"}</CommandEmpty>
                         <CommandGroup>
                             {list.map(item => {
-                                // Comprobar si el item ya está seleccionado
-                                const isSelected = selectedValue.includes(item.name);
-
+                                const isSelected = selectedValue.some(a => a.id === item.id);
                                 return (
                                     <CommandItem
                                         key={item.id}

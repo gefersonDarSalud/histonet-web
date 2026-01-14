@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
+
+
 type props = {
     antecedent: string
     handlerOnClick: (antecedente: string) => void

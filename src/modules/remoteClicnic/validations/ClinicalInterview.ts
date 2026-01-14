@@ -1,6 +1,11 @@
+import { IdNameSchema } from "#/utils/zod";
 import { z } from "zod";
 
 // --- Esquema de Validación Zod ---
+const extendedSchema = IdNameSchema.extend({
+    description: z.string().optional(), // Permite string o undefined
+}).nullable();
+
 export const VisitSchema = z.object({
     // Sección: Entrevista Clínica
     clinicalInterview: z.string()
@@ -13,9 +18,9 @@ export const VisitSchema = z.object({
         .max(2000),
 
     // Sección: Antecedentes
-    familyHistory: z.array(z.string()).optional(), // Ej: ['Diabetes', 'Cáncer']
+    familyHistory: extendedSchema.array().optional(), // Ej: ['Diabetes', 'Cáncer']
     otherFamilyHistory: z.string().max(500).optional(),
-    personalHistory: z.array(z.string()).optional(), // Ej: ['Alergia a Penicilina', 'Asma']
+    personalHistory: extendedSchema.array().optional(), // Ej: ['Alergia a Penicilina', 'Asma']
     personalHistoryInput: z.string().max(200).optional(), // Campo temporal para añadir nuevos
 
     // Sección: Hábitos
@@ -50,11 +55,4 @@ export const otherFamilyHistoryOptions = [
     "Hipertensión",
     "Cáncer",
     "Cardiopatía",
-] as const;
-
-export const habitsOptions = [
-    "Tabaquismo",
-    "Alcoholismo",
-    "Ejercicio Regular",
-    "Dieta Balanceada",
 ] as const;
