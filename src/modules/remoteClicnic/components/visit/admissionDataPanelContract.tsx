@@ -1,7 +1,7 @@
 import { Badge, Building2, CircleDollarSign, Handshake, ShieldCheck, UserStar } from "lucide-react";
-import { DataField } from "./dataField";
 import { useMedicalVisit } from "@/components/hooks/useMedicalVisit";
 import { capitalizeText } from "#/utils/functions";
+import { DataField } from "../dataField";
 
 export const AdmissionDataPanelContract = () => {
     const { state: visit } = useMedicalVisit();

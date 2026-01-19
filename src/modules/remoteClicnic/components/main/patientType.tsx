@@ -1,4 +1,4 @@
-import type { TypeVisit } from "#/core/entities";
+import type { GroupTypeVisit } from "#/core/entities";
 import {
     Select,
     SelectContent,
@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/select"
 
 interface PatientTypeProps {
-    typeVisit: TypeVisit[];
-    value: TypeVisit | null;
-    onValueChange: (value: TypeVisit) => void;
+    typeVisit: GroupTypeVisit[];
+    value: GroupTypeVisit | null;
+    onValueChange: (value: GroupTypeVisit) => void;
 }
 
 

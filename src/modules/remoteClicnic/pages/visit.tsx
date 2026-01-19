@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MapIcon, Stethoscope } from 'lucide-react';
 import type { MedicalVisitNursingDetails, VisitStatus } from '#/core/entities';
-import { AdmissionDataPanel } from '../components/AdmissionDataPanel';
 import { useMedicalVisit } from '@/components/hooks/useMedicalVisit';
 import { useParams } from 'react-router-dom';
 import { useFetch } from '@/components/hooks/useFetch';
@@ -9,7 +8,8 @@ import { useServices } from '@/components/hooks/useServices';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loading } from '@/components/app/loading';
 import { capitalizeText } from '#/utils/functions';
-import { ClinicalInterview } from '../components/ClinicalInterview';
+import { ClinicalInterview } from '../components/visit/ClinicalInterview';
+import { AdmissionDataPanel } from '../components/visit/AdmissionDataPanel';
 
 const TABS = [
     { id: 'ficha-tecnica', label: 'Ficha Técnica', icon: 'User' },
@@ -88,13 +88,10 @@ export default function Visit() {
                         {/* Entrevista Clínica */}
                         <TabsContent value="entrevista-clinica">
                             <ClinicalInterview />
-                            <p className="text-gray-500 dark:text-gray-400">Contenido de Entrevista Clínica (Pendiente de implementación)</p>
                         </TabsContent>
 
                         {/* Visitas Anteriores */}
                         <TabsContent value="visitas-anteriores">
-                            {/* Descomentar y pasar los props adecuados cuando el componente VisitasAnterioresContent esté disponible */}
-                            {/* <VisitasAnterioresContent visits={MOCK_PREVIOUS_VISITS} /> */}
                             <p className="text-gray-500 dark:text-gray-400">Contenido de Visitas Anteriores (Pendiente de implementación)</p>
                         </TabsContent>
                     </div>

@@ -19,23 +19,17 @@ import {
     FieldSeparator,
     FieldSet,
 } from "@/components/ui/field"
-
-import { BusinessCombobox } from "./Business.combobox"
-import { PatientType } from "./patientType"
-import { PatientCombobox } from "./Patient.combobox"
-import { useEffect, useMemo, useState } from "react"
-import type { PatientState } from "#/utils/types"
-import { Loader2 } from "lucide-react"
-import { FeeScheduleType } from "./feeScheduleType"
-import type { Business, TypeVisit } from "#/core/entities"
-import { InsuranceType } from "./InsuranceType"
 import { useServices } from "@/components/hooks/useServices"
+import type { GroupTypeVisit } from "#/core/entities"
+import type { PatientState } from "#/utils/types"
+import { useState } from "react"
+
 
 
 export const NewCall = () => {
     const { getPatientVisitContracts } = useServices();
 
-    const typeVisit: TypeVisit[] = ["particular", "afiliado", "asegurado"]
+    const typeVisit: GroupTypeVisit[] = ["particular", "afiliado", "asegurado"]
 
     const [patient, setPatient] = useState<PatientState>({
         id: null,

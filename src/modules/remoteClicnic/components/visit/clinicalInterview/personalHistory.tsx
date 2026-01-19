@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Newspaper, NotebookText } from "lucide-react";
+import { Newspaper, NotebookText, UserPen } from "lucide-react";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SelectSearch } from "@/components/app/selectSearch";
@@ -9,21 +9,22 @@ import type { IdName } from "#/core/entities";
 
 type IdNameExtended = IdName & { description?: string };
 
+// Props que recibirá automáticamente desde FormController
 interface PersonalHistoryProps {
     value?: IdNameExtended[];
     onChange: (value: IdNameExtended[]) => void;
     onBlur: () => void;
 }
 
-const habits: IdNameExtended[] = [
-    { id: '1', name: 'Correr' },
-    { id: '2', name: 'Nadar' },
-    { id: '3', name: 'Futbol' },
-    { id: '4', name: 'Fiesta' },
-    { id: '5', name: 'Leer en la noche' },
+const antecedents: IdNameExtended[] = [
+    { id: '1', name: 'Hipertensión' },
+    { id: '2', name: 'Diabetes Tipo 2' },
+    { id: '3', name: 'Tabaquismo' },
+    { id: '4', name: 'Alcoholismo' },
+    { id: '5', name: 'Sedentarismo' },
 ];
 
-export const Habits = ({ value = [], onChange, onBlur }: PersonalHistoryProps) => {
+export const PersonalHistory = ({ value = [], onChange, onBlur }: PersonalHistoryProps) => {
     const [open, setOpen] = useState(false);
     const safeValue = Array.isArray(value) ? value : [];
 
@@ -44,20 +45,20 @@ export const Habits = ({ value = [], onChange, onBlur }: PersonalHistoryProps) =
     };
 
     return (
-        <Card>
+        <Card className="max-h-80 overflow-scroll">
             <CardHeader>
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground">
-                    <Newspaper />
-                    Habitos Personales
+                    <UserPen />
+                    Antecedentes Personales
                 </CardTitle>
                 <CardDescription>
-                    Corre, Nadar, Leer en la noche, etc.
+                    Patologías, Infecciones, Alergias, etc.
                 </CardDescription>
                 <CardAction>
                     <SelectSearch
                         placeholder="Buscar o seleccionar"
-                        empty="No se encontraron Habitos"
-                        list={habits}
+                        empty="No se encontraron antecedentes"
+                        list={antecedents}
                         open={{ set: setOpen, value: open }}
                         onSelect={handleAdd}
                         selectedValue={safeValue}
@@ -68,21 +69,22 @@ export const Habits = ({ value = [], onChange, onBlur }: PersonalHistoryProps) =
                     </SelectSearch>
                 </CardAction>
             </CardHeader>
-            <CardContent className="space-y-4">
-                {safeValue.map((habits) => (
+            <CardContent className="flex">
+                {safeValue.map((antecedent) => (
                     <CardCheckbox
-                        key={habits.id}
-                        title={habits.name}
-                        checked={true}
+                        key={antecedent.id}
+                        title={antecedent.name}
+                        checked={true} // Si está en la lista, está marcado
                         onCheckedChange={(checked) => {
-                            if (!checked) handleRemove(habits.id);
+                            if (!checked) handleRemove(antecedent.id);
                         }}
                     >
                         <InputGroup>
-                            <InputGroupInput className="w-full"
+                            <InputGroupInput
                                 placeholder="Ingrese detalle/observación"
-                                value={habits.description || ""}
-                                onChange={(e) => handleDescriptionChange(habits.id, e.target.value)}
+                                className="w-full"
+                                value={antecedent.description || ""}
+                                onChange={(e) => handleDescriptionChange(antecedent.id, e.target.value)}
                                 onBlur={onBlur}
                             />
                             <InputGroupAddon>

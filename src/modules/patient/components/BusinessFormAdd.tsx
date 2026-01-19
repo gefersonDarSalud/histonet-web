@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { BusinessCombobox } from '@/remoteClicnic/components/Business.combobox';
+import { BusinessCombobox } from '@/remoteClicnic/components/main/Business.combobox';
 import type { Business, IdName } from '#/core/entities';
 import { useServices } from '@/components/hooks/useServices';
 import { Select } from '@/components/app/select';

@@ -1,7 +1,8 @@
 import { Separator } from "@/components/ui/separator";
-import { AdmissionDataPanelVisit } from "./admissionDataPanelVisit";
 import { AdmissionDataPanelPatient } from "./admissionDataPanelPatient";
 import { AdmissionDataPanelContract } from "./admissionDataPanelContract";
+import { AdmissionDataPanelVisit } from "./admissionDataPanelVisit";
+
 
 export const AdmissionDataPanel = () => {
     return (

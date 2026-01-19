@@ -2,7 +2,7 @@ import type { IdName } from "#/core/entities"
 import { CardCheckbox } from "@/components/app/cardCheckbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { Newspaper, NotebookText } from "lucide-react"
+import { Newspaper, NotebookText, Users } from "lucide-react"
 
 const familiesList: IdName[] = [
     { id: '1', name: 'Padre' },
@@ -28,16 +28,17 @@ export const FamilyHistory = ({ value, onChange, onBlur }: any) => {
     };
 
     return (
-        <Card className="max-h-64 overflow-scroll">
+        <Card className="max-h-80 overflow-scroll">
             <CardHeader>
                 <CardTitle className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground ">
-                    <Newspaper />Antecedentes Familiares
+                    <Users />
+                    Antecedentes Familiares
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 {familiesList.map((family) => {
                     const existingData = safeValue.find((item: any) => item.id === family.id);
-                    const isChecked = !!existingData; // Si existe en el array, está checked
+                    const isChecked = !!existingData;
 
                     return (
                         <CardCheckbox

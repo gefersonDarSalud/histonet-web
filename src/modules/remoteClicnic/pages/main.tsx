@@ -2,13 +2,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/input';
 import {
     useState,
-    //useMemo,
     useCallback,
     useEffect
 } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { NewCall } from '../components/newCall';
-import { PatientVisitTable } from '../components/PatientVisitTable';
+import { PatientVisitTable } from '../components/main/PatientVisitTable';
 import type { SearchResponse } from '#/data/mappers/visitMappers';
 import { useServices } from '@/components/hooks/useServices';
 import type { VisitRepositorySearchParams } from '#/core/repositories/visitRepository';
@@ -16,6 +14,7 @@ import { formatDate } from '#/utils/functions';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { NewCall } from '../components/main/newCall';
 
 export const RemoteClinic = () => {
     const { searchVisit } = useServices();
@@ -111,7 +110,7 @@ export const RemoteClinic = () => {
                     {/* Card Header (Cola de Pacientes + Botón) */}
                     <CardHeader className='flex justify-between items-center'>
                         <CardTitle>Cola de Pacientes</CardTitle>
-                        <NewCall />
+                        {/* <NewCall /> */}
                     </CardHeader>
 
                     {/* Herramientas de Filtro y Búsqueda */}

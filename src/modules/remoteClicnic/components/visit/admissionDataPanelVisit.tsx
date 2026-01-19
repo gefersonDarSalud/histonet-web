@@ -1,8 +1,9 @@
 import { Clock, HandCoins, Scroll, ShieldAlert } from "lucide-react";
-import { VisitDetailItem } from "./visitDetailItem";
+
 import { formatDateTime } from "#/utils/functions";
 import { useMedicalVisit } from "@/components/hooks/useMedicalVisit";
-import { MedicinePanaIcon } from "./icons";
+import { VisitDetailItem } from "./visitDetailItem";
+import { MedicinePanaIcon } from "../icons";
 
 
 export const AdmissionDataPanelVisit = () => {

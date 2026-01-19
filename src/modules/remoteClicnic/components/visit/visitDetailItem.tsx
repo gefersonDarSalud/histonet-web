@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-
 export const VisitDetailItem = ({ children, label, value }: { children: ReactNode, label: string, value: string }) => (
     <div className="flex items-start gap-3">
         {children}

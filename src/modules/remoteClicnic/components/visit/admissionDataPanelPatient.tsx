@@ -1,7 +1,8 @@
 import { AtSign, Badge, CalendarClock, FileUser, IdCard, Phone, User } from "lucide-react";
-import { DataField } from "./dataField";
-import { calculateAge, capitalizeText, formatPersonalId } from "#/utils/functions";
+
+import { capitalizeText, formatPersonalId } from "#/utils/functions";
 import { useMedicalVisit } from "@/components/hooks/useMedicalVisit";
+import { DataField } from "../dataField";
 
 export const AdmissionDataPanelPatient = () => {
     const { state: visit } = useMedicalVisit();

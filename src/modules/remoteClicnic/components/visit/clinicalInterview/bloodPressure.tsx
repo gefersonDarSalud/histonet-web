@@ -1,4 +1,4 @@
-import { InputWithSuffix } from "../inputWithSuffix";
+import { InputWithSuffix } from "../../inputWithSuffix";
 
 export const BloodPressureInput = (props: any) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -9,12 +9,5 @@ export const BloodPressureInput = (props: any) => {
         }
     };
 
-    return (
-        <InputWithSuffix
-            {...props}
-            onChange={handleChange}
-            placeholder="120/80"
-            suffix="mmHg"
-        />
-    );
+    return <InputWithSuffix {...props} onChange={handleChange} />;
 };
