@@ -1,188 +1,92 @@
-// components/FormularioVisita.tsx
-
 import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-// Componentes de shadcn/ui
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Separator } from '@/components/ui/separator'; // Sugiero añadir este componente
-import { otherFamilyHistoryOptions, VisitSchema, type VisitFormValues } from '../validations/ClinicalInterview';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
-import { WysiwigEditor } from '@/components/app/wysiwyg';
-import Editor from 'react-simple-wysiwyg';
-import { Activity, FileUser } from 'lucide-react';
-import { InputTag } from './inputTag';
-import { InputTagBadge } from './inputTagBadge';
-import { SelectSearch } from '@/components/app/selectSearch';
-import { PersonalHistory } from './clinicalInterview/personalHistory';
-import { ClinicalInterviewSection } from './clinicalInterview/clinicalInterviewSection';
-import { ChiefComplaint } from './clinicalInterview/chiefComplaint';
-import { FamilyHistory } from './clinicalInterview/familyHistory';
+import { Separator } from '@/components/ui/separator';
+import { Schema, type VisitFormValues } from '../validations/ClinicalInterview';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { FormController } from '@/components/app/FormController';
+import { Code } from '@/components/app/code';
 
+import { BloodPressureInput } from './clinicalInterview/bloodPressure';
 
-// --- Tipo para los elementos del Plan Médico (para el estado interno) ---
 interface MedicalPlanItem {
-    id: string; // Usar una ID única
+    id: string;
     type: 'Medicamento' | 'Terapia' | 'Cita' | 'Estudio';
     detail: string;
 }
 
-// --- Componente de Formulario Principal ---
-
 interface ClinicalInterviewProps {
-    // Simulación de datos iniciales. Podrían venir de una API.
     defaultValues?: Partial<VisitFormValues>;
     patientName: string;
     visitNumber: string;
     onSubmit: (data: VisitFormValues) => void;
 }
 
-const defaultFormData: VisitFormValues = {
-    clinicalInterview: "",
-    chiefComplaint: "",
-    familyHistory: [],
-    otherFamilyHistory: null,
-    personalHistory: ["Alergia a Penicilina", "Asma"],
-    personalHistoryInput: null,
-    habit: ["Ejercicio Regular"],
-    habitDetails: null,
-    bloodPressure: null,
-    heartRate: null,
-    temperature: null,
-    weight: null,
-    painScale: 3,
-    observations: null,
-    comments: null,
-    medicalPlan: [],
-};
 
 
 export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
-
-    const [newHistory, setNewHistory] = useState('');
-
-    // Estado para el Plan Médico (a menudo es mejor manejar esta lista con su propia lógica)
     const [medicalPlan, setMedicalPlan] = useState<MedicalPlanItem[]>([]);
-
-    const form = useForm<VisitFormValues>({
-        resolver: zodResolver(VisitSchema),
-        defaultValues: { ...defaultFormData },
-        mode: 'onBlur', // Validar al perder el foco para un mejor DX
+    const methods = useForm<VisitFormValues>({
+        resolver: zodResolver(Schema),
+        mode: 'onBlur',
     });
 
-    // Función para manejar el envío (se ejecuta solo si la validación Zod es exitosa)
+    const { formState, handleSubmit, reset } = methods;
+
     const handleFormSubmit = (data: VisitFormValues) => {
         const finalData = { ...data, MedicalPlan: medicalPlan.map(item => ({ type: item.type, detail: item.detail })) };
+        console.log(finalData);
         // onSubmit(finalData);
     };
 
-    // Función para añadir un antecedente personal al array de RHF
-    const handleAddPersonalHistory = () => {
-        if (newHistory.trim()) {
-            const current = form.getValues('personalHistory') || [];
-            const updated = [...current, newHistory.trim()];
-            form.setValue('personalHistory', updated, { shouldDirty: true, shouldValidate: true });
-            setNewHistory('');
-        }
-    };
-
-
-
-    // Función de ejemplo para añadir un elemento al Plan Médico
-    const handleAddMedicalPlan = () => {
-        const newId = (Math.random() * 1000).toFixed(0);
-        const newItem: MedicalPlanItem = {
-            id: newId,
-            type: 'Medicamento', // Valor por defecto
-            detail: 'Nuevo elemento de plan médico',
-        };
-        setMedicalPlan(prev => [...prev, newItem]);
-    };
-
-    // Función de ejemplo para remover un elemento del Plan Médico
-    const handleRemoveMedicalPlan = (id: string) => {
-        setMedicalPlan(prev => prev.filter(item => item.id !== id));
-    };
-
     return (
-        // El tag <Form {...form}> ha sido reemplazado por un simple <div> o React.Fragment
-        <div className="space-y-10">
-            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-10">
+        <FormProvider {...methods}>
+            <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-10">
+                <Card>
+                    <CardContent>
+                        {/* <div className='flex flex-col justify-between gap-3 '>
+                            <ClinicalInterviewSection />
+                            <ChiefComplaint />
+                        </div> */}
 
-                {/* --- Contenedor Principal del Formulario --- */}
-                <div className="bg-card p-6 rounded-lg border">
-                    <div className="space-y-10">
+                        {/* <Separator className="my-8" /> */}
 
-                        {/* wysiwix */}
-                        <div className='flex flex-col justify-between gap-3 '>
-                            {/* <ClinicalInterviewSection form={form} /> */}
-                            {/* <ChiefComplaint form={form} /> */}
-                        </div>
+                        {/* <section className='grid grid-cols-2 gap-6 max-h-64 '>
+                            <FormController
+                                as={FamilyHistory}
+                                name='familyHistory'
+                            />
+                            <FormController
+                                as={PersonalHistory}
+                                name='personalHistory'
+                            />
+                        </section> */}
 
-                        <Separator className="my-8" />
+                        <Code data={methods.watch()} />
 
-                        {/* 3. Antecedentes (Grid) - Adaptación de Checkbox Group y Tags */}
+                        {/* <Separator className="my-8" /> */}
 
+                        {/* <div className='grid grid-cols-2 gap-6 max-h-64'>
 
-                        {/* --- 3.1 Antecedentes Familiares (Checkbox Group) --- */}
-                        <section className='grid grid-cols-2 gap-6 max-h-64 '>
-                            <FamilyHistory form={form} />
-                            {/* <PersonalHistory form={form} /> */}
-                        </section>
-
-
-
-
-                        <Separator className="my-8" />
-
-                        {/* ========================================================================= */}
-                        {/* 4. Hábitos (Adaptado a Controller + Field) */}
-                        {/* ========================================================================= */}
-                        <section>
-
+                            <FormController
+                                as={Habits}
+                                name='habit'
+                            />
+                        </div> */}
 
 
-                        </section>
+                        {/* --- PA (bloodPressure) --- */}
+                        <FormController
+                            as={BloodPressureInput}
+                            name="bloodPressure"
+                            label="Presión Arterial"
+                            placeholder="120/80"
+                            suffix="mmHg"
+                        />
 
-                        <Separator className="my-8" />
-
-                        {/* ========================================================================= */}
-                        {/* 5. Exploración Física (Adaptado a Controller + Field) */}
-                        {/* ========================================================================= */}
-                        <section>
-                            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-                                <span className="material-symbols-outlined text-primary">stethoscope</span> Exploración Física
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-
-                                {/* --- PA (bloodPressure) --- */}
-                                <Controller
-                                    name="bloodPressure"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor={field.name}>Presión Arterial</FieldLabel>
-                                            <div className="relative">
-                                                <Input
-                                                    id={field.name}
-                                                    placeholder="120/80"
-                                                    aria-invalid={fieldState.invalid}
-                                                    {...field}
-                                                    value={field.value ?? ''}
-                                                />
-                                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground pointer-events-none">mmHg</div>
-                                            </div>
-                                            {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                                        </Field>
-                                    )}
-                                />
-
-                                {/* --- FC (heartRate) --- */}
-                                <Controller
+                        {/* --- FC (heartRate) --- */}
+                        {/* <Controller
                                     name="heartRate"
                                     control={form.control}
                                     render={({ field, fieldState }) => (
@@ -204,10 +108,10 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                                             {fieldState.error && <FieldError errors={[fieldState.error]} />}
                                         </Field>
                                     )}
-                                />
+                                /> */}
 
-                                {/* --- TEMP (temperature) --- */}
-                                <Controller
+                        {/* --- TEMP (temperature) --- */}
+                        {/* <Controller
                                     name="temperature"
                                     control={form.control}
                                     render={({ field, fieldState }) => (
@@ -230,10 +134,10 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                                             {fieldState.error && <FieldError errors={[fieldState.error]} />}
                                         </Field>
                                     )}
-                                />
+                                /> */}
 
-                                {/* --- PESO (weight) --- */}
-                                <Controller
+                        {/* --- PESO (weight) --- */}
+                        {/* <Controller
                                     name="weight"
                                     control={form.control}
                                     render={({ field, fieldState }) => (
@@ -255,12 +159,12 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                                             {fieldState.error && <FieldError errors={[fieldState.error]} />}
                                         </Field>
                                     )}
-                                />
-                            </div>
+                                /> */}
 
-                            {/* --- ESCALA DE DOLOR (RANGE INPUT) --- */}
-                            <div className="mt-6">
-                                <Controller
+
+                        {/* --- ESCALA DE DOLOR (RANGE INPUT) --- */}
+
+                        {/* <Controller
                                     name="painScale"
                                     control={form.control}
                                     render={({ field, fieldState }) => (
@@ -288,21 +192,17 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                                             {fieldState.error && <FieldError errors={[fieldState.error]} />}
                                         </Field>
                                     )}
-                                />
-                            </div>
-                        </section>
+                                /> */}
+
 
                         <Separator className="my-8" />
 
-                        {/* ========================================================================= */}
-                        {/* 6. Observaciones (Adaptado a Controller + Field) */}
-                        {/* ========================================================================= */}
-                        <section>
+                        {/* <section>
                             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
                                 <span className="material-symbols-outlined text-primary">visibility</span> Observaciones Públicas y Privadas
                             </h2>
                             <div className="space-y-6">
-                                {/* --- 6.1 Públicas (observations) --- */}
+
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="material-symbols-outlined text-muted-foreground">visibility</span>
@@ -327,7 +227,6 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                                     />
                                 </div>
 
-                                {/* --- 6.2 Privadas (comments) --- */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="material-symbols-outlined text-muted-foreground">visibility_off</span>
@@ -352,14 +251,12 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                                     />
                                 </div>
                             </div>
-                        </section>
+                        </section> */}
 
                         <Separator className="my-8" />
 
-                        {/* ========================================================================= */}
-                        {/* 7. Plan Médico (Sin cambios, sigue con estado local) */}
-                        {/* ========================================================================= */}
-                        <section>
+
+                        {/* <section>
                             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
                                 <span className="material-symbols-outlined text-primary">list_alt</span> Plan Médico
                             </h2>
@@ -399,24 +296,24 @@ export const ClinicalInterview: React.FC<ClinicalInterviewProps> = () => {
                                     <span className="material-symbols-outlined text-lg">add</span>Añadir módulo al plan
                                 </Button>
                             </div>
-                        </section>
+                        </section> */}
 
-                    </div>
 
-                    {/* --- Footer y Botones de Acción --- */}
-                    <div className="mt-10 flex justify-end gap-3 border-t pt-6">
-                        <Button type="button" variant="outline" onClick={() => form.reset()}>
+                        <Separator className="my-8" />
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="button" variant="outline" onClick={() => reset()}>
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={form.formState.isSubmitting} className="flex items-center gap-2">
+                        <Button type="submit" disabled={formState.isSubmitting} className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-lg">save</span>
-                            {form.formState.isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+                            {formState.isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
                         </Button>
-                    </div>
-                </div>
+                    </CardFooter>
+                </Card>
+                {/* --- Contenedor Principal del Formulario --- */}
             </form>
-        </div>
+        </FormProvider>
     );
-
 
 };

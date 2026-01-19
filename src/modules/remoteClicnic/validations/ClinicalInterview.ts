@@ -1,55 +1,35 @@
 import { IdNameSchema } from "#/utils/zod";
 import { z } from "zod";
 
-// --- Esquema de Validación Zod ---
 const extendedSchema = IdNameSchema.extend({
-    description: z.string().optional(), // Permite string o undefined
+    description: z.string().optional(),
+    type: z.string().optional(),
 }).nullable();
 
-export const VisitSchema = z.object({
-    // Sección: Entrevista Clínica
-    clinicalInterview: z.string()
-        // .min(20, "Detalle la entrevista clínica (mínimo 20 caracteres).")
-        .max(10000)
-        .optional(),
-
-    chiefComplaint: z.string()
-        // .min(20, "Detalle la enfermedad actual (mínimo 20 caracteres).")
-        .max(2000),
-
-    // Sección: Antecedentes
-    familyHistory: extendedSchema.array().optional(), // Ej: ['Diabetes', 'Cáncer']
-    otherFamilyHistory: z.string().max(500).optional(),
-    personalHistory: extendedSchema.array().optional(), // Ej: ['Alergia a Penicilina', 'Asma']
-    personalHistoryInput: z.string().max(200).optional(), // Campo temporal para añadir nuevos
-
-    // Sección: Hábitos
-    habit: z.array(z.string()).optional(), // Ej: ['Tabaquismo', 'Ejercicio Regular']
+export const Schema = z.object({
+    clinicalInterview: z.string().max(10000).optional(),
+    chiefComplaint: z.string().max(2000),
+    familyHistory: extendedSchema.array().optional(),
+    personalHistory: extendedSchema.array().optional(),
+    // otherFamilyHistory: z.string().max(500).optional(),
+    //personalHistoryInput: z.string().max(200).optional(), 
+    habit: extendedSchema.array().optional(),
     habitDetails: z.string().max(500).optional(),
-
-    // Sección: Exploración Física
     bloodPressure: z.string().regex(/^\d{2,3}\/\d{2,3}$/, "Formato inválido (Ej: 120/80)").optional(),
-    heartRate: z.number().int().min(30).max(200).nullable().optional(), // Usamos nullable y optional para campos numéricos vacíos
+    heartRate: z.number().int().min(30).max(200).nullable().optional(),
     temperature: z.number().min(30).max(45).nullable().optional(),
     weight: z.number().min(1).max(500).nullable().optional(),
-    painScale: z.number().int().min(0).max(10), // Rango de 0 a 10
-
-    // Sección: Observaciones
+    // painScale: z.number().int().min(0).max(10), 
     observations: z.string().max(2000).optional(),
-    comments: z.string().max(2000).optional(),
-
-    // NOTA: El Plan Médico es complejo y generalmente se maneja con arrays
-    // o componentes de estado interno separados, pero lo tipamos como placeholder.
-    medicalPlan: z.array(z.object({
-        type: z.enum(["Medicamento", "Terapia", "Cita"]),
-        detail: z.string(),
-    })).optional(),
+    notes: z.string().max(2000).optional(),
+    // medicalPlan: z.array(z.object({
+    //     type: z.enum(["Medicamento", "Terapia", "Cita"]),
+    //     detail: z.string(),
+    // })).optional(),
 });
 
-// --- Tipo TypeScript a partir del esquema Zod ---
-export type VisitFormValues = z.infer<typeof VisitSchema>;
+export type VisitFormValues = z.infer<typeof Schema>;
 
-// --- Tipos para la UI ---
 export const otherFamilyHistoryOptions = [
     "Diabetes",
     "Hipertensión",

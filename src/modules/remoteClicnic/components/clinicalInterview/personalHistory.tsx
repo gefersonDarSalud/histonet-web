@@ -1,102 +1,99 @@
-import { Field, FieldError, } from "@/components/ui/field";
-import type { VisitFormValues } from "@/remoteClicnic/validations/ClinicalInterview";
-import { Controller, type UseFormReturn } from "react-hook-form";
-import { InputTagBadge } from "../inputTagBadge";
-import { SelectSearch } from "@/components/app/selectSearch";
-import type { IdName } from "#/core/entities";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Newspaper } from "lucide-react";
+import { Newspaper, NotebookText } from "lucide-react";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
-type props = {
-    form: UseFormReturn<VisitFormValues>
-}
+import { Button } from "@/components/ui/button";
+import { SelectSearch } from "@/components/app/selectSearch";
+import { CardCheckbox } from "@/components/app/cardCheckbox";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import type { IdName } from "#/core/entities";
 
 type IdNameExtended = IdName & { description?: string };
 
+// Props que recibirá automáticamente desde FormController
+interface PersonalHistoryProps {
+    value?: IdNameExtended[];
+    onChange: (value: IdNameExtended[]) => void;
+    onBlur: () => void;
+}
 
 const antecedents: IdNameExtended[] = [
-    { id: '1', name: 'Hipertensión', description: 'Presión arterial alta' },
-    { id: '2', name: 'Diabetes Tipo 2', description: 'Insulina alta' },
-    { id: '3', name: 'Tabaquismo', description: 'Fumador' },
-    { id: '4', name: 'Alcoholismo', description: 'Bebe' },
-    { id: '5', name: 'Sedentarismo', description: 'No hace ejercicio' },
+    { id: '1', name: 'Hipertensión' },
+    { id: '2', name: 'Diabetes Tipo 2' },
+    { id: '3', name: 'Tabaquismo' },
+    { id: '4', name: 'Alcoholismo' },
+    { id: '5', name: 'Sedentarismo' },
 ];
 
-export const PersonalHistory = ({ form }: props) => {
+export const PersonalHistory = ({ value = [], onChange, onBlur }: PersonalHistoryProps) => {
     const [open, setOpen] = useState(false);
-    const currentPersonalHistory = form.watch('personalHistory') || [];
+    const safeValue = Array.isArray(value) ? value : [];
 
-    const handleRemovePersonalHistory = (IdHistory: string) => {
-        const current = form.getValues('personalHistory') || [];
-        const updated = current.filter(a => a.id !== IdHistory);
-        form.setValue('personalHistory', updated, { shouldDirty: true, shouldValidate: true });
+    // Añadir desde el buscador
+    const handleAdd = (item: IdNameExtended) => {
+        if (safeValue.some(i => i.id === item.id)) return;
+        onChange([...safeValue, { ...item, description: "" }]);
     };
 
-    const handleAddPersonalHistory = (a: IdNameExtended) => {
-        if (currentPersonalHistory.some(current => current.id === a.id)) {
-            console.warn(`El antecedente '${a.name}' ya está incluido.`);
-            return;
-        }
-        form.setValue('personalHistory', [...currentPersonalHistory, a], { shouldDirty: true, shouldValidate: true });
+    // Eliminar (al desmarcar el checkbox)
+    const handleRemove = (id: string) => {
+        onChange(safeValue.filter(i => i.id !== id));
+    };
+
+    // Actualizar descripción del input
+    const handleDescriptionChange = (id: string, description: string) => {
+        onChange(safeValue.map(i => i.id === id ? { ...i, description } : i));
     };
 
     return (
-        <section>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground ">
-                        <Newspaper />
-                        Antecedentes Personales
-                    </CardTitle>
-
-                    <CardDescription>
-                        Patologías, Infecciones, Alergias, etc.
-                    </CardDescription>
-
-                    <CardAction>
-                        <SelectSearch
-                            placeholder="Buscar o seleccionar"
-                            empty="No se encontraron antecedentes"
-                            list={antecedents}
-                            open={{ set: setOpen, value: open }}
-                            onSelect={handleAddPersonalHistory}
-                            selectedValue={currentPersonalHistory}
-                        >
-                            <Button type="button"
-                                variant="default">
-                                Añadir
-                            </Button>
-                        </SelectSearch>
-                    </CardAction>
-                </CardHeader>
-                <CardContent>
-                    <Controller
-                        name="personalHistory"
-                        control={form.control}
-                        render={({ fieldState }) => (
-                            <Field data-invalid={fieldState.invalid} className="space-y-4">
-                                <div className='flex flex-wrap gap-2 min-h-8'>
-                                    {currentPersonalHistory.map(antecedent =>
-                                        <InputTagBadge
-                                            antecedent={antecedent.name}
-                                            handlerOnClick={handleRemovePersonalHistory}
-                                        />
-                                    )}
-                                </div>
-                                <div className="flex gap-2">
-
-
-
-                                </div>
-
-                                {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                        )}
-                    />
-                </CardContent>
-            </Card>
-        </section>
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground">
+                    <Newspaper />
+                    Antecedentes Personales
+                </CardTitle>
+                <CardDescription>
+                    Patologías, Infecciones, Alergias, etc.
+                </CardDescription>
+                <CardAction>
+                    <SelectSearch
+                        placeholder="Buscar o seleccionar"
+                        empty="No se encontraron antecedentes"
+                        list={antecedents}
+                        open={{ set: setOpen, value: open }}
+                        onSelect={handleAdd}
+                        selectedValue={safeValue}
+                    >
+                        <Button type="button" variant="default">
+                            Añadir
+                        </Button>
+                    </SelectSearch>
+                </CardAction>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {safeValue.map((antecedent) => (
+                    <CardCheckbox
+                        key={antecedent.id}
+                        title={antecedent.name}
+                        checked={true} // Si está en la lista, está marcado
+                        onCheckedChange={(checked) => {
+                            if (!checked) handleRemove(antecedent.id);
+                        }}
+                    >
+                        <InputGroup>
+                            <InputGroupInput
+                                placeholder="Ingrese detalle/observación"
+                                className="w-full"
+                                value={antecedent.description || ""}
+                                onChange={(e) => handleDescriptionChange(antecedent.id, e.target.value)}
+                                onBlur={onBlur}
+                            />
+                            <InputGroupAddon>
+                                <NotebookText />
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </CardCheckbox>
+                ))}
+            </CardContent>
+        </Card>
     );
-} 
+};

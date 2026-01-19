@@ -25,9 +25,9 @@ type SelectProps = {
     list: IdNameType[];
     title: string;
     placeholder: string;
-    value: RHFValue;
-    onChange: (value: IdNameType | undefined | null) => void;
-    onBlur: () => void;
+    value?: RHFValue;
+    onChange?: (value: IdNameType | undefined | null) => void;
+    onBlur?: () => void;
 }
 
 

@@ -32,3 +32,9 @@ export type state<type> = {
     set: React.Dispatch<React.SetStateAction<type>>
 }
 
+export type componentPropsForm<Value, OnChange> = {
+    value?: Value;
+    onChange?: (value?: OnChange | undefined | null) => void;
+    onBlur?: () => void;
+}
+

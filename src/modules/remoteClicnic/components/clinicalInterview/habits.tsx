@@ -1,78 +1,97 @@
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import type { VisitFormValues } from "@/remoteClicnic/validations/ClinicalInterview";
-import { Controller, type UseFormReturn } from "react-hook-form";
+import { useState } from "react";
+import { Newspaper, NotebookText } from "lucide-react";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SelectSearch } from "@/components/app/selectSearch";
+import { CardCheckbox } from "@/components/app/cardCheckbox";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import type { IdName } from "#/core/entities";
 
-type props = {
-    form: UseFormReturn<VisitFormValues>
+type IdNameExtended = IdName & { description?: string };
+
+interface PersonalHistoryProps {
+    value?: IdNameExtended[];
+    onChange: (value: IdNameExtended[]) => void;
+    onBlur: () => void;
 }
 
-const habitsOptions = [
-    "Tabaquismo",
-    "Alcoholismo",
-    "Ejercicio Regular",
-    "Dieta Balanceada",
-] as const;
+const habits: IdNameExtended[] = [
+    { id: '1', name: 'Correr' },
+    { id: '2', name: 'Nadar' },
+    { id: '3', name: 'Futbol' },
+    { id: '4', name: 'Fiesta' },
+    { id: '5', name: 'Leer en la noche' },
+];
 
-export const Habits = ({form}: props) => {
+export const Habits = ({ value = [], onChange, onBlur }: PersonalHistoryProps) => {
+    const [open, setOpen] = useState(false);
+    const safeValue = Array.isArray(value) ? value : [];
+
+    // Añadir desde el buscador
+    const handleAdd = (item: IdNameExtended) => {
+        if (safeValue.some(i => i.id === item.id)) return;
+        onChange([...safeValue, { ...item, description: "" }]);
+    };
+
+    // Eliminar (al desmarcar el checkbox)
+    const handleRemove = (id: string) => {
+        onChange(safeValue.filter(i => i.id !== id));
+    };
+
+    // Actualizar descripción del input
+    const handleDescriptionChange = (id: string, description: string) => {
+        onChange(safeValue.map(i => i.id === id ? { ...i, description } : i));
+    };
+
     return (
-        <>
-            <Controller
-                name="habit" // Asumo que el nombre es 'habit'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid} className="space-y-4">
-                        <div>
-                            <FieldLabel className="text-base">Hábitos comunes</FieldLabel>
-                            <FieldDescription>Marque los hábitos relevantes del paciente.</FieldDescription>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                            {habitsOptions.map((item) => (
-                                <label
-                                    key={item}
-                                    className="flex flex-row items-center space-x-2 space-y-0 p-2 border rounded-full hover:bg-muted/50 cursor-pointer"
-                                    htmlFor={`${field.name}-${item}`}
-                                >
-                                    <Checkbox
-                                        id={`${field.name}-${item}`}
-                                        checked={field.value?.includes(item)}
-                                        onCheckedChange={(checked) => {
-                                            const newValue = checked
-                                                ? [...(field.value || []), item]
-                                                : field.value?.filter((value) => value !== item);
-                                            field.onChange(newValue);
-                                        }}
-                                    />
-                                    <span className="text-sm font-normal cursor-pointer">
-                                        {item}
-                                    </span>
-                                </label>
-                            ))}
-                        </div>
-                        {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                    </Field>
-                )}
-            />
-            {/* Detalles Adicionales */}
-            <Controller
-                name="habitDetails" // Asumo que el nombre es 'habitDetails'
-                control={form.control}
-                render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid} className="mt-4">
-                        <FieldLabel htmlFor={field.name}>Detalles Adicionales</FieldLabel>
-                        <Input
-                            id={field.name}
-                            placeholder="Ej. Fuma 10 cigarrillos al día, corre 3 veces por semana..."
-                            aria-invalid={fieldState.invalid}
-                            {...field}
-                            value={field.value ?? ''}
-                        />
-                        {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                    </Field>
-                )}
-            />
-        </>
-
-    )
-
-}
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground">
+                    <Newspaper />
+                    Habitos Personales
+                </CardTitle>
+                <CardDescription>
+                    Corre, Nadar, Leer en la noche, etc.
+                </CardDescription>
+                <CardAction>
+                    <SelectSearch
+                        placeholder="Buscar o seleccionar"
+                        empty="No se encontraron Habitos"
+                        list={habits}
+                        open={{ set: setOpen, value: open }}
+                        onSelect={handleAdd}
+                        selectedValue={safeValue}
+                    >
+                        <Button type="button" variant="default">
+                            Añadir
+                        </Button>
+                    </SelectSearch>
+                </CardAction>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {safeValue.map((habits) => (
+                    <CardCheckbox
+                        key={habits.id}
+                        title={habits.name}
+                        checked={true}
+                        onCheckedChange={(checked) => {
+                            if (!checked) handleRemove(habits.id);
+                        }}
+                    >
+                        <InputGroup>
+                            <InputGroupInput className="w-full"
+                                placeholder="Ingrese detalle/observación"
+                                value={habits.description || ""}
+                                onChange={(e) => handleDescriptionChange(habits.id, e.target.value)}
+                                onBlur={onBlur}
+                            />
+                            <InputGroupAddon>
+                                <NotebookText />
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </CardCheckbox>
+                ))}
+            </CardContent>
+        </Card>
+    );
+};

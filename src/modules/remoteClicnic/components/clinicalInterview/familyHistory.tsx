@@ -1,36 +1,8 @@
 import type { IdName } from "#/core/entities"
+import { CardCheckbox } from "@/components/app/cardCheckbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { Label } from "@/components/ui/label"
-import type { VisitFormValues } from "@/remoteClicnic/validations/ClinicalInterview"
 import { Newspaper, NotebookText } from "lucide-react"
-import type { UseFormReturn } from "react-hook-form"
-
-type CardProps = {
-    children: React.ReactNode
-    title: string,
-}
-
-
-const CardCheckbox = ({ children, title }: CardProps) => {
-    return (
-        <Label className="hover:bg-accent/50 flex items-center gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950">
-            <Checkbox
-                className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
-            />
-            <p className="text-sm leading-none font-medium">
-                {title}
-            </p>
-            {children}
-
-        </Label>
-    );
-}
-
-type props = {
-    form: UseFormReturn<VisitFormValues>;
-}
 
 const familiesList: IdName[] = [
     { id: '1', name: 'Padre' },
@@ -41,7 +13,20 @@ const familiesList: IdName[] = [
     { id: '8', name: 'Tía' },
 ]
 
-export const FamilyHistory = (props: props) => {
+export const FamilyHistory = ({ value, onChange, onBlur }: any) => {
+    const safeValue = Array.isArray(value) ? value : [];
+
+    const handleToggle = (id: string, name: string, isChecked: boolean) => {
+        if (isChecked) onChange([...safeValue, { id, name, description: "" }]);
+        else onChange(safeValue.filter((item: any) => item.id !== id));
+
+    };
+
+    const handleDescriptionChange = (id: string, text: string) => {
+        const updatedArray = safeValue.map((item: any) => item.id === id ? { ...item, description: text } : item);
+        onChange(updatedArray);
+    };
+
     return (
         <Card className="max-h-64 overflow-scroll">
             <CardHeader>
@@ -50,16 +35,34 @@ export const FamilyHistory = (props: props) => {
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                {familiesList.map(family =>
-                    <CardCheckbox title={family.name} key={family.id}>
-                        <InputGroup>
-                            <InputGroupInput placeholder="Ingrese la patología" className="w-full" />
-                            <InputGroupAddon>
-                                <NotebookText />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </CardCheckbox>
-                )}
+                {familiesList.map((family) => {
+                    const existingData = safeValue.find((item: any) => item.id === family.id);
+                    const isChecked = !!existingData; // Si existe en el array, está checked
+
+                    return (
+                        <CardCheckbox
+                            key={family.id}
+                            title={family.name}
+                            checked={isChecked}
+                            onCheckedChange={(checked) => handleToggle(family.id, family.name, !!checked)}
+                        >
+                            <InputGroup>
+                                <InputGroupInput
+                                    className="w-full"
+                                    placeholder={isChecked ? "Ingrese la patología" : "Marque para escribir"}
+                                    value={existingData?.description || ""}
+                                    onChange={(e) => handleDescriptionChange(family.id, e.target.value)}
+                                    onBlur={onBlur}
+                                    // Bloqueamos el input si no está seleccionado
+                                    disabled={!isChecked}
+                                />
+                                <InputGroupAddon>
+                                    <NotebookText className={isChecked ? "text-blue-500" : "text-muted-foreground"} />
+                                </InputGroupAddon>
+                            </InputGroup>
+                        </CardCheckbox>
+                    );
+                })}
             </CardContent>
         </Card>
     )
