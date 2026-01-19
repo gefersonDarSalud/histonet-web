@@ -1,8 +1,19 @@
-import type { IdName } from "#/core/entities"
-import { CardCheckbox } from "@/components/app/cardCheckbox"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { Newspaper, NotebookText, Users } from "lucide-react"
+import { useState } from "react";
+import { HousePlus, NotebookText, Users } from "lucide-react";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SelectSearch } from "@/components/app/selectSearch";
+import { CardCheckbox } from "@/components/app/cardCheckbox";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import type { IdName } from "#/core/entities";
+
+type IdNameExtended = IdName & { description?: string };
+
+interface props {
+    value?: IdNameExtended[];
+    onChange: (value: IdNameExtended[]) => void;
+    onBlur: () => void;
+}
 
 const familiesList: IdName[] = [
     { id: '1', name: 'Padre' },
@@ -13,58 +24,72 @@ const familiesList: IdName[] = [
     { id: '8', name: 'Tía' },
 ]
 
-export const FamilyHistory = ({ value, onChange, onBlur }: any) => {
+export const FamilyHistory = ({ value = [], onChange, onBlur }: props) => {
+    const [open, setOpen] = useState(false);
     const safeValue = Array.isArray(value) ? value : [];
 
-    const handleToggle = (id: string, name: string, isChecked: boolean) => {
-        if (isChecked) onChange([...safeValue, { id, name, description: "" }]);
-        else onChange(safeValue.filter((item: any) => item.id !== id));
-
+    const handleAdd = (item: IdNameExtended) => {
+        if (safeValue.some(i => i.id === item.id)) return;
+        onChange([...safeValue, { ...item, description: "" }]);
     };
 
-    const handleDescriptionChange = (id: string, text: string) => {
-        const updatedArray = safeValue.map((item: any) => item.id === id ? { ...item, description: text } : item);
-        onChange(updatedArray);
+    const handleRemove = (id: string) => {
+        onChange(safeValue.filter(i => i.id !== id));
+    };
+
+    const handleDescriptionChange = (id: string, description: string) => {
+        onChange(safeValue.map(i => i.id === id ? { ...i, description } : i));
     };
 
     return (
         <Card className="max-h-80 overflow-scroll">
             <CardHeader>
-                <CardTitle className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground ">
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground">
                     <Users />
                     Antecedentes Familiares
                 </CardTitle>
+                <CardDescription>
+                    Patologías, Infecciones, Alergias, etc.
+                </CardDescription>
+                <CardAction>
+                    <SelectSearch
+                        placeholder="Buscar o seleccionar"
+                        empty="No se encontraron Familiares"
+                        list={familiesList}
+                        open={{ set: setOpen, value: open }}
+                        onSelect={handleAdd}
+                        selectedValue={safeValue}
+                    >
+                        <Button type="button" variant="default">
+                            Añadir
+                        </Button>
+                    </SelectSearch>
+                </CardAction>
             </CardHeader>
             <CardContent className="space-y-4">
-                {familiesList.map((family) => {
-                    const existingData = safeValue.find((item: any) => item.id === family.id);
-                    const isChecked = !!existingData;
-
-                    return (
-                        <CardCheckbox
-                            key={family.id}
-                            title={family.name}
-                            checked={isChecked}
-                            onCheckedChange={(checked) => handleToggle(family.id, family.name, !!checked)}
-                        >
-                            <InputGroup>
-                                <InputGroupInput
-                                    className="w-full"
-                                    placeholder={isChecked ? "Ingrese la patología" : "Marque para escribir"}
-                                    value={existingData?.description || ""}
-                                    onChange={(e) => handleDescriptionChange(family.id, e.target.value)}
-                                    onBlur={onBlur}
-                                    // Bloqueamos el input si no está seleccionado
-                                    disabled={!isChecked}
-                                />
-                                <InputGroupAddon>
-                                    <NotebookText className={isChecked ? "text-blue-500" : "text-muted-foreground"} />
-                                </InputGroupAddon>
-                            </InputGroup>
-                        </CardCheckbox>
-                    );
-                })}
+                {safeValue.map((family) => (
+                    <CardCheckbox
+                        key={family.id}
+                        title={family.name}
+                        checked={true}
+                        onCheckedChange={(checked) => {
+                            if (!checked) handleRemove(family.id);
+                        }}
+                    >
+                        <InputGroup>
+                            <InputGroupInput className="w-full"
+                                placeholder="Ingrese detalle/observación"
+                                value={family.description || ""}
+                                onChange={(e) => handleDescriptionChange(family.id, e.target.value)}
+                                onBlur={onBlur}
+                            />
+                            <InputGroupAddon>
+                                <NotebookText />
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </CardCheckbox>
+                ))}
             </CardContent>
         </Card>
-    )
-}
+    );
+};

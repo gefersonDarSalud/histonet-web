@@ -15,7 +15,7 @@ import { PersonalHistory } from './clinicalInterview/personalHistory';
 import { Habits } from './clinicalInterview/habits';
 import { WysiwigEditor } from '@/components/app/wysiwyg';
 import { Activity, AlertCircle, FileUser, Heart, Weight as WeightIcon, SquareActivity, Thermometer } from 'lucide-react';
-import { FieldLabel } from '@/components/ui/field';
+
 
 export const ClinicalInterview = () => {
     const methods = useForm<VisitFormValues>({

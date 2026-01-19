@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HousePlus, Newspaper, NotebookText } from "lucide-react";
+import { HousePlus, NotebookText } from "lucide-react";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SelectSearch } from "@/components/app/selectSearch";

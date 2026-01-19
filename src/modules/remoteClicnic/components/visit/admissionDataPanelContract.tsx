@@ -1,4 +1,4 @@
-import { Badge, Building2, CircleDollarSign, Handshake, ShieldCheck, UserStar } from "lucide-react";
+import { Building2, CircleDollarSign, Handshake, ShieldCheck, UserStar } from "lucide-react";
 import { useMedicalVisit } from "@/components/hooks/useMedicalVisit";
 import { capitalizeText } from "#/utils/functions";
 import { DataField } from "../dataField";
