@@ -1,25 +1,10 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import type { ReactElement } from "react";
+import { useAuthStore } from "#/stores/auth/useAuth";
 import { routeLabel } from "#/routes";
-import { LoadingCircle } from "@/components/app/loading";
 
-export const ProtectedRoute = ({ children }: { children: ReactElement; }) => {
-    const { isLoggedIn, isAuthReady } = useAuth();
-    const location = useLocation();
-
-    if (!isAuthReady) {
-        return (
-            <div className="flex justify-center items-center h-screen bg-gray-100">
-                <LoadingCircle />
-            </div>
-        );
-    }
-
-    const toMain = () => <Navigate to={routeLabel.login} replace state={{ from: location }} />
-
-    if (location.pathname === "/") return toMain();
-    if (!isLoggedIn) return toMain();
-
+export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    const { isLoggedIn, isProfileSelected } = useAuthStore();    
+    if (!isLoggedIn) return <Navigate to={routeLabel.login} replace state={{ from: useLocation() }} />;
+    // if (!isProfileSelected) return <Navigate to={routeLabel.login} replace state={{ from: useLocation() }} />;
     return children;
 };

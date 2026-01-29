@@ -12,7 +12,7 @@ import App from "#/App";
 import { MedicalVisitProvider } from "#/context/providers/medicalVisitProvider";
 import { ErrorBoundary } from "@/components/app/errorBoundary";
 import { ErrorFallback } from "@/components/app/errorFallback";
-import { AuthRedirectRoute } from "@/auth/components/authRedirectRoute";
+import { PublicRoute } from "@/auth/components/publicRoute";
 
 export const routeLabel: Record<string, string> = {
     // home: "/inicio",
@@ -63,9 +63,9 @@ export const routesConfig = [
     {
         path: routeLabel.login,
         element:
-            <AuthRedirectRoute>
+            <PublicRoute>
                 <Login />
-            </AuthRedirectRoute>
+            </PublicRoute>
 
         ,
         NotFoundPage: <NotFoundPage />,

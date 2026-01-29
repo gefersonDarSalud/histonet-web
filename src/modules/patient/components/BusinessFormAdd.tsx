@@ -10,9 +10,8 @@ import type { Business, IdName } from '#/core/entities';
 import { useServices } from '@/components/hooks/useServices';
 import { Select } from '@/components/app/select';
 import { useFetch } from '@/components/hooks/useFetch';
-import { useToast } from '@/components/hooks/useToast';
 import type { SetPatientContractsServiceProps } from '#/core/services/patient/setPatientContractsService';
-// import { Code } from '@/components/app/code';
+import { useAlertStore } from '#/stores/alert/useAlert';
 
 const IdNameSchema = z.object({
     id: z.union([
@@ -41,7 +40,7 @@ type BusinessFormProps = {
 
 export const BusinessFormAdd = ({ patientId, initialValues, onSuccess }: BusinessFormProps) => {
     const { searchBusinessService, getBusinessDataListService, setPatientContracts } = useServices();
-    const { toast } = useToast();
+    const { alert } = useAlertStore();
 
     // field
     const [isBusinessLoading, setIsBusinessLoading] = useState(false);
@@ -154,13 +153,13 @@ export const BusinessFormAdd = ({ patientId, initialValues, onSuccess }: Busines
         }
         try {
             const response = await setPatientContracts.execute(patientId, dataMapped)
-            if (response.status !== 1) return toast({
+            if (response.status !== 1) return alert({
                 title: "Error al guardar:",
                 description: `No se pudo agregar la empresa. ${response.resultado}`,
                 variant: "destructive",
             });
 
-            toast({
+            alert({
                 title: "Éxito",
                 description: `${response.resultado}`,
                 variant: "success"
@@ -171,14 +170,14 @@ export const BusinessFormAdd = ({ patientId, initialValues, onSuccess }: Busines
 
         catch (e) {
             if (e instanceof Error) {
-                toast({
+                alert({
                     title: "Error",
                     description: `${e.message}`,
                     variant: "destructive"
                 });
             }
         }
-    }, [patientId, form, setPatientContracts, toast, onSuccess]);
+    }, [patientId, form, setPatientContracts, alert, onSuccess]);
 
     const handlerOnSubmit = (data: FormValues) => {
         onSubmit(data)

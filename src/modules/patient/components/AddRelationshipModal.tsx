@@ -20,9 +20,8 @@ import { useServices } from '@/components/hooks/useServices';
 import type { IdName, Patient, Response } from '#/core/entities';
 import { AddRelationshipModalSearchPatient } from './addRelationshipModalSearchPatient';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { useToast } from '@/components/hooks/useToast';
-import type { ToastProps } from '#/context/providers/toastProvider';
 import type { SetPatientRelationshipServiceProps } from '#/core/services/patient/setPatientRelationship';
+import { useAlertStore, type AlertProps } from '#/stores/alert/useAlert';
 
 interface AddRelationshipModalProps {
     triggerText: string;
@@ -30,7 +29,7 @@ interface AddRelationshipModalProps {
     onSaveSuccess: () => void;
 }
 
-const validationErrors: ToastProps[] = [
+const validationErrors: AlertProps[] = [
     {
         title: "Error de Validación",
         description: "Debe seleccionar el beneficiario/titular y el tipo de relación.",
@@ -53,7 +52,7 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
     const [isSaving, setIsSaving] = useState(false);
 
     const { setPatientRelationship, searchPatientsService, getPatientRelationshipName } = useServices(); // Añadimos setPatientRelationship
-    const { toast } = useToast();
+    const { alert } = useAlertStore();
 
     const { data: patientSearched, execute: patientSearchedFetch } = useFetch<Patient[], string[]>(searchPatientsService.execute, []);
     const { data: relationshipOptions, execute: relationshipOptionsFetch } = useFetch<IdName[], []>(getPatientRelationshipName.execute, []);
@@ -78,8 +77,8 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
     };
 
     const handleSaveRelationship = async () => {
-        if (!selectedPatient || !relationship) return toast(validationErrors[0]);
-        if (selectedPatient === mainPatientId) return toast(validationErrors[1]);
+        if (!selectedPatient || !relationship) return alert(validationErrors[0]);
+        if (selectedPatient === mainPatientId) return alert(validationErrors[1]);
 
         setIsSaving(true);
 
@@ -95,7 +94,7 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
 
             // 5. Manejar la respuesta
             if (response.status === 1) {
-                toast({
+                alert({
                     title: "Éxito",
                     description: response.resultado || "Relación guardada correctamente.",
                     variant: 'default',
@@ -104,7 +103,7 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
                 onSaveSuccess();
             }
             else {
-                toast({
+                alert({
                     title: "Error al guardar",
                     description: "Ocurrió un error al guardar la relación.",
                     variant: 'destructive',
@@ -114,7 +113,7 @@ export const AddRelationshipModal = ({ triggerText, mainPatientId, onSaveSuccess
 
         catch (error) {
             console.error("Error saving relationship:", error);
-            toast({
+            alert({
                 title: "Error de Conexión",
                 description: "No se pudo comunicar con el servidor para guardar la relación.",
                 variant: 'destructive',

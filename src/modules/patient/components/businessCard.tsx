@@ -1,12 +1,10 @@
 import type { IdName, PatientContracts } from "#/core/entities"
+import { useAlertStore } from "#/stores/alert/useAlert"
 import { ConfirmationModal } from "@/components/app/confirmationModal"
 import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/hooks/useToast"
 import { X } from "lucide-react"
 import { useState } from "react"
-
-
 
 type BusinessCardProps = {
     contract: PatientContracts
@@ -15,15 +13,14 @@ type BusinessCardProps = {
     onDelete: (contract: PatientContracts) => void;
 }
 
-
 export const BusinessCard = ({ business, insurance, contract, onDelete }: BusinessCardProps) => {
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-    const { toast } = useToast()
+    const { alert } = useAlertStore()
 
     const confirmDeletion = (onDelete: (contract: PatientContracts) => void) => {
         onDelete(contract)
         setIsConfirmModalOpen(false);
-        toast({
+        alert({
             title: "Eliminado",
             description: "El paciente ha sido eliminado.",
             variant: "destructive"

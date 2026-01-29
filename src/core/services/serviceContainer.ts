@@ -29,7 +29,7 @@ import { DeletePatientContractsService } from "./patient/deletePatientContractsS
 import { GetPatientRelationshipNameService } from "./patient/getPatientRelationshipNameService";
 import { DeletePatientRelationshipService } from "./patient/deletePatientRelationship";
 import { UpdateProfileService } from "./user/updateProfileService";
-import { GetOneProfileService } from "./user/GetOneProfileService";
+import { GetOneProfileService } from "./user/getOneProfileService";
 import { GetProfileEspecialityService } from "./user/getProfileEspecialityService";
 
 type Repositories = {

@@ -12,7 +12,6 @@ import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/fie
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from "@/components/hooks/useToast";
 import { mapPatientToFormValues } from "../hooks/mappedForm";
 // import { ConfirmationModal } from "@/components/app/confirmationModal";
 import { cn } from "@/lib/utils";
@@ -21,6 +20,7 @@ import { Loading } from "@/components/app/loading";
 import { Card } from "@/components/ui/card";
 import { useServices } from "@/components/hooks/useServices";
 import { Toggle } from "@/components/ui/toggle";
+import { useAlertStore } from "#/stores/alert/useAlert";
 
 export type PatientProfileFormValues = z.infer<typeof patientProfileSchema>;
 
@@ -64,7 +64,7 @@ const genders: IdName[] = [
 
 export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, patientId }: PatientProfileFormProps) => {
     const { setPatientData } = useServices();
-    const { toast } = useToast();
+    const { alert } = useAlertStore();
     const initialValues = useMemo(() => {
         if (isNewPatient) {
             return emptyDefaults;
@@ -94,14 +94,14 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
         try {
             const result = await setPatientData.execute(patientId === 'new' ? null : patientId, data)
             if (result.status !== 1) throw new Error("Algo salio mal");
-            toast({
+            alert({
                 title: "Éxito",
                 description: `${result.resultado}`,
                 variant: "success"
             });
         } catch (e) {
             if (e instanceof Error) {
-                toast({
+                alert({
                     title: "Error",
                     description: `${e.message}`,
                     variant: "destructive"
@@ -117,7 +117,7 @@ export const PatientProfileForm = ({ patientState, isNewPatient, isLoading, pati
     // const confirmDeletion = () => {
     //     setIsConfirmModalOpen(false);
 
-    //     toast({
+    //     alert({
     //         title: "Eliminado",
     //         description: "El paciente ha sido eliminado.",
     //         variant: "destructive"

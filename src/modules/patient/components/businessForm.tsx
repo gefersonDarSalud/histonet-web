@@ -6,7 +6,7 @@ import { BusinessCard } from './businessCard';
 import { Input } from '@/components/ui/input';
 import { BusinessFormAdd } from './BusinessFormAdd';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/components/hooks/useToast';
+import { useAlertStore } from '#/stores/alert/useAlert';
 
 type BusinessFormProps = {
     patient: string | number,
@@ -14,7 +14,7 @@ type BusinessFormProps = {
 
 export const BusinessForm = ({ patient }: BusinessFormProps) => {
     const { getPatientContracts, deletePatientContracts } = useServices();
-    const { toast } = useToast();
+    const { alert } = useAlertStore();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [listBusiness, setListBusiness] = useState<PatientContracts[]>([]);
     const [searchBusiness, setSearchBusiness] = useState<string>("");
@@ -26,7 +26,7 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
             setListBusiness(response);
         } catch (error) {
             console.error("Error al cargar contratos:", error);
-            toast({
+            alert({
                 title: "Error de Carga",
                 description: "No se pudieron cargar los contratos de empresa.",
                 variant: "destructive"
@@ -34,7 +34,7 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
         } finally {
             setIsLoading(false);
         }
-    }, [getPatientContracts, toast]);
+    }, [getPatientContracts, alert]);
 
     useEffect(() => {
         fetchData(patient);
@@ -49,14 +49,14 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
                 insurance: insurance.id.toString(),
             });
             if (response.status !== 1) {
-                return toast({
+                return alert({
                     title: "Error:",
                     description: `No se ha podido eliminar la empresa. ${response.resultado}`,
                     variant: "destructive"
                 });
             }
             setListBusiness(prevList => prevList.filter(c => c.row !== contractRow));
-            toast({
+            alert({
                 title: "Completado",
                 description: `Se ha eliminado la empresa. ${response.resultado}`,
                 variant: "success"
@@ -65,7 +65,7 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
 
         catch (error) {
             console.error("Error al eliminar contrato:", error);
-            toast({
+            alert({
                 title: "Error del sistema:",
                 description: "Ocurrió un error inesperado al contactar con el servicio.",
                 variant: "destructive"
@@ -74,7 +74,7 @@ export const BusinessForm = ({ patient }: BusinessFormProps) => {
         finally {
             setIsLoading(false);
         }
-    }, [deletePatientContracts, patient, toast]);
+    }, [deletePatientContracts, patient, alert]);
 
     const filteredListBusiness = useMemo(() => listBusiness.filter(business => {
         const businessName = business.business.name;

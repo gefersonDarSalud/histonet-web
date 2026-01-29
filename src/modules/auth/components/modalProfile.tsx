@@ -25,8 +25,8 @@ import * as z from "zod"
 import { useServices } from "@/components/hooks/useServices";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { useToast } from "@/components/hooks/useToast";
+import { useAuthStore } from "#/stores/auth/useAuth";
+import { useAlertStore } from "#/stores/alert/useAlert";
 
 
 const idNameSchema = z.object({
@@ -53,13 +53,13 @@ type FormSchema = z.infer<typeof formSchema>
 type props = {
     open: boolean;
     isDoctor: boolean;
-    onOpenChange: (open: boolean) => void;
+    onOpenChange: (open: any) => void;
 }
 
 export const ModalProfile = ({ open, onOpenChange, isDoctor }: props) => {
-    const { setMessage } = useToast();
     const { updateProfileService, getOneProfileService, getProfileEspecialityService } = useServices();
-    const auth = useAuth();
+    const { alert } = useAlertStore();
+    const auth = useAuthStore.getState();
     const navigate = useNavigate();
     const from = useLocation().state?.from?.pathname || "/";
     const form = useForm({
@@ -106,7 +106,7 @@ export const ModalProfile = ({ open, onOpenChange, isDoctor }: props) => {
             navigate(from, { replace: true });
             onOpenChange(false);
         } catch (error) {
-            setMessage({
+            alert({
                 title: "Error",
                 variant: "destructive",
                 description: `algo ha salido mal | ${error}`

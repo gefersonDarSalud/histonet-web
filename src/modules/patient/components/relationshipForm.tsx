@@ -15,8 +15,7 @@ import { useServices } from "@/components/hooks/useServices"
 import type { PatientRelationship, Response } from "#/core/entities"
 import { useCallback, useEffect } from "react"
 import { AddRelationshipModal } from "./AddRelationshipModal"
-import { useToast } from "@/components/hooks/useToast"
-import type { ToastProps } from "#/context/providers/toastProvider"
+import { useAlertStore, type AlertProps } from "#/stores/alert/useAlert"
 
 export type beneficiariesType = { patient: string; list: 'BENEFICIARIO'; }
 export type ownersType = { patient: string; list: 'TITULAR'; }
@@ -25,7 +24,7 @@ type props = {
     id_patient?: string;
 }
 
-const messages: ToastProps[] = [
+const messages: AlertProps[] = [
     {
         title: "Error de Datos",
         description: "Falta el ID del beneficiario para la eliminación.",
@@ -56,14 +55,11 @@ const messages: ToastProps[] = [
         description: "Ocurrió un error inesperado al intentar eliminar el titular.",
         variant: 'destructive',
     },
-
-
-
 ]
 
 export const RelationshipForm = ({ id_patient }: props) => {
     const { getPatientRelationship, deletePatientRelationship } = useServices();
-    const { toast } = useToast();
+    const { alert } = useAlertStore();
 
     const {
         data: beneficiaries,
@@ -101,7 +97,7 @@ export const RelationshipForm = ({ id_patient }: props) => {
         const beneficiaryId = beneficiary.id_patient.toString();
 
         if (!beneficiaryId) {
-            return toast(messages[0]);
+            return alert(messages[0]);
         }
 
         try {
@@ -111,10 +107,10 @@ export const RelationshipForm = ({ id_patient }: props) => {
             });
 
             if (response.status === 1 || response.status === 1) {
-                toast(messages[1]);
+                alert(messages[1]);
                 fetchRelationships(); // Recargar los listados
             } else {
-                toast({
+                alert({
                     title: "Error al Eliminar",
                     description: `No se pudo eliminar al beneficiario: ${response.resultado}`,
                     variant: 'destructive',
@@ -122,9 +118,9 @@ export const RelationshipForm = ({ id_patient }: props) => {
             }
         } catch (error) {
             console.error("Error al eliminar beneficiario:", error);
-            toast(messages[2]);
+            alert(messages[2]);
         }
-    }, [id_patient, deletePatientRelationship, fetchRelationships, toast]);
+    }, [id_patient, deletePatientRelationship, fetchRelationships, alert]);
 
     const handleDeleteOwner = useCallback(async (owner: PatientRelationship) => {
 
@@ -132,7 +128,7 @@ export const RelationshipForm = ({ id_patient }: props) => {
         const ownerId = owner.id_client.toString();
 
         if (!ownerId) {
-            return toast(messages[3]);
+            return alert(messages[3]);
         }
 
         try {
@@ -142,10 +138,10 @@ export const RelationshipForm = ({ id_patient }: props) => {
             });
 
             if (response.status === 1 || response.status === 1) {
-                toast(messages[4]);
+                alert(messages[4]);
                 fetchRelationships();
             } else {
-                toast({
+                alert({
                     title: "Error al Eliminar",
                     description: `No se pudo eliminar al titular: ${response.resultado}`,
                     variant: 'destructive',
@@ -153,9 +149,9 @@ export const RelationshipForm = ({ id_patient }: props) => {
             }
         } catch (error) {
             console.error("Error al eliminar titular:", error);
-            toast(messages[5]);
+            alert(messages[5]);
         }
-    }, [id_patient, deletePatientRelationship, fetchRelationships, toast]);
+    }, [id_patient, deletePatientRelationship, fetchRelationships, alert]);
 
     return (
         <Card>

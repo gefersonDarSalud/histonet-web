@@ -3,13 +3,11 @@ import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
-    // CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Logo } from '../components/logo';
 import { Link, } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
 import { useServices } from '@/components/hooks/useServices';
 import { routeLabel } from '#/routes';
 import type { objectList } from '#/utils/types';
@@ -21,6 +19,8 @@ import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
 import { Field, FieldLabel, FieldSet } from '@/components/ui/field';
 import { useMutation } from '@tanstack/react-query';
+import { useAuthStore } from '#/stores/auth/useAuth';
+import { useAlertStore } from '#/stores/alert/useAlert';
 
 const idNameSchema = z.object({
     username: z.string(),
@@ -48,10 +48,12 @@ export const Login = (): Component => {
         resolver: zodResolver(idNameSchema),
     })
 
+    const { alert } = useAlertStore.getState();
+
+
     const [openModal, setOpenModal] = useState<boolean>(false);
-    const [isDoctor, setIsDoctor] = useState(true);
     const { authService } = useServices();
-    const { login, setMessage } = useAuth();
+    const { login } = useAuthStore();
 
     const loginMutation = useMutation({
         mutationFn: (credentials: IdNameSchema) => {
@@ -62,14 +64,14 @@ export const Login = (): Component => {
         },
         onSuccess: () => {
             login();
-            setMessage(messages.sessionSuccess);
+            alert(messages.sessionSuccess);
             setOpenModal(true);
 
         },
 
         onError: (error) => {
             console.error(error);
-            setMessage(messages.sessionError);
+            alert(messages.sessionError);
         }
     });
 

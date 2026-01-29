@@ -74,7 +74,6 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
             }
         };
 
-        checkAuthStatus();
     }, []);
 
     const login = useCallback(() => {
@@ -85,11 +84,12 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
 
     const logout = useCallback(async () => {
         try {
-            const response = await apiFetch(`${serverUrl}/cerrar-sesion`, 'POST');
+            const response = await apiFetch(`${serverUrl}/sesion/cerrar`, 'POST');
 
             if (response.ok) {
                 setIsLoggedIn(false);
                 setMessage(messages.sessionLogout);
+                setIsProfileSelected(false);
                 setTimeout(() => setMessage(null), 3000);
             }
 
