@@ -1,247 +1,180 @@
-import { Button } from "@/components/ui/button"
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-
-import {
-    Field,
-    FieldGroup,
-    FieldLabel,
-    FieldLegend,
-    FieldSeparator,
-    FieldSet,
-} from "@/components/ui/field"
+import type { Patient } from "#/core/entities"
+import { Code } from "@/components/app/code"
+import { FormController } from "@/components/app/FormController"
+import { OptionCards } from "@/components/app/OptionCards"
+import { SearchCombobox } from "@/components/app/SearchCombobox"
 import { useServices } from "@/components/hooks/useServices"
-import type { GroupTypeVisit } from "#/core/entities"
-import type { PatientState } from "#/utils/types"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { FieldGroup } from "@/components/ui/field"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { schema } from "@/remoteClicnic/validations/newcall"
+import { zodResolver } from "@hookform/resolvers/zod"
+
 import { useState } from "react"
-
-
+import { FormProvider, useForm } from "react-hook-form"
 
 export const NewCall = () => {
-    const { getPatientVisitContracts } = useServices();
+    const { searchPatientsService } = useServices();
+    const [open, setOpen] = useState<boolean>(false);
 
-    const typeVisit: GroupTypeVisit[] = ["particular", "afiliado", "asegurado"]
-
-    const [patient, setPatient] = useState<PatientState>({
-        id: null,
-        code: null,
-        fullname: null,
-        birthdate: null,
+    const form = useForm({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            patientId: "",
+            patientCode: "",
+            patientFullName: "",
+            admissionType: undefined as 'particular' | 'asegurado' | 'corporativo' | 'convenio' | undefined,
+            visitMotive: "",
+            policyHolderId: "",
+            policyHolderName: "",
+            businessId: "",
+            businessName: "",
+            feeScheduleId: "",
+            services: [],
+            observations: "",
+        }
     });
 
-    const [visitType, setVisitType] = useState<TypeVisit | null>(null);
-    const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
-    const [selectedIsurance, setSelectedIsurance] = useState<string | null>(null);
-    const [businessList, setBusinessList] = useState<Business[]>([]);
-    const [isBusinessLoading, setIsBusinessLoading] = useState(false);
+    const { watch, setValue, handleSubmit } = form;
+    const admissionType = watch('admissionType');
+    const isSelectedPatient = watch().patientCode.length !== 0;
 
-    const isInsuredPatient = visitType === 'asegurado';
-    const patientIdExists = !!patient.id;
-
-    const { insuranceName, getFeeSchedulesInsurance, getFeeSchedulesBusiness, businessObject } = useMemo(() => {
-        const business = businessList.find(b => b.id === selectedBusiness);
-        const insurance = business?.insurances?.find(i => String(i.id) === String(selectedIsurance));
-        const feeSchedulesInsurance = insurance?.feeSchedules;
-        const feeSchedulesBusiness = business?.insurances?.find(i => typeof i.id === 'undefined')?.feeSchedules;
-        return {
-            insuranceName: insurance?.name ?? null,
-            getFeeSchedulesInsurance: feeSchedulesInsurance,
-            getFeeSchedulesBusiness: feeSchedulesBusiness,
-            businessObject: business
-        };
-    }, [selectedIsurance, selectedBusiness, businessList]);
-
-    const selectedBusinessState = {
-        value: selectedBusiness,
-        set: setSelectedBusiness
-    }
-
-    const selectedIsuranceState = {
-        value: selectedIsurance,
-        set: setSelectedIsurance
-    }
-
-
-    useEffect(() => {
-        if (isInsuredPatient && patientIdExists) {
-
-            const fetchBusinesses = async () => {
-                setIsBusinessLoading(true);
-                setBusinessList([]);
-                setSelectedBusiness(null);
-
-                try {
-                    const patientParam = { id: patient.id! };
-                    setBusinessList(await getPatientVisitContracts.execute(patientParam));
-                }
-
-                catch (error) {
-                    console.error("Error al cargar empresas:", error);
-                    setBusinessList([]);
-                }
-
-                finally {
-                    setIsBusinessLoading(false);
-                }
-            };
-
-            fetchBusinesses();
-        } else {
-            setBusinessList([]);
-            setSelectedBusiness(null);
-        }
-    }, [isInsuredPatient, patientIdExists, patient.id]);
-
-    const handlePatientChange = (field: keyof PatientState, value: string | null) => {
-        setPatient(othersFields => {
-            return { ...othersFields, [field]: value }
-        });
+    const onSubmit = (data: unknown) => {
+        console.log('Form submitted:', data);
+        // Aquí se navegaría a la página de ClinicalInterview
+        // navigate('/remote-clinic/visit', { state: { visitData: data } });
+        setOpen(false);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleRegisterPatient = () => {
+        // Navegar al registro de nuevo paciente
+        console.log('Register new patient');
     };
 
     return (
-        <Dialog>
-            <form onSubmit={handleSubmit}>
+        <FormProvider {...form}>
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     <Button variant="default">Nuevo Ingreso</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[50vw]">
+                <DialogContent className="sm:max-w-[70vw] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <div>
-                            <DialogTitle className="mb-2">Nuevo Registro de llamada</DialogTitle>
-                            <DialogDescription>
-                                Busca el Paciente y para registrarlo a la llamada
-                            </DialogDescription>
-                        </div>
-                        <div className="flex justify-between">
-                            <PatientCombobox patient={patient} setPatient={setPatient} />
-                            <Button variant={"link"} className="flex-1 font-bold cursor-pointer">¿El cliente No esta registrado?</Button>
-                        </div>
+                        <DialogTitle className="mb-2">Nueva Llamada - Telemedicina</DialogTitle>
+                        <DialogDescription className="flex justify-between">
+                            <div>
+
+                                Complete los datos para registrar una nueva llamada médica
+                            </div>
+                            <Button
+                                type="button"
+                                variant="link"
+                                className="font-bold cursor-pointer p-0 h-auto"
+                                onClick={handleRegisterPatient}
+                            >
+                                ¿El paciente no está registrado?
+                            </Button>
+                        </DialogDescription>
                     </DialogHeader>
-                    <div className="w-full">
+
+
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Paso 1: Búsqueda de Paciente */}
                         <FieldGroup>
-                            <FieldSet>
-
-                                {/* patient data */}
-                                <FieldLegend>Paciente</FieldLegend>
-                                <FieldGroup className="grid grid-cols-4 gap-4">
-                                    <Field className=" col-span-2">
-                                        <FieldLabel htmlFor="newCall-fullname">
-                                            Nombre completo
-                                        </FieldLabel>
-                                        <Input
-                                            id="newCall-fullname"
-                                            placeholder="Nombre del paciente"
-                                            required
-                                            value={patient.fullname ?? ''}
-                                            onChange={(e) => handlePatientChange('fullname', e.target.value)}
-                                            disabled={patientIdExists}
-                                        />
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="newCall-id">
-                                            Cedula
-                                        </FieldLabel>
-                                        <Input
-                                            id="newCall-id"
-                                            placeholder="V28563229"
-                                            required
-                                            value={patient.id ?? ''}
-                                            onChange={(e) => handlePatientChange('id', e.target.value)}
-                                            disabled={patientIdExists}
-                                        />
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="newCall-birthdate">
-                                            Fecha de Nacimiento
-                                        </FieldLabel>
-                                        <Input
-                                            id="newCall-birthdate"
-                                            type="date"
-                                            required
-                                            value={patient.birthdate ? patient.birthdate.split('T')[0] : ''}
-                                            onChange={(e) => handlePatientChange('birthdate', e.target.value)}
-                                            disabled={patientIdExists}
-                                        />
-                                    </Field>
-                                </FieldGroup>
-
-                                {/* config data */}
-                                <FieldSeparator />
-                                <div className="flex justify-between items-center">
-                                    <FieldLegend className="m-0">Configuracion</FieldLegend>
-                                    <Field orientation="horizontal" className="w-1/2">
-                                        <FieldLabel htmlFor="newCall-patientsTypes">
-                                            Tipo de Paciente
-                                        </FieldLabel>
-                                        <PatientType
-                                            typeVisit={typeVisit}
-                                            value={visitType}
-                                            onValueChange={setVisitType}
-                                        />
-                                    </Field>
+                            {!isSelectedPatient ? (
+                                <FormController
+                                    as={SearchCombobox}
+                                    name="patientCode"
+                                    label="Buscar Paciente por Cédula o Nombre"
+                                    description="Escribe al menos 3 caracteres para iniciar la búsqueda"
+                                    queryKey="patients-search"
+                                    fetcher={searchPatientsService.execute}
+                                    getOptionValue={(p: Patient) => p.code}
+                                    getOptionLabel={(p: Patient) => `${p.code} - ${p.fullname}`}
+                                    onSelect={(p: Patient) => {
+                                        form.setValue("patientFullName", p.fullname)
+                                    }}
+                                    placeholder="Ej: V28563229"
+                                    renderItem={(p: Patient) => (
+                                        <div className="flex flex-col cursor-pointer py-1 my-2">
+                                            <span className="font-bold">{p.fullname}</span>
+                                            <span className="text-xs text-muted-foreground">{p.code}</span>
+                                        </div>
+                                    )}
+                                />
+                            ) : (
+                                <div className="p-4 bg-slate-50 rounded-lg border">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-bold text-lg">{watch().patientFullName}</p>
+                                            <p className="text-muted-foreground">{watch().patientCode}</p>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                form.reset(null);
+                                                setValue('patientId', '');
+                                                setValue('patientCode', '');
+                                                setValue('patientFullName', '');
+                                            }}
+                                        >
+                                            Cambiar paciente
+                                        </Button>
+                                    </div>
                                 </div>
-                                <FieldGroup className="grid grid-cols-2 gap-4">
-                                    {isInsuredPatient &&
-                                        <>
-                                            <Field>
-                                                <FieldLabel htmlFor="newCall-business">
-                                                    Empresa {isBusinessLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin inline" />}
-                                                </FieldLabel>
-                                                <BusinessCombobox
-                                                    listBusiness={businessList}
-                                                    businessId={selectedBusinessState}
-                                                    disabled={isBusinessLoading || businessList.length === 0}
-                                                    businessObject={businessObject}
-                                                />
-                                            </Field>
-                                            {businessObject && businessObject.insurances?.some(insurance => typeof insurance.id !== 'undefined') && businessObject &&
-                                                <Field>
-                                                    <FieldLabel htmlFor="newCall-insurances">
-                                                        Seguro:
-                                                    </FieldLabel>
-                                                    <InsuranceType
-                                                        list={businessObject.insurances}
-                                                        state={selectedIsuranceState}
-                                                        selectedInsurance={insuranceName ?? ''}
-                                                        selfBusiness={{ name: businessObject.name, id: businessObject.id }}
-                                                    />
-                                                </Field>
-                                            }
-                                        </>
-                                    }
-                                </FieldGroup>
-                            </FieldSet>
-                            <FieldSeparator />
-
+                            )}
                         </FieldGroup>
-                    </div>
-                    <DialogFooter>
-                        <Field orientation={'horizontal'}>
-                            <FieldLabel htmlFor="newCall-patientsTypes">
-                                Baremo
-                            </FieldLabel>
-                            <FeeScheduleType feeSchedules={getFeeSchedulesInsurance ?? getFeeSchedulesBusiness ?? []} />
-                        </Field>
-                        <DialogClose asChild>
-                            <Button variant="outline">Cancelar</Button>
-                        </DialogClose>
-                        <Button type="submit">Ingresar</Button>
-                    </DialogFooter>
+
+                        {/* Paso 2: Tipo de Ingreso */}
+
+                        <FieldGroup>
+                            <Label className="text-lg font-semibold">2. Tipo de Ingreso</Label>
+                            <FormController
+                                as={OptionCards}
+                                name="admissionType"
+                            />
+                        </FieldGroup>
+
+
+                        {/* Campos condicionales según el tipo de ingreso */}
+                        {['asegurado', 'corporativo'].includes(admissionType || '') && (
+                            <FieldGroup>
+                                <Label className="text-lg font-semibold">4. {admissionType === 'asegurado' ? 'Aseguradora' : 'Empresa'}</Label>
+                                <FormController
+                                    as={SearchCombobox}
+                                    name="businessId"
+                                    label={`Buscar ${admissionType === 'asegurado' ? 'aseguradora' : 'empresa'}`}
+                                    queryKey="business-search"
+                                    fetcher={() => Promise.resolve([])} // TODO: Implementar servicio de búsqueda de empresas
+                                    getOptionValue={(b: { id: string; name: string }) => b.id}
+                                    getOptionLabel={(b: { id: string; name: string }) => b.name}
+                                    placeholder="Buscar empresa o aseguradora..."
+                                />
+                            </FieldGroup>
+                        )}
+
+
+
+                        {/* Debug: Mostrar datos del formulario */}
+                        <Code data={watch()} />
+
+                        <DialogFooter className="mt-6">
+                            <DialogClose asChild>
+                                <Button type="button" variant="outline">Cancelar</Button>
+                            </DialogClose>
+                            <Button
+                                type="submit"
+                                disabled={!isSelectedPatient || !admissionType || !watch('visitMotive')}
+                            >
+                                Continuar a Entrevista Clínica
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
-            </form>
-        </Dialog>
+            </Dialog>
+        </FormProvider>
     )
 }

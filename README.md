@@ -1,69 +1,134 @@
-# React + TypeScript + Vite
+# HistoNet - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend de la aplicación de telemedicina HistoNet, construida con React, TypeScript y Vite.
 
-Currently, two official plugins are available:
+## 📋 Descripción
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**HistoNet** es una aplicación de historias médicas electrónicas donde se gestiona el ingreso de pacientes y los médicos registran toda la información de la visita médica.
 
-## Expanding the ESLint configuration
+**RemoteClinic** es un módulo específico para gestión de llamadas/telemedicina, donde:
+- Se busca al paciente previamente registrado en el sistema
+- Se selecciona el método de ingreso (Particular, Asegurado, Corporativo, Convenio)
+- Se registra el motivo de la consulta
+- Se configura el baremo de precios y servicios
+- Se pasa a la entrevista clínica del paciente
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Stack Tecnológico
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Framework:** React 18
+- **Build Tool:** Vite
+- **Lenguaje:** TypeScript
+- **Estilado:** Tailwind CSS + shadcn/ui
+- **Validaciones:** Zod
+- **Gestión de Formularios:** React Hook Form + FormController
+- **Estado del Servidor:** TanStack Query (React Query)
+- **Íconos:** Lucide React
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 📁 Estructura de Carpetas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+frontent/src/
+├── assets/              # Recursos estáticos (imágenes, logos)
+├── components/          # Componentes compartidos
+│   └── ui/              # Componentes base de shadcn/ui
+├── context/             # Contextos de la aplicación
+│   └── providers/       # Providers (medicalVisit, toast)
+├── core/                # Núcleo de la aplicación
+│   ├── entities/        # Entidades del dominio
+│   ├── repositories/    # Interfaces de repositorios
+│   └── services/        # Servicios de negocio
+├── data/                # Capa de datos
+│   ├── mappers/         # Mapeadores de datos
+│   └── types/           # Tipos de datos
+├── infrastructure/      # Implementación de repositorios
+├── modules/             # Módulos de la aplicación
+│   ├── admission/       # Módulo de admisión
+│   ├── auth/            # Módulo de autenticación
+│   ├── components/      # Componentes compartidos del proyecto
+│   │   └── app/         # Componentes agnósticos (FormController, SearchCombobox, OptionCards)
+│   └── remoteClicnic/   # Módulo de telemedicina
+│       ├── components/
+│       │   ├── main/    # Componentes principales (newCall, PatientVisitTable)
+│       │   └── visit/   # Componentes de visita (ClinicalInterview, AdmissionDataPanel)
+│       ├── pages/       # Páginas del módulo
+│       └── validations/ # Esquemas Zod
+└── infrastructure/      # Repositorios concretos
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Componentes Principales (modules/components/app/)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### FormController
+Wrapper agnóstico para integrar componentes UI con React Hook Form.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```tsx
+<FormController
+    as={SearchCombobox}
+    name="patientId"
+    label="Buscar Paciente"
+    fetcher={searchService.execute}
+    getOptionValue={(p) => p.id}
+    getOptionLabel={(p) => p.fullname}
+/>
 ```
+
+### SearchCombobox
+Combobox con búsqueda asíncrona y debounce.
+
+### OptionCards
+Selector visual mediante tarjetas para elegir tipo de ingreso:
+- **Particular** - Atención directa sin intermediarios
+- **Asegurado** - Cobertura mediante póliza de seguro
+- **Corporativo** - Cargo a cuenta de empresa directa
+- **Convenio** - Acuerdos institucionales especiales
+
+## 📝 Validaciones
+
+Los esquemas Zod se encuentran en `modules/remoteClicnic/validations/`:
+
+- `newcall.ts` - Validación del formulario de nueva llamada
+- `ClinicalInterview.ts` - Validación de entrevista clínica
+
+## 🔧 Configuración
+
+### Variables de Entorno
+Crear un archivo `.env` en la raíz del proyecto:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+```
+
+### Scripts Disponibles
+
+```bash
+# Desarrollo
+npm run dev
+
+# Build para producción
+npm run build
+
+# Linting
+npm run lint
+
+# Vista previa de producción
+npm run preview
+```
+
+## 📚 Dependencias Principales
+
+- `@hookform/resolvers` - Resolvedores de validación para React Hook Form
+- `zod` - Validaciones de esquemas TypeScript
+- `lucide-react` - Biblioteca de íconos
+- `class-variance-authority` - Variantes de clases CSS
+- `clsx` - Utilidad para clases condicionales
+- `tailwind-merge` - Merge de clases Tailwind
+- `@tanstack/react-query` - Gestión de estado del servidor
+
+## 🎨 Estilo y Theme
+
+El theme de la aplicación está definido en:
+- `src/assets/theme/colors.ts` - Colores del sistema
+- `src/assets/theme/darsalud.css` - Estilos CSS globales
+
+## 📄 Licencia
+
+Este proyecto es parte del sistema HistoNet.

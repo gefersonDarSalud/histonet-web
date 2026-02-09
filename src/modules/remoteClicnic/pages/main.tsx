@@ -110,7 +110,7 @@ export const RemoteClinic = () => {
                     {/* Card Header (Cola de Pacientes + Botón) */}
                     <CardHeader className='flex justify-between items-center'>
                         <CardTitle>Cola de Pacientes</CardTitle>
-                        {/* <NewCall /> */}
+                        <NewCall />
                     </CardHeader>
 
                     {/* Herramientas de Filtro y Búsqueda */}

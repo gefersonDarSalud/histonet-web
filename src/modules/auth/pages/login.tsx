@@ -5,7 +5,7 @@ import {
     CardContent,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Logo } from '../components/logo';
+import { Logo } from '../../layout/logo';
 import { Link, } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { useServices } from '@/components/hooks/useServices';
